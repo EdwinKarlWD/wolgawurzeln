@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wolgawurzeln — Russlanddeutsche Ahnenforschung · Edwin Karl</title>
+<meta name="description" content="Russlanddeutsche und Wolgadeutsche Ahnenforschung. Ich finde was 1941 verloren ging. Herkunftsberichte und erzählte Familiengeschichten aus historischen Quellen — auf Deutsch und Russisch.">
+<meta name="theme-color" content="#0D1527">
+<meta name="google-site-verification" content="lBfMbHLjNO9nCgk6NkqTKpR8XXk7XvQYjJYr1mOCAXs" />
+<link rel="icon" type="image/png" href="crest.png">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png">
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root {
+  --gold: #C9A84C;
+  --gold-light: #EDD070;
+  --gold-soft: #B89940;
+  --gold-dark: #8B6914;
+  --navy: #0D1527;
+  --navy-deep: #070B17;
+  --navy-mid: #141E36;
+  --navy-light: #1C2A47;
+  --paper: #F5EDD8;
+  --paper-dim: rgba(245,237,216,0.72);
+  --paper-faint: rgba(245,237,216,0.42);
+  --rule: rgba(201,168,76,0.22);
+  --rule-soft: rgba(201,168,76,0.12);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+body {
+  background:var(--navy);
+  color:var(--paper);
+  font-family:"EB Garamond",Georgia,serif;
+  font-size:18px;
+  line-height:1.55;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  font-feature-settings:"kern","liga","onum";
+}
+
+::selection { background:var(--gold); color:var(--navy); }
+
+a { color:inherit; text-decoration:none; }
+img { display:block; max-width:100%; }
+
+/* ─────────── NAV ─────────── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  background:rgba(13,21,39,0.85);
+  backdrop-filter:blur(14px) saturate(140%);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);
+  border-bottom:1px solid var(--rule);
+  padding:14px 32px;
+  display:flex; align-items:center; justify-content:space-between;
+  transition:padding .25s ease, background .25s ease;
+}
+nav.shrunk { padding:10px 32px; background:rgba(7,11,23,0.95); }
+
+.nav-brand {
+  display:flex; align-items:center; gap:14px;
+}
+.nav-brand img { height:34px; width:auto; }
+.nav-brand-text {
+  font-family:"Cinzel",serif; font-size:13px; letter-spacing:3.5px;
+  color:var(--gold-light); font-weight:600;
+}
+
+.nav-links {
+  display:flex; gap:30px; list-style:none; align-items:center;
+}
+.nav-links a {
+  font-family:"Cinzel",serif; font-size:10.5px; letter-spacing:2.4px;
+  color:var(--paper-dim); text-transform:uppercase;
+  position:relative; padding:4px 0; transition:color .25s;
+}
+.nav-links a::after {
+  content:""; position:absolute; left:0; right:0; bottom:-2px;
+  height:1px; background:var(--gold);
+  transform:scaleX(0); transform-origin:right; transition:transform .3s ease;
+}
+.nav-links a:hover { color:var(--gold-light); }
+.nav-links a:hover::after { transform:scaleX(1); transform-origin:left; }
+
+.nav-cta {
+  font-family:"Cinzel",serif; font-size:10.5px; letter-spacing:2.4px;
+  color:var(--navy) !important; background:var(--gold);
+  padding:9px 18px; text-transform:uppercase;
+  transition:background .25s;
+}
+.nav-cta:hover { background:var(--gold-light); }
+.nav-cta::after { display:none !important; }
+
+.nav-burger {
+  display:none; width:32px; height:32px; background:none; border:none; cursor:pointer;
+  flex-direction:column; justify-content:center; gap:5px;
+}
+.nav-burger span {
+  display:block; width:22px; height:1.5px; background:var(--gold);
+  transition:transform .3s, opacity .3s;
+}
+
+/* ─────────── HERO ─────────── */
+.hero {
+  min-height:100vh;
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+  padding:130px 32px 90px;
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 30%, rgba(201,168,76,0.10) 0%, transparent 65%),
+    radial-gradient(ellipse 100% 50% at 50% 100%, rgba(201,168,76,0.04) 0%, transparent 70%),
+    linear-gradient(90deg, rgba(13,21,39,0.62) 0%, rgba(13,21,39,0.10) 62%, rgba(13,21,39,0.0) 100%),
+    linear-gradient(180deg, rgba(13,21,39,0.90) 0%, rgba(13,21,39,0.70) 42%, rgba(7,11,23,0.92) 100%),
+    url("hero-bg.jpg") center/cover no-repeat,
+    var(--navy);
+}
+
+/* Decorative grain overlay */
+.hero::before {
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:1;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(201,168,76,0.012) 0px, rgba(201,168,76,0.012) 1px, transparent 1px, transparent 4px);
+  opacity:.5;
+}
+
+/* Subtle topographic concentric rings far in background */
+.hero::after {
+  content:""; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:1400px; height:1400px;
+  background:
+    radial-gradient(circle, transparent 0%, transparent 18%, rgba(201,168,76,0.04) 18.2%, transparent 18.4%),
+    radial-gradient(circle, transparent 0%, transparent 28%, rgba(201,168,76,0.04) 28.2%, transparent 28.4%),
+    radial-gradient(circle, transparent 0%, transparent 40%, rgba(201,168,76,0.03) 40.2%, transparent 40.4%);
+  pointer-events:none; z-index:0;
+}
+
+.hero-inner {
+  max-width:1180px; width:100%;
+  position:relative; z-index:2;
+  display:grid; grid-template-columns:1fr 1.05fr; gap:88px;
+  align-items:center;
+}
+
+/* Hero text column */
+.hero-eyebrow {
+  font-family:"Cinzel",serif; font-size:10.5px; letter-spacing:6px;
+  color:var(--gold); text-transform:uppercase;
+  margin-bottom:28px;
+  display:flex; align-items:center; gap:14px;
+  opacity:0; animation:slideUp .7s .1s ease forwards;
+}
+.hero-eyebrow::before { content:""; width:42px; height:1px; background:var(--gold); }
+
+h1.hero-title {
+  font-family:"Cinzel",serif;
+  font-size:clamp(40px, 5.4vw, 68px);
+  font-weight:600; line-height:1.05;
+  color:var(--gold-light);
+  letter-spacing:-0.5px;
+  margin-bottom:14px;
+  opacity:0; animation:slideUp .7s .2s ease forwards;
+}
+h1.hero-title .gold-strong { font-weight:900; }
+
+.hero-byline {
+  font-family:"Cinzel",serif; font-size:13px; letter-spacing:4.5px;
+  color:var(--paper-faint); text-transform:uppercase;
+  margin-bottom:38px;
+  opacity:0; animation:slideUp .7s .3s ease forwards;
+}
+
+.hero-slogan {
+  font-size:clamp(20px, 2.2vw, 26px);
+  font-style:italic; font-weight:400;
+  color:var(--paper);
+  line-height:1.5;
+  margin-bottom:48px;
+  padding:6px 0 6px 22px;
+  border-left:3px solid var(--gold);
+  opacity:0; animation:slideUp .7s .4s ease forwards;
+}
+
+.hero-ctas {
+  display:flex; gap:14px; flex-wrap:wrap;
+  opacity:0; animation:slideUp .7s .5s ease forwards;
+}
+.btn {
+  display:inline-flex; align-items:center; gap:11px;
+  padding:15px 30px;
+  font-family:"Cinzel",serif; font-size:11.5px; letter-spacing:3px;
+  text-transform:uppercase;
+  position:relative; overflow:hidden;
+  transition:color .3s, border-color .3s;
+  cursor:pointer;
+}
+.btn-primary {
+  background:var(--gold); color:var(--navy);
+  border:1.5px solid var(--gold);
+}
+.btn-primary:hover { background:var(--gold-light); border-color:var(--gold-light); }
+.btn-secondary {
+  background:transparent; color:var(--gold);
+  border:1.5px solid var(--gold);
+}
+.btn-secondary::before {
+  content:""; position:absolute; inset:0; background:var(--gold);
+  transform:translateX(-101%); transition:transform .3s ease; z-index:0;
+}
+.btn-secondary span { position:relative; z-index:1; }
+.btn-secondary:hover { color:var(--navy); }
+.btn-secondary:hover::before { transform:translateX(0); }
+
+.btn-arrow { font-size:14px; transition:transform .3s; }
+.btn:hover .btn-arrow { transform:translateX(3px); }
+
+/* Hero crest column */
+.hero-crest-col {
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+  min-height:580px;
+  opacity:0; animation:fadeIn 1s .3s ease forwards;
+}
+
+.crest-rings .ring {
+  position:absolute; left:50%; top:50%;
+  border-radius:50%; border:1px solid rgba(201,168,76,0.10);
+  pointer-events:none;
+}
+.crest-rings .ring-1 { width:600px; height:600px; transform:translate(-50%,-50%); animation:slowSpin 60s linear infinite; }
+.crest-rings .ring-2 { width:480px; height:480px; transform:translate(-50%,-50%); animation:slowSpin 40s linear infinite reverse; border-color:rgba(201,168,76,0.16); border-style:dashed; }
+.crest-rings .ring-3 { width:380px; height:380px; transform:translate(-50%,-50%); animation:slowSpin 80s linear infinite; border-color:rgba(201,168,76,0.08); }
+
+.crest-img {
+  width:360px; max-width:88%;
+  position:relative; z-index:2;
+  filter:
+    drop-shadow(0 0 60px rgba(201,168,76,0.28))
+    drop-shadow(0 30px 80px rgba(0,0,0,0.65));
+  animation:floaty 8s ease-in-out infinite;
+}
+
+/* Compass marks around the crest */
+.crest-marks {
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:600px; height:600px; pointer-events:none;
+}
+.crest-marks span {
+  position:absolute; left:50%; top:50%;
+  font-family:"Cinzel",serif; font-size:9px; letter-spacing:3px; color:var(--gold);
+  opacity:.6;
+}
+.crest-marks span:nth-child(1) { transform:translate(-50%,-285px); } /* N — 1763 */
+.crest-marks span:nth-child(2) { transform:translate(245px,-50%); }  /* E — 1941 */
+.crest-marks span:nth-child(3) { transform:translate(-50%,235px); }  /* S — 1990 */
+.crest-marks span:nth-child(4) { transform:translate(-285px,-50%); } /* W — heute */
+
+@keyframes slowSpin { to { transform:translate(-50%,-50%) rotate(360deg); } }
+@keyframes floaty { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-12px); } }
+@keyframes slideUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+/* Hero scroll cue */
+.scroll-cue {
+  position:absolute; left:50%; bottom:32px; transform:translateX(-50%);
+  font-family:"Cinzel",serif; font-size:9.5px; letter-spacing:4px;
+  color:var(--paper-faint); text-transform:uppercase;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  opacity:0; animation:fadeIn 1s 1.2s ease forwards;
+}
+.scroll-cue::after {
+  content:""; width:1px; height:38px; background:var(--gold);
+  animation:cue 2s ease-in-out infinite;
+}
+@keyframes cue { 0%,100% { opacity:.3; transform:scaleY(.6); transform-origin:top; } 50% { opacity:1; transform:scaleY(1); } }
+
+/* ─────────── 1941 MISSION ─────────── */
+.mission-section {
+  padding:120px 32px;
+  background:linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+  position:relative; overflow:hidden;
+}
+.mission-section::before {
+  content:""; position:absolute; left:0; right:0; top:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold-soft), transparent);
+}
+.mission-inner {
+  max-width:1100px; margin:0 auto;
+  display:grid; grid-template-columns:auto 1fr; gap:80px; align-items:center;
+}
+
+.mission-year {
+  font-family:"Cinzel",serif;
+  font-size:clamp(120px, 18vw, 220px);
+  font-weight:900; line-height:0.85;
+  color:transparent;
+  -webkit-text-stroke:1.5px var(--gold);
+  letter-spacing:-4px;
+  position:relative;
+}
+.mission-year::after {
+  content:"1941"; position:absolute; left:0; top:0;
+  color:var(--gold-light);
+  -webkit-text-stroke:0;
+  clip-path:polygon(0 0, 100% 0, 100% 38%, 0 38%);
+}
+
+.mission-text .label {
+  font-family:"Cinzel",serif; font-size:10.5px; letter-spacing:6px;
+  color:var(--gold); text-transform:uppercase; margin-bottom:22px;
+  display:flex; align-items:center; gap:14px;
+}
+.mission-text .label::before { content:""; width:42px; height:1px; background:var(--gold); }
+
+.mission-text h2 {
+  font-family:"Cinzel",serif; font-size:clamp(28px, 3.4vw, 40px);
+  font-weight:600; color:var(--gold-light); line-height:1.18;
+  margin-bottom:24px;
+}
+.mission-text p {
+  font-size:19px; line-height:1.75; color:var(--paper-dim); margin-bottom:18px;
+}
+.mission-text p strong { color:var(--paper); font-weight:500; }
+.mission-text .quote-line {
+  margin-top:32px; padding:16px 22px;
+  background:rgba(201,168,76,0.04);
+  border-left:3px solid var(--gold);
+  font-style:italic; font-size:20px; color:var(--paper);
+  line-height:1.5;
+}
+
+/* ─────────── ÜBER MICH ─────────── */
+.about-section {
+  padding:120px 32px;
+  background:var(--navy-mid);
+  position:relative;
+}
+.about-inner { max-width:1180px; margin:0 auto; }
+
+.section-label {
+  font-family:"Cinzel",serif; font-size:10.5px; letter-spacing:6px;
+  color:var(--gold); text-transform:uppercase; margin-bottom:18px;
+  display:flex; align-items:center; gap:14px;
+}
+.section-label::before { content:""; width:42px; height:1px; background:var(--gold); }
+
+.section-title {
+  font-family:"Cinzel",serif;
+  font-size:clamp(28px, 3.8vw, 46px);
+  font-weight:600; color:var(--gold-light); line-height:1.15;
+  margin-bottom:18px; letter-spacing:-0.3px;
+}
+.section-sub {
+  font-size:19px; color:var(--paper-dim); max-width:680px; line-height:1.65;
+}
+
+.about-grid {
+  display:grid; grid-template-columns:1.25fr 1fr; gap:80px;
+  margin-top:56px; align-items:start;
+}
+.about-text p {
+  font-size:18px; line-height:1.78; color:var(--paper-dim);
+  margin-bottom:18px;
+}
+.about-text strong { color:var(--gold-light); font-weight:500; }
+.about-text em { color:var(--paper); font-style:italic; }
+
+.about-quote {
+  margin-top:32px; padding:24px 28px;
+  background:rgba(201,168,76,0.05);
+  border-left:3px solid var(--gold);
+  font-size:21px; font-style:italic; line-height:1.5;
+  color:var(--paper);
+}
+
+.lineage-card {
+  background:rgba(7,11,23,0.6);
+  border:1px solid var(--rule);
+  padding:36px 32px;
+  position:relative;
+}
+.lineage-card::before {
+  content:""; position:absolute; top:-1px; left:0; width:60px; height:1px; background:var(--gold);
+}
+.lineage-card-eyebrow {
+  font-family:"Cinzel",serif; font-size:9.5px; letter-spacing:3.5px;
+  color:var(--gold); text-transform:uppercase; margin-bottom:14px;
+}
+.lineage-card h3 {
+  font-family:"Cinzel",serif; font-size:22px; font-weight:600;
+  color:var(--paper); margin-bottom:24px; letter-spacing:0.5px;
+}
+.lineage-row {
+  display:flex; align-items:flex-start; gap:18px;
+  padding:14px 0;
+  border-top:1px solid var(--rule-soft);
+}
+.lineage-row:first-of-type { border-top:none; padding-top:6px; }
+.lineage-year {
+  font-family:"Cinzel",serif; font-size:13px; font-weight:600; letter-spacing:1px;
+  color:var(--gold); flex-shrink:0; width:62px;
+  padding-top:2px;
+}
+.lineage-content { flex:1; }
+.lineage-place {
+  font-size:16px; color:var(--paper); margin-bottom:2px; font-weight:500;
+}
+.lineage-detail {
+  font-size:14px; color:var(--paper-faint); font-style:italic;
+}
+
+.stat-strip {
+  display:grid; grid-template-columns:repeat(4, 1fr);
+  gap:0;
+  margin-top:72px;
+  border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+}
+.stat-cell {
+  padding:32px 22px; text-align:center;
+  border-right:1px solid var(--rule-soft);
+}
+.stat-cell:last-child { border-right:none; }
+.stat-num {
+  font-family:"Cinzel",serif; font-size:38px; font-weight:900;
+  color:var(--gold-light); line-height:1; margin-bottom:8px; letter-spacing:-0.5px;
+}
+.stat-label {
+  font-family:"Cinzel",serif; font-size:9.5px; letter-spacing:2.5px;
+  color:var(--paper-faint); text-transform:uppercase;
+}
+
+/* ─────────── PROCESS ─────────── */
+.process-section {
+  padding:120px 32px;
+  background:var(--navy);
+  position:relative;
+}
+.process-inner { max-width:1180px; margin:0 auto; }
+
+.process-grid {
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:0;
+  margin-top:64px; position:relative;
+}
+.process-grid::before {
+  content:""; position:absolute; left:0; right:0; top:36px;
+  height:1px; background:linear-gradient(90deg, transparent 0%, var(--rule) 12%, var(--rule) 88%, transparent 100%);
+}
+.process-step {
+  padding:0 24px; position:relative;
+}
+.process-step:not(:last-child)::after {
+  content:""; position:absolute; right:0; top:60px; bottom:30px;
+  width:1px; background:var(--rule-soft);
+}
+
+.step-number {
+  width:72px; height:72px; border-radius:50%;
+  background:var(--navy); border:1.5px solid var(--gold);
+  display:flex; align-items:center; justify-content:center;
+  font-family:"Cinzel",serif; font-size:22px; font-weight:600;
+  color:var(--gold-light); margin-bottom:24px;
+  position:relative; z-index:2;
+}
+.step-title {
+  font-family:"Cinzel",serif; font-size:16px; font-weight:600;
+  color:var(--paper); margin-bottom:12px; letter-spacing:0.5px;
+}
+.step-desc {
+  font-size:15.5px; line-height:1.6; color:var(--paper-dim);
+}
+
+/* ─────────── PAKETE ─────────── */
+.packages-section {
+  padding:120px 32px;
+  background:linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+  position:relative;
+}
+.packages-section::before, .packages-section::after {
+  content:""; position:absolute; left:50%; transform:translateX(-50%);
+  width:60%; max-width:600px; height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold-soft), transparent);
+}
+.packages-section::before { top:0; }
+.packages-section::after { bottom:0; }
+
+.packages-inner { max-width:1240px; margin:0 auto; }
+
+.package-grid {
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;
+  margin-top:64px;
+}
+
+.package {
+  background:rgba(20,30,54,0.5);
+  border:1px solid var(--rule);
+  padding:42px 36px 36px;
+  position:relative; transition:transform .35s ease, border-color .35s ease;
+  display:flex; flex-direction:column;
+}
+.package::before {
+  content:""; position:absolute; top:0; left:0; width:100%; height:3px;
+  background:linear-gradient(90deg, var(--gold-dark), var(--gold-light), var(--gold-dark));
+  opacity:.5;
+}
+.package:hover {
+  transform:translateY(-6px);
+  border-color:rgba(201,168,76,0.4);
+}
+
+.package.featured {
+  background:rgba(201,168,76,0.06);
+  border-color:rgba(201,168,76,0.45);
+  transform:scale(1.03);
+}
+.package.featured::before { opacity:1; height:4px; }
+.package.featured:hover { transform:translateY(-6px) scale(1.03); }
+
+.package-tag {
+  position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+  background:var(--gold); color:var(--navy);
+  font-family:"Cinzel",serif; font-size:9.5px; letter-spacing:3px;
+  font-weight:600; padding:6px 16px; text-transform:uppercase;
+}
+
+.package-roman {
+  font-family:"Cinzel",serif; font-size:12px; letter-spacing:5px;
+  color:var(--gold); text-transform:uppercase; margin-bottom:8px;
+}
+.package-name {
+  font-family:"Cinzel",serif; font-size:30px; font-weight:600;
+  color:var(--paper); margin-bottom:14px; letter-spacing:0.5px;
+}
+.package-byline {
+  font-size:15px; font-style:italic; color:var(--paper-faint);
+  line-height:1.5; margin-bottom:32px; min-height:46px;
+}
+.package-price {
+  font-family:"Cinzel",serif; font-weight:900;
+  color:var(--gold-light); line-height:1;
+  margin-bottom:6px; letter-spacing:-1.5px;
+  display:flex; align-items:baseline; gap:6px;
+}
+.package-price .num { font-size:54px; }
+.package-price .currency { font-size:24px; font-weight:600; color:var(--gold); }
+.package-deliver {
+  font-family:"Cinzel",serif; font-size:10px; letter-spacing:2.5px;
+  color:var(--paper-faint); text-transform:uppercase; margin-bottom:30px;
+}
+
+.package-divider {
+  height:1px; background:var(--rule); margin-bottom:26px;
+}
+
+.package-features {
+  list-style:none; margin-bottom:34px; flex:1;
+}
+.package-features li {
+  display:flex; gap:11px; align-items:flex-start;
+  font-size:15.5px; line-height:1.55; color:var(--paper-dim);
+  margin-bottom:13px;
+}
+.package-features li::before {
+  content:""; flex-shrink:0;
+  width:6px; height:6px; background:var(--gold);
+  margin-top:9px; transform:rotate(45deg);
+}
+.package-features li.bold {
+  color:var(--paper); font-weight:500;
+}
+.package-features li.bold::before { background:var(--gold-light); box-shadow:0 0 8px rgba(237,208,112,0.6); }
+
+.package-cta {
+  display:block; text-align:center;
+  padding:14px 24px;
+  font-family:"Cinzel",serif; font-size:11px; letter-spacing:3px;
+  text-transform:uppercase;
+  border:1.5px solid var(--gold); color:var(--gold);
+  background:transparent;
+  position:relative; overflow:hidden; transition:color .3s;
+}
+.package-cta::before {
+  content:""; position:absolute; inset:0; background:var(--gold);
+  transform:translateX(-101%); transition:transform .3s ease; z-index:0;
+}
+.package-cta span { position:relative; z-index:1; }
+.package-cta:hover { color:var(--navy); }
+.package-cta:hover::before { transform:translateX(0); }
+
+.package.featured .package-cta {
+  background:var(--gold); color:var(--navy);
+}
+.package.featured .package-cta::before { background:var(--gold-light); }
+.package.featured .package-cta:hover { color:var(--navy); }
+
+/* Honest scope note on the report cards */
+.package-note {
+  margin-top:14px; font-size:13.5px; font-style:italic;
+  color:var(--paper-faint); line-height:1.5;
+}
+
+/* ── Pakete: Toggle (Herkunft / Stammbaum) ── */
+.pkg-toggle {
+  display:inline-flex; gap:4px; margin:40px 0 4px;
+  padding:5px; border:1px solid var(--rule);
+  background:rgba(13,21,39,0.55);
+  border-radius:2px;
+}
+.pkg-toggle-btn {
+  font-family:"Cinzel",serif; font-size:11px; letter-spacing:2.4px;
+  text-transform:uppercase; color:var(--paper-dim);
+  background:none; border:none; cursor:pointer;
+  padding:13px 28px; transition:color .3s ease, background .3s ease;
+  white-space:nowrap;
+}
+.pkg-toggle-btn:hover { color:var(--paper); }
+.pkg-toggle-btn.active {
+  background:var(--gold); color:var(--navy); font-weight:600;
+}
+
+/* Views */
+.pkg-view { display:none; }
+.pkg-view.active { display:block; }
+
+/* Two-card grid for the report tier */
+.package-grid.two {
+  grid-template-columns:repeat(2, 1fr);
+  max-width:760px; margin-left:auto; margin-right:auto;
+}
+
+/* Bridge from report tier to the deep tier */
+.pkg-bridge {
+  margin-top:46px; text-align:center;
+  font-size:17px; color:var(--paper-dim); line-height:1.6;
+}
+.pkg-bridge button {
+  font-family:"Cinzel",serif; font-size:11px; letter-spacing:2px;
+  text-transform:uppercase; color:var(--gold);
+  background:none; border:none; cursor:pointer;
+  padding:4px 2px; margin-left:4px;
+  border-bottom:1px solid var(--rule);
+  transition:color .3s ease, border-color .3s ease;
+}
+.pkg-bridge button:hover { color:var(--gold-light); border-color:var(--gold); }
+
+/* Trust strip below packages */
+.trust-strip {
+  margin-top:72px;
+  display:grid; grid-template-columns:repeat(4, 1fr);
+  gap:0;
+  background:rgba(7,11,23,0.5);
+  border:1px solid var(--rule);
+}
+.trust-cell {
+  padding:30px 24px; text-align:center;
+  border-right:1px solid var(--rule-soft);
+}
+.trust-cell:last-child { border-right:none; }
+.trust-icon {
+  font-family:"Cinzel",serif; font-size:13px; font-weight:600;
+  color:var(--gold-light); margin-bottom:10px; letter-spacing:1px;
+}
+.trust-label {
+  font-family:"Cinzel",serif; font-size:9.5px; letter-spacing:2.5px;
+  color:var(--gold); text-transform:uppercase; margin-bottom:8px;
+}
+.trust-text {
+  font-size:14px; line-height:1.5; color:var(--paper-dim);
+}
+
+/* ─────────── HISTORY STRIP ─────────── */
+.history-section {
+  padding:100px 0 110px;
+  background:var(--navy);
+  position:relative; overflow:hidden;
+  border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+}
+.history-header {
+  max-width:1180px; margin:0 auto 48px; padding:0 32px;
+}
+
+.history-track-wrap { position:relative; }
+.history-track-wrap::before, .history-track-wrap::after {
+  content:""; position:absolute; top:0; bottom:0; width:140px; z-index:2; pointer-events:none;
+}
+.history-track-wrap::before { left:0; background:linear-gradient(90deg, var(--navy), transparent); }
+.history-track-wrap::after { right:0; background:linear-gradient(-90deg, var(--navy), transparent); }
+
+.history-track {
+  display:flex; gap:18px; width:max-content;
+  animation:scroll 55s linear infinite;
+}
+.history-track:hover { animation-play-state:paused; }
+@keyframes scroll { to { transform:translateX(-50%); } }
+
+.photo-card {
+  flex-shrink:0; width:280px;
+  background:#0a0d18;
+  border:1px solid var(--rule);
+  overflow:hidden;
+  transition:transform .35s, border-color .35s;
+  position:relative;
+}
+.photo-card:hover { transform:translateY(-4px); border-color:rgba(201,168,76,0.55); }
+.photo-card .photo-frame {
+  height:200px; position:relative; overflow:hidden;
+  background:linear-gradient(135deg, #1a1410, #2a1f15);
+}
+.photo-card .photo-frame::before {
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 90% 90% at 50% 50%, transparent 35%, rgba(0,0,0,0.6) 100%);
+  z-index:2;
+}
+.photo-card .photo-frame::after {
+  content:""; position:absolute; inset:0; z-index:1;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,220,160,0.025) 0px, rgba(255,220,160,0.025) 1px, transparent 1px, transparent 3px),
+    linear-gradient(180deg, rgba(180,140,80,0.18), transparent 30%, transparent 70%, rgba(80,60,40,0.25));
+}
+.photo-card .photo-frame img {
+  width:100%; height:100%; object-fit:cover; display:block;
+  filter: sepia(45%) contrast(0.92) brightness(0.85) saturate(0.7);
+  transition: filter .5s ease, transform 1.2s ease;
+}
+.photo-card:hover .photo-frame img {
+  filter: sepia(20%) contrast(1) brightness(0.95) saturate(1);
+  transform: scale(1.04);
+}
+.photo-caption {
+  padding:18px 18px 16px;
+  border-top:1px solid var(--rule);
+  background:rgba(13,21,39,0.92);
+}
+.caption-year {
+  font-family:"Cinzel",serif; font-size:10.5px; letter-spacing:3.5px;
+  color:var(--gold); margin-bottom:6px; display:block; font-weight:600;
+}
+.caption-title {
+  font-size:14px; line-height:1.45; color:var(--paper-dim);
+  margin-bottom:8px;
+}
+.caption-source {
+  font-family:"Cinzel",serif; font-size:8.5px; letter-spacing:1.8px;
+  color:var(--paper-faint); text-transform:uppercase;
+  font-style:normal; font-weight:500;
+  padding-top:8px; border-top:1px solid var(--rule-soft);
+}
+
+/* ─────────── CONTACT ─────────── */
+.contact-section {
+  padding:130px 32px;
+  background:linear-gradient(180deg, var(--navy-deep) 0%, var(--navy) 100%);
+  position:relative;
+}
+.contact-inner { max-width:980px; margin:0 auto; text-align:center; }
+
+.contact-section .section-label { justify-content:center; }
+.contact-section .section-label::before { display:none; }
+.contact-section .section-label::after { content:""; width:42px; height:1px; background:var(--gold); }
+.contact-section .section-label { gap:14px; }
+
+.contact-title {
+  font-family:"Cinzel",serif; font-size:clamp(32px, 4.4vw, 52px);
+  font-weight:600; color:var(--gold-light); line-height:1.15;
+  margin-bottom:22px; letter-spacing:-0.3px;
+}
+.contact-sub {
+  font-size:19px; line-height:1.6; color:var(--paper-dim);
+  max-width:600px; margin:0 auto 50px;
+}
+
+.contact-grid {
+  display:grid; grid-template-columns:repeat(2, minmax(0, 280px)); gap:18px;
+  justify-content:center;
+  max-width:780px; margin:0 auto 50px;
+}
+.contact-card {
+  padding:28px 22px;
+  background:rgba(7,11,23,0.5);
+  border:1px solid var(--rule);
+  transition:border-color .3s, background .3s;
+  text-align:center;
+}
+.contact-card:hover { border-color:rgba(201,168,76,0.5); background:rgba(201,168,76,0.04); }
+.cc-label {
+  font-family:"Cinzel",serif; font-size:9.5px; letter-spacing:3px;
+  color:var(--gold); text-transform:uppercase; margin-bottom:12px;
+}
+.cc-value {
+  font-size:16px; color:var(--paper); line-height:1.4;
+  word-break:break-word;
+}
+
+.contact-ctas {
+  display:flex; gap:14px; justify-content:center; flex-wrap:wrap;
+}
+
+/* ─────────── FOOTER ─────────── */
+footer {
+  padding:60px 32px 40px;
+  background:var(--navy-deep);
+  border-top:1px solid var(--rule);
+  text-align:center;
+}
+.footer-mark {
+  font-family:"Cinzel",serif; font-size:18px; letter-spacing:5px;
+  color:var(--gold-light); margin-bottom:10px; font-weight:600;
+}
+.footer-slogan {
+  font-style:italic; color:var(--paper-dim); font-size:16px; margin-bottom:30px;
+}
+.footer-links {
+  list-style:none; display:flex; gap:32px; justify-content:center;
+  margin-bottom:24px; flex-wrap:wrap;
+}
+.footer-links a {
+  font-family:"Cinzel",serif; font-size:10.5px; letter-spacing:2.5px;
+  color:var(--paper-faint); text-transform:uppercase; transition:color .25s;
+}
+.footer-links a:hover { color:var(--gold); }
+.footer-copy {
+  font-size:13px; color:var(--paper-faint);
+}
+.footer-divider {
+  width:60px; height:1px; background:var(--gold-soft);
+  margin:24px auto;
+}
+
+/* ─────────── REVEAL ─────────── */
+.reveal { opacity:0; transform:translateY(22px); transition:opacity .8s ease, transform .8s ease; }
+.reveal.v { opacity:1; transform:translateY(0); }
+
+/* ─────────── RESPONSIVE ─────────── */
+@media (max-width: 1024px) {
+  .hero-inner { grid-template-columns:1fr; gap:60px; text-align:left; }
+  .hero-crest-col { min-height:440px; order:-1; }
+  .crest-img { width:260px; }
+  .crest-rings .ring-1 { width:430px; height:430px; }
+  .crest-rings .ring-2 { width:340px; height:340px; }
+  .crest-rings .ring-3 { width:270px; height:270px; }
+  .crest-marks { width:430px; height:430px; }
+  .crest-marks span:nth-child(1) { transform:translate(-50%,-200px); }
+  .crest-marks span:nth-child(2) { transform:translate(170px,-50%); }
+  .crest-marks span:nth-child(3) { transform:translate(-50%,160px); }
+  .crest-marks span:nth-child(4) { transform:translate(-200px,-50%); }
+
+  .mission-inner { grid-template-columns:1fr; gap:30px; }
+  .about-grid { grid-template-columns:1fr; gap:50px; }
+  .package-grid { grid-template-columns:1fr; gap:30px; max-width:520px; margin-left:auto; margin-right:auto; }
+  .package-grid.two { grid-template-columns:1fr; max-width:520px; }
+  .package.featured { transform:none; }
+  .package.featured:hover { transform:translateY(-6px); }
+  .process-grid { grid-template-columns:repeat(2, 1fr); gap:50px 0; }
+  .process-grid::before { display:none; }
+  .process-step::after { display:none !important; }
+  .stat-strip { grid-template-columns:repeat(2, 1fr); }
+  .stat-cell:nth-child(2) { border-right:none; }
+  .stat-cell:nth-child(1), .stat-cell:nth-child(2) { border-bottom:1px solid var(--rule-soft); }
+  .trust-strip { grid-template-columns:repeat(2, 1fr); }
+  .trust-cell:nth-child(2) { border-right:none; }
+  .trust-cell:nth-child(1), .trust-cell:nth-child(2) { border-bottom:1px solid var(--rule-soft); }
+  .contact-grid { grid-template-columns:1fr; }
+}
+
+@media (max-width: 720px) {
+  body { font-size:17px; }
+  .scroll-cue { display:none; }
+  nav { padding:12px 18px; }
+  nav.shrunk { padding:10px 18px; }
+  .nav-brand-text { font-size:11.5px; letter-spacing:2.5px; }
+  .nav-brand img { height:30px; }
+  .nav-links { display:none; position:fixed; top:60px; left:0; right:0; flex-direction:column; gap:0; background:var(--navy-deep); border-bottom:1px solid var(--rule); padding:14px 0; }
+  .nav-links.open { display:flex; }
+  .nav-links li { width:100%; text-align:center; }
+  .nav-links a { display:block; padding:14px 0; }
+  .nav-cta { margin:14px auto 4px; }
+  .nav-burger { display:flex; }
+
+  .hero { padding:110px 20px 80px; }
+  .hero-slogan { font-size:18px; padding-left:18px; }
+  .btn { padding:13px 22px; font-size:10.5px; letter-spacing:2.5px; }
+
+  .mission-section, .about-section, .process-section, .packages-section, .contact-section { padding:80px 20px; }
+  .mission-year { font-size:120px; }
+  .stat-strip { grid-template-columns:1fr 1fr; }
+  .process-grid { grid-template-columns:1fr; }
+  .package { padding:36px 26px; }
+  .package-name { font-size:26px; }
+  .package-price .num { font-size:48px; }
+  .trust-strip { grid-template-columns:1fr; }
+  .trust-cell { border-right:none; border-bottom:1px solid var(--rule-soft); }
+  .trust-cell:last-child { border-bottom:none; }
+  .photo-card { width:240px; }
+  .photo-card .photo-frame { height:170px; }
+
+  /* Hero compass marks — pull inward so labels stay on-screen */
+  .crest-marks { width:340px; height:340px; }
+  .crest-marks span { font-size:8px; letter-spacing:2px; }
+  .crest-marks span:nth-child(1) { transform:translate(-50%,-180px); } /* 1763 */
+  .crest-marks span:nth-child(2) { transform:translate(140px,-50%); }  /* 1941 */
+  .crest-marks span:nth-child(3) { transform:translate(-50%,165px); }  /* 1990 */
+  .crest-marks span:nth-child(4) { transform:translate(-160px,-50%); } /* HEUTE */
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+}
+
+/* ─────────── LEGAL MODAL ─────────── */
+.modal {
+  position:fixed; inset:0; z-index:2000;
+  display:none; align-items:flex-start; justify-content:center;
+  padding:60px 20px;
+  background:rgba(7,11,23,0.82);
+  backdrop-filter:blur(4px);
+  overflow-y:auto;
+}
+.modal.open { display:flex; }
+.modal-box {
+  position:relative;
+  max-width:680px; width:100%;
+  background:var(--navy-mid);
+  border:1px solid var(--rule);
+  border-radius:4px;
+  padding:48px 44px 44px;
+  box-shadow:0 30px 80px rgba(0,0,0,0.55);
+}
+.modal-box h2 {
+  font-family:"Cinzel",serif; font-weight:600;
+  font-size:1.7rem; color:var(--gold); letter-spacing:0.02em;
+  margin-bottom:24px;
+}
+.modal-box h3 {
+  font-family:"Cinzel",serif; font-weight:500;
+  font-size:0.82rem; letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--gold-light);
+  margin:26px 0 8px;
+}
+.modal-box p { color:var(--paper-dim); font-size:1rem; line-height:1.6; }
+.modal-box a { color:var(--gold); text-decoration:none; }
+.modal-box a:hover { text-decoration:underline; }
+.modal-close {
+  position:absolute; top:18px; right:18px;
+  width:38px; height:38px; border-radius:50%;
+  border:1px solid var(--rule);
+  background:transparent; color:var(--paper-dim);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all 0.2s;
+}
+.modal-close:hover { border-color:var(--gold); color:var(--gold); }
+
+/* Beispiel-Links + individuelle Recherche */
+.package-example {
+  display:block; text-align:center; margin-top:14px;
+  font-size:13.5px; color:var(--gold); text-decoration:none;
+  letter-spacing:0.4px; opacity:.85; transition:opacity .2s;
+}
+.package-example:hover { opacity:1; text-decoration:underline; }
+
+/* ── Direktkauf + WhatsApp CTA ── */
+.package-cta.is-primary { background:var(--gold); color:var(--navy); border-color:var(--gold); }
+.package-cta.is-primary:hover { color:var(--navy); }
+.package-cta + .package-cta { margin-top:10px; }
+.package-cta.is-wa { display:flex; align-items:center; justify-content:center; gap:9px; }
+.package-cta.is-wa svg, .package-cta.is-wa span { position:relative; z-index:1; }
+.package-cta.is-wa svg { width:16px; height:16px; flex:none; }
+.pkg-pay-note { margin-top:10px; text-align:center; font-size:12px; color:var(--paper-faint); letter-spacing:0.3px; font-style:italic; }
+.btn.btn-wa svg { width:17px; height:17px; flex:none; }
+.custom-note {
+  margin-top:60px; border:1px solid rgba(201,168,76,.35);
+  padding:38px 40px; text-align:center; position:relative;
+}
+.custom-note-label {
+  font-family:"Cinzel",serif; font-size:11px; letter-spacing:3px;
+  color:var(--gold); margin-bottom:16px; text-transform:uppercase;
+}
+.custom-note p {
+  color:var(--paper-dim); font-size:16px; line-height:1.75;
+  max-width:740px; margin:0 auto 20px;
+}
+.custom-note a {
+  font-family:"Cinzel",serif; font-size:11px; letter-spacing:2px;
+  text-transform:uppercase; color:var(--gold); text-decoration:none;
+  border-bottom:1px solid rgba(201,168,76,.5); padding-bottom:3px;
+  transition:color .2s, border-color .2s;
+}
+.custom-note a:hover { color:var(--gold-light); border-color:var(--gold-light); }
+@media (max-width:700px){ .custom-note { padding:28px 22px; } }
+
+/* ─── Footer-Compliance: Widerrufsbutton + Händlerbund-Siegel ─── */
+.footer-compliance{ display:flex; flex-direction:column; align-items:center; gap:16px; margin:6px 0 28px; }
+#hbRevocationButton{
+  display:inline-block; font-family:"Cinzel",serif; font-size:10.5px; letter-spacing:2.2px;
+  text-transform:uppercase; color:var(--gold-light)!important; border:1px solid var(--gold);
+  padding:11px 22px; border-radius:2px; transition:background .2s,color .2s; cursor:pointer; text-decoration:none;
+}
+#hbRevocationButton:hover{ background:var(--gold)!important; color:var(--navy)!important; text-decoration:none; }
+#hbRevocationButton span{ color:inherit; }
+.footer-seal{ background:#F5EDD8; padding:9px 13px; border-radius:4px; display:inline-flex; align-items:center; line-height:0; }
+
+/* ─── Bestell-Schritt (Widerrufs-Verzicht vor Zahlung) ─── */
+.order-box{ max-width:560px; }
+.order-eyebrow{ font-family:"Cinzel",serif; font-size:10.5px; letter-spacing:3px; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
+.order-box h2{ margin-bottom:10px; }
+.order-intro{ color:var(--paper-dim); font-size:15.5px; line-height:1.6; margin-bottom:22px; }
+.order-check{ display:flex; gap:12px; align-items:flex-start; margin-bottom:18px; cursor:pointer; }
+.order-check input{ margin-top:5px; width:18px; height:18px; flex:none; accent-color:var(--gold); cursor:pointer; }
+.order-check span{ color:var(--paper); font-size:14.5px; line-height:1.55; }
+.order-check.optional span{ color:var(--paper-dim); }
+.order-pay{
+  display:block; text-align:center; margin-top:26px; font-family:"Cinzel",serif;
+  font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--navy); background:var(--gold);
+  padding:15px 22px; border-radius:2px; transition:background .2s, opacity .2s;
+}
+.order-pay:hover{ background:var(--gold-light); text-decoration:none; }
+.order-pay.disabled{ opacity:.4; pointer-events:none; }
+.order-pay span{ color:inherit; }
+.order-foot{ margin-top:16px; font-size:12.5px; line-height:1.55; color:var(--paper-faint); text-align:center; }
+.order-foot a{ color:var(--gold-soft); }
+</style>
+</head>
+<body>
+
+<!-- ─────────── NAV ─────────── -->
+<nav id="nav">
+  <a href="#top" class="nav-brand">
+    <img src="crest.png" alt="" aria-hidden="true">
+    <span class="nav-brand-text">WOLGAWURZELN</span>
+  </a>
+  <button class="nav-burger" aria-label="Menü öffnen" id="burger">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#mission">1941</a></li>
+    <li><a href="#ueber">Über mich</a></li>
+    <li><a href="#ablauf">Ablauf</a></li>
+    <li><a href="#pakete">Pakete</a></li>
+    <li><a href="stammbaum-magel.html">Stammbaum</a></li>
+    <li><a href="widerruf.html">Widerruf</a></li>
+    <li><a href="mailto:edwin@wolgawurzeln.de" class="nav-cta">Anfragen</a></li>
+  </ul>
+</nav>
+
+<!-- ─────────── HERO ─────────── -->
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-eyebrow">Edwin Karl · Russlanddeutscher Ahnenforscher</div>
+      <h1 class="hero-title">
+        Ihre Familie hat<br>
+        <span class="gold-strong">eine Geschichte.</span><br>
+        Ich finde sie.
+      </h1>
+      <div class="hero-byline">Wolgadeutsche · Spätaussiedler · Schwarzmeerdeutsche</div>
+      <p class="hero-slogan">„Ich finde was 1941 verloren ging."</p>
+      <div class="hero-ctas">
+        <a href="#pakete" class="btn btn-primary">
+          Pakete ansehen <span class="btn-arrow">→</span>
+        </a>
+        <a href="#ablauf" class="btn btn-secondary">
+          <span>So funktioniert es</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-crest-col">
+      <div class="crest-rings">
+        <div class="ring ring-1"></div>
+        <div class="ring ring-2"></div>
+        <div class="ring ring-3"></div>
+      </div>
+      <div class="crest-marks">
+        <span>1763</span>
+        <span>1941</span>
+        <span>1990</span>
+        <span>HEUTE</span>
+      </div>
+      <img src="logo-full.png" alt="Wolgawurzeln · Ahnenforschung" class="crest-img">
+    </div>
+  </div>
+
+  <div class="scroll-cue">Scroll</div>
+</section>
+
+<!-- ─────────── 1941 MISSION ─────────── -->
+<section class="mission-section" id="mission">
+  <div class="mission-inner">
+    <div class="mission-year reveal">1941</div>
+    <div class="mission-text">
+      <div class="label reveal">Worum es geht</div>
+      <h2 class="reveal">Der Faden riss<br>im August 1941.</h2>
+      <p class="reveal">Mit Stalins Erlass vom <strong>28. August 1941</strong> wurden die Wolgadeutschen innerhalb von Tagen nach Sibirien und Kasachstan deportiert. Familien wurden getrennt, Männer in die Trudarmee verschickt, Kirchenbücher verbrannt, Heimatdörfer aufgelöst.</p>
+      <p class="reveal">Was viele heute über ihre Familie wissen, endet bei den Großeltern. <strong>Davor — Schweigen.</strong> Genau dort beginnt meine Arbeit.</p>
+      <div class="quote-line reveal">Ich finde das Dorf, die Geschichte und den Weg hinter Ihrem Familiennamen.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── ÜBER MICH ─────────── -->
+<section class="about-section" id="ueber">
+  <div class="about-inner">
+    <div class="section-label reveal">Über mich</div>
+    <h2 class="section-title reveal">Ich kenne diese<br>Geschichte von innen.</h2>
+
+    <div class="about-grid">
+      <div class="about-text">
+        <p class="reveal">Mein Name ist <strong>Edwin Karl</strong>. Meine eigene Familie stammt aus dem Dorf <em>Lauwe / Jablonowka</em> im Saratower Gebiet, einer Kolonie die <strong>1767</strong> gegründet wurde, vier Jahre nach Katharinas Manifest.</p>
+        <p class="reveal">Die Geschichte, die meine Kunden erleben, kenne ich persönlich: das Schweigen der Großeltern, die fehlenden Namen, der Faden der 1941 abriss. Ich habe meine eigene Linie zurückverfolgt — bis ins Jahr <strong>1640</strong> nach Hessen.</p>
+        <p class="reveal">Genau diese Recherchearbeit mache ich für Sie. Ich arbeite mit veröffentlichten Siedler- und Einwandererlisten, Koloniechroniken, historischen Karten und Gedenkbüchern zu Deportation und Trudarmee. Für viele Familiennamen verzeichnen diese Quellen sogar den Herkunftsort in Deutschland vor der Auswanderung.</p>
+        <blockquote class="about-quote reveal">„Sie wissen wer Ihre Großeltern waren. Ich finde heraus, wer davor war."</blockquote>
+      </div>
+
+      <div class="lineage-card reveal">
+        <div class="lineage-card-eyebrow">Meine eigene Linie</div>
+        <h3>Von Hessen zur Wolga und zurück</h3>
+        <div class="lineage-row">
+          <div class="lineage-year">1640</div>
+          <div class="lineage-content">
+            <div class="lineage-place">Hessen, Deutschland</div>
+            <div class="lineage-detail">Ältester nachweisbarer Vorfahre</div>
+          </div>
+        </div>
+        <div class="lineage-row">
+          <div class="lineage-year">1767</div>
+          <div class="lineage-content">
+            <div class="lineage-place">Lauwe / Jablonowka, Saratow</div>
+            <div class="lineage-detail">Gründung der Kolonie · nach der Familie benannt</div>
+          </div>
+        </div>
+        <div class="lineage-row">
+          <div class="lineage-year">1941</div>
+          <div class="lineage-content">
+            <div class="lineage-place">Deportation nach Osten</div>
+            <div class="lineage-detail">Trudarmee, Kasachstan, Sibirien · der Bruch</div>
+          </div>
+        </div>
+        <div class="lineage-row">
+          <div class="lineage-year">1990+</div>
+          <div class="lineage-content">
+            <div class="lineage-place">Rückkehr als Spätaussiedler</div>
+            <div class="lineage-detail">Bayern · die Generation, die wieder anfängt</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat-cell reveal"><div class="stat-num">1640</div><div class="stat-label">Eigener Vorfahre</div></div>
+      <div class="stat-cell reveal"><div class="stat-num">1763</div><div class="stat-label">Manifest Katharinas II.</div></div>
+      <div class="stat-cell reveal"><div class="stat-num">104</div><div class="stat-label">Kolonien recherchierbar</div></div>
+      <div class="stat-cell reveal"><div class="stat-num">DE · RU</div><div class="stat-label">Beide Sprachen</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── PROCESS ─────────── -->
+<section class="process-section" id="ablauf">
+  <div class="process-inner">
+    <div class="section-label reveal">Ablauf</div>
+    <h2 class="section-title reveal">In vier Schritten<br>zu Ihrer Familiengeschichte.</h2>
+    <p class="section-sub reveal">Erstberatung kostenlos — ich sage Ihnen vorab ehrlich, was möglich ist und was die Quellen hergeben.</p>
+
+    <div class="process-grid">
+      <div class="process-step reveal">
+        <div class="step-number">I</div>
+        <div class="step-title">Erstgespräch</div>
+        <p class="step-desc">Sie schreiben mir per E-Mail. Ich schätze unverbindlich ein, was sich zu Ihren Familiennamen und Herkunftsorten herausfinden lässt.</p>
+      </div>
+      <div class="process-step reveal">
+        <div class="step-number">II</div>
+        <div class="step-title">Ihre Daten</div>
+        <p class="step-desc">Sie geben mir alle bekannten Namen, Orte und Daten, die in Ihrer Familie noch erinnert werden — jedes Detail kann der Schlüssel sein.</p>
+      </div>
+      <div class="process-step reveal">
+        <div class="step-number">III</div>
+        <div class="step-title">Recherche</div>
+        <p class="step-desc">Veröffentlichte Siedler- und Einwandererlisten, Koloniechroniken, historische Karten, Gedenkbücher: Ich arbeite die zugänglichen Quellen gründlich und nachvollziehbar ab.</p>
+      </div>
+      <div class="process-step reveal">
+        <div class="step-number">IV</div>
+        <div class="step-title">Ihr Bericht</div>
+        <p class="step-desc">Sie erhalten ein ausführlich gestaltetes PDF: Herkunft, Kolonie, Geschichte, je nach Paket mit Karte und Zeitleiste. Druckfertig und zum Teilen mit der Familie.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── PAKETE ─────────── -->
+<section class="packages-section" id="pakete">
+  <div class="packages-inner">
+    <div class="section-label reveal">Angebote</div>
+    <h2 class="section-title reveal">Zwei Wege zu<br>Ihrer Herkunft.</h2>
+    <p class="section-sub reveal">Beginnen Sie mit der Geschichte hinter einem Namen, oder lassen Sie die Wege Ihrer ganzen Familie erzählen: von der Auswanderung aus Deutschland bis nach Sibirien.</p>
+
+
+    <!-- ─── ANSICHT: HERKUNFT — Herkunft & Geschichte ─── -->
+    <div class="pkg-view active" id="view-ohne">
+      <div class="package-grid two">
+
+        <!-- HERKUNFTSBERICHT -->
+        <div class="package reveal">
+          <div class="package-roman">Einstieg</div>
+          <div class="package-name">Herkunftsbericht</div>
+          <p class="package-byline">Woher Ihr Name stammt — und in welcher Kolonie er zuhause war.</p>
+          <div class="package-price"><span class="currency">€</span><span class="num">39</span></div>
+          <div class="package-deliver">Lieferzeit 3–5 Tage · Sofortzahlung bei Bestellung</div>
+          <div class="package-divider"></div>
+          <ul class="package-features">
+            <li class="bold">1 Nachname</li>
+            <li>Herkunft &amp; Bedeutung Ihres Nachnamens</li>
+            <li>Zuordnung zur Kolonie — an der Wolga, am Schwarzen Meer oder in Wolhynien</li>
+            <li>Geschichte der Kolonie: Gründung, Alltag, Deportation</li>
+            <li>Der Weg: Deutschland → Russland → und was danach kam</li>
+            <li>Gestaltetes PDF mit Quellenangaben</li>
+          </ul>
+          <p class="package-note">Herkunft, Kolonie und Geschichte als gestaltetes PDF.</p>
+          <a href="#" class="package-cta is-primary" onclick="openOrder('Herkunftsbericht','39 €','https://buy.stripe.com/aFa00cb0y8gw8UlceM6Vq01');return false;"><span>Jetzt bestellen · 39 €</span></a>
+          <a href="https://wa.me/491735412807?text=Hallo%20Edwin%2C%20ich%20interessiere%20mich%20f%C3%BCr%20den%20Herkunftsbericht%20%2839%20%E2%82%AC%29.%20Mein%20Nachname%3A%20" target="_blank" rel="noopener" class="package-cta is-wa">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-2.9.8.8-2.8-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.1-.2 0-.4.1-.5l.4-.5c.1-.1.1-.3 0-.4l-.8-1.9c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1c0 1.2.9 2.4 1 2.6.1.2 1.8 2.8 4.4 3.9.6.3 1.1.4 1.5.5.6.2 1.2.2 1.6.1.5-.1 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1l-.5-.2Z"/></svg><span>Per WhatsApp anfragen</span>
+          </a>
+          <div class="pkg-pay-note">Antwort meist innerhalb von 24 Stunden</div>
+          <a class="package-example" href="beispiel-herkunftsbericht.pdf" target="_blank" rel="noopener">Beispielbericht ansehen (PDF)</a>
+        </div>
+
+        <!-- FAMILIENGESCHICHTE — FEATURED -->
+        <div class="package featured reveal">
+          <div class="package-tag">Empfohlen</div>
+          <div class="package-roman">Erweitert</div>
+          <div class="package-name">Familiengeschichte</div>
+          <p class="package-byline">Alle vier Linien — erzählt als Geschichte, mit Karte und Zeitleiste.</p>
+          <div class="package-price"><span class="currency">€</span><span class="num">69</span></div>
+          <div class="package-deliver">Lieferzeit 5–8 Tage · Sofortzahlung bei Bestellung</div>
+          <div class="package-divider"></div>
+          <ul class="package-features">
+            <li class="bold">Bis zu 4 Nachnamen — die Linien Ihrer vier Großeltern</li>
+            <li>Alles aus dem Herkunftsbericht, für jede Linie</li>
+            <li class="bold">Ihre Familiengeschichte erzählt — was Ihre Familie in Deportation und Trudarmee durchlebte</li>
+            <li>Karte Ihrer Herkunftsdörfer + dokumentierte Deportationsroute</li>
+            <li>Zeitleiste von der Auswanderung bis zur Rückkehr</li>
+            <li>Ausführliches, gestaltetes PDF</li>
+          </ul>
+          <p class="package-note">Die ganze Familiengeschichte erzählt, mit Karte und Zeitleiste.</p>
+          <a href="#" class="package-cta is-primary" onclick="openOrder('Familiengeschichte','69 €','https://buy.stripe.com/9B6cMYc4C8gwc6xceM6Vq00');return false;"><span>Jetzt bestellen · 69 €</span></a>
+          <a href="https://wa.me/491735412807?text=Hallo%20Edwin%2C%20ich%20interessiere%20mich%20f%C3%BCr%20die%20Familiengeschichte%20%2869%20%E2%82%AC%29.%20Meine%20Nachnamen%20%28bis%20zu%204%29%3A%20" target="_blank" rel="noopener" class="package-cta is-wa">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-2.9.8.8-2.8-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.1-.2 0-.4.1-.5l.4-.5c.1-.1.1-.3 0-.4l-.8-1.9c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1c0 1.2.9 2.4 1 2.6.1.2 1.8 2.8 4.4 3.9.6.3 1.1.4 1.5.5.6.2 1.2.2 1.6.1.5-.1 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1l-.5-.2Z"/></svg><span>Per WhatsApp anfragen</span>
+          </a>
+          <div class="pkg-pay-note">Antwort meist innerhalb von 24 Stunden</div>
+          <a class="package-example" href="beispiel-familiengeschichte.pdf" target="_blank" rel="noopener">Beispieldokument ansehen (PDF)</a>
+        </div>
+
+      </div>
+
+      <p class="pkg-bridge reveal">
+        Unsicher, welches Paket passt? Schreiben Sie mir Ihren Nachnamen. Die Ersteinschätzung ist kostenlos.
+        <button type="button" onclick="window.open('https://wa.me/491735412807?text=Hallo%20Edwin%2C%20welches%20Paket%20passt%20zu%20mir%3F%20Mein%20Nachname%3A%20','_blank')">Nachname per WhatsApp senden →</button>
+      </p>
+    </div>
+
+    <!-- TRUST STRIP -->
+    <div class="trust-strip">
+      <div class="trust-cell">
+        <div class="trust-label">Beratung</div>
+        <div class="trust-icon">Kostenlos</div>
+        <div class="trust-text">Ehrliche Vorab-Einschätzung. Ich sage Ihnen, was möglich ist.</div>
+      </div>
+      <div class="trust-cell">
+        <div class="trust-label">Zahlung</div>
+        <div class="trust-icon">Sofortzahlung</div>
+        <div class="trust-text">Per Überweisung oder PayPal — Rechnung bei Bestellung.</div>
+      </div>
+      <div class="trust-cell">
+        <div class="trust-label">Quellen</div>
+        <div class="trust-icon">Nachvollziehbar</div>
+        <div class="trust-text">Jede Angabe im Bericht mit Quellennachweis.</div>
+      </div>
+      <div class="trust-cell">
+        <div class="trust-label">Garantie</div>
+        <div class="trust-icon">Anteilige Erstattung</div>
+        <div class="trust-text">Wenn die Quellen zu Ihrem Namen nicht genug hergeben.</div>
+      </div>
+    </div>
+
+    <!-- INDIVIDUELLE RECHERCHE (Hinweis) -->
+    <div class="custom-note reveal">
+      <div class="custom-note-label">Mehr als Geschichte?</div>
+      <p>Sie suchen konkrete Vorfahren mit Namen, Daten und Dokumenten? Für einzelne Familien übernehme ich eine individuelle Tiefenrecherche in digital zugänglichen Quellen wie veröffentlichten Siedlerlisten, digitalisierten Kirchenbüchern und Gedenkbüchern. Umfang und Preis nach kostenlosem Erstgespräch, denn jede Familie ist anders. Keine Archivanfragen nach Russland; gefunden wird, was die zugänglichen Quellen hergeben, und ich sage Ihnen vorab ehrlich, wo die Grenzen liegen.</p>
+      <a href="mailto:edwin@wolgawurzeln.de?subject=Individuelle%20Recherche%20%E2%80%93%20Erstgespr%C3%A4ch">Erstgespräch anfragen →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─────────── HISTORY STRIP ─────────── -->
+<section class="history-section">
+  <div class="history-header">
+    <div class="section-label reveal">Quellenmaterial</div>
+    <h2 class="section-title reveal">280 Jahre auf einer Zeitleiste.</h2>
+  </div>
+
+  <div class="history-track-wrap">
+    <div class="history-track">
+      <div class="photo-card"><div class="photo-frame"><img src="tl-1.jpg" alt="Manifest Katharinas II. — die deutschstämmige Zarin lädt deutsche Bauern an die Wolga ein" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1763</span><div class="caption-title">Manifest Katharinas II. — die deutschstämmige Zarin lädt deutsche Bauern an die Wolga ein</div><div class="caption-source">Historische Aufnahme</div></div></div>
+      <div class="photo-card"><div class="photo-frame"><img src="tl-2.jpg" alt="Auswanderungswelle nach Amerika und Argentinien aus den Wolgakolonien" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1850</span><div class="caption-title">Auswanderungswelle nach Amerika und Argentinien aus den Wolgakolonien</div><div class="caption-source">Historische Aufnahme</div></div></div>
+      <div class="photo-card"><div class="photo-frame"><img src="tl-3.jpg" alt="ASSR der Wolgadeutschen — eigene Republik, eigene Schulen, eigene Sprache" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1924</span><div class="caption-title">ASSR der Wolgadeutschen — eigene Republik, eigene Schulen, eigene Sprache</div><div class="caption-source">Historische Aufnahme</div></div></div>
+      <div class="photo-card"><div class="photo-frame"><img src="tl-4.jpg" alt="28. August · Stalins Erlass — Deportation aus den Wolgadörfern in den Wintertagen" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1941</span><div class="caption-title">28. August · Stalins Erlass — Deportation aus den Wolgadörfern in den Wintertagen</div><div class="caption-source">Historische Aufnahme</div></div></div>
+      <div class="photo-card"><div class="photo-frame"><img src="tl-5.jpg" alt="Trudarmee — deutsche Männer und Familien werden in sowjetische Arbeitslager mobilisiert" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1942</span><div class="caption-title">Trudarmee — deutsche Männer und Familien werden in sowjetische Arbeitslager mobilisiert</div><div class="caption-source">Historische Aufnahme</div></div></div>
+      <div class="photo-card"><div class="photo-frame"><img src="tl-6.jpg" alt="Spätaussiedler — Rückkehr nach Deutschland nach 49 Jahren Exil" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1990</span><div class="caption-title">Spätaussiedler — Rückkehr nach Deutschland nach 49 Jahren Exil</div><div class="caption-source">Historische Aufnahme</div></div></div>
+
+      <!-- duplicate for seamless loop -->
+      <div class="photo-card"><div class="photo-frame"><img src="tl-1.jpg" alt="Manifest Katharinas II. — die deutschstämmige Zarin lädt deutsche Bauern an die Wolga ein" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1763</span><div class="caption-title">Manifest Katharinas II. — die deutschstämmige Zarin lädt deutsche Bauern an die Wolga ein</div><div class="caption-source">Historische Aufnahme</div></div></div>
+      <div class="photo-card"><div class="photo-frame"><img src="tl-2.jpg" alt="Auswanderungswelle nach Amerika und Argentinien aus den Wolgakolonien" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1850</span><div class="caption-title">Auswanderungswelle nach Amerika und Argentinien aus den Wolgakolonien</div><div class="caption-source">Historische Aufnahme</div></div></div>
+      <div class="photo-card"><div class="photo-frame"><img src="tl-3.jpg" alt="ASSR der Wolgadeutschen — eigene Republik, eigene Schulen, eigene Sprache" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1924</span><div class="caption-title">ASSR der Wolgadeutschen — eigene Republik, eigene Schulen, eigene Sprache</div><div class="caption-source">Historische Aufnahme</div></div></div>
+      <div class="photo-card"><div class="photo-frame"><img src="tl-4.jpg" alt="28. August · Stalins Erlass — Deportation aus den Wolgadörfern in den Wintertagen" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1941</span><div class="caption-title">28. August · Stalins Erlass — Deportation aus den Wolgadörfern in den Wintertagen</div><div class="caption-source">Historische Aufnahme</div></div></div>
+      <div class="photo-card"><div class="photo-frame"><img src="tl-5.jpg" alt="Trudarmee — deutsche Männer und Familien werden in sowjetische Arbeitslager mobilisiert" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1942</span><div class="caption-title">Trudarmee — deutsche Männer und Familien werden in sowjetische Arbeitslager mobilisiert</div><div class="caption-source">Historische Aufnahme</div></div></div>
+      <div class="photo-card"><div class="photo-frame"><img src="tl-6.jpg" alt="Spätaussiedler — Rückkehr nach Deutschland nach 49 Jahren Exil" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1990</span><div class="caption-title">Spätaussiedler — Rückkehr nach Deutschland nach 49 Jahren Exil</div><div class="caption-source">Historische Aufnahme</div></div></div>
+    
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── CONTACT ─────────── -->
+<section class="contact-section" id="kontakt">
+  <div class="contact-inner">
+    <div class="section-label reveal">Anfrage</div>
+    <h2 class="contact-title reveal">Sprechen wir<br>über Ihre Familie.</h2>
+    <p class="contact-sub reveal">Erste Einschätzung kostenlos und unverbindlich. Antwort auf Deutsch, Russisch oder Englisch — meist innerhalb von 24 Stunden.</p>
+
+    <div class="contact-grid">
+      <div class="contact-card reveal">
+        <div class="cc-label">E-Mail</div>
+        <div class="cc-value">edwin@wolgawurzeln.de</div>
+      </div>
+      <div class="contact-card reveal">
+        <div class="cc-label">Sprachen</div>
+        <div class="cc-value">Deutsch · Русский · English</div>
+      </div>
+    </div>
+
+    <div class="contact-ctas reveal">
+      <a href="https://wa.me/491735412807?text=Hallo%20Edwin%2C%20ich%20habe%20eine%20Frage%20zu%20meiner%20Familiengeschichte.%20Mein%20Nachname%3A%20" target="_blank" rel="noopener" class="btn btn-primary btn-wa">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-2.9.8.8-2.8-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.1-.2 0-.4.1-.5l.4-.5c.1-.1.1-.3 0-.4l-.8-1.9c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1c0 1.2.9 2.4 1 2.6.1.2 1.8 2.8 4.4 3.9.6.3 1.1.4 1.5.5.6.2 1.2.2 1.6.1.5-.1 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1l-.5-.2Z"/></svg>
+        WhatsApp schreiben <span class="btn-arrow">→</span>
+      </a>
+      <a href="mailto:edwin@wolgawurzeln.de" class="btn btn-secondary">
+        <span>E-Mail senden</span> <span class="btn-arrow">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── FOOTER ─────────── -->
+<footer>
+  <div class="footer-mark">WOLGAWURZELN</div>
+  <p class="footer-slogan">„Ich finde was 1941 verloren ging."</p>
+  <div class="footer-divider"></div>
+  <ul class="footer-links">
+    <li><a href="#top">Start</a></li>
+    <li><a href="#ueber">Über mich</a></li>
+    <li><a href="#pakete">Pakete</a></li>
+    <li><a href="stammbaum-magel.html">Stammbaum</a></li>
+    <li><a href="impressum.html">Impressum</a></li>
+    <li><a href="datenschutz.html">Datenschutz</a></li>
+    <li><a href="widerruf.html">Widerrufsbelehrung</a></li>
+    <li><a href="agb.html">AGB</a></li>
+    <li><a href="versand.html">Zahlung &amp; Lieferung</a></li>
+  </ul>
+  <div class="footer-compliance">
+    <!-- Widerrufsbutton (Händlerbund) -->
+    <a id="hbRevocationButton" href="https://connect.haendlerbund.de/widerrufsformular/wolgawurzeln-de/01KVR995H8SJY8CG0CVWN319VW" data-shop-id="01KVR995H8SJY8CG0CVWN319VW" data-key="CQ0EJPchn5SiRcT55uLj2JSFID1jCD0b" data-preview="false" data-lang="de" rel="noopener" aria-label="Widerrufsformular öffnen" target="_blank"><span>Vertrag widerrufen</span></a>
+    <!-- Beginn des H&auml;ndlerbund HTML-Code -->
+    <div class="footer-seal"><img src="https://logo.haendlerbund.de/logo.php?uuid=e88d7c67-6ca4-11f1-ae6d-0242ac130002-8810122580&size=120&variant=2" title="H&auml;ndlerbund Mitglied" alt="Mitglied im H&auml;ndlerbund" hspace="5" vspace="5" border="0" /></div>
+    <!-- Ende des H&auml;ndlerbund HTML-Code -->
+  </div>
+  <p class="footer-copy">© 2026 Edwin Karl · Einzelunternehmen · Augsburg, Bayern · wolgawurzeln.de</p>
+</footer>
+
+<!-- ─────────── BESTELL-SCHRITT (Widerrufs-Verzicht vor Zahlung) ─────────── -->
+<div class="modal" id="modal-order">
+  <div class="modal-box order-box">
+    <button class="modal-close" onclick="closeOrder()" aria-label="Schließen"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <div class="order-eyebrow">Bestellung</div>
+    <h2 id="order-title">Herkunftsbericht · 39 €</h2>
+    <p class="order-intro">Sie bestellen einen digitalen Inhalt. Vor der Zahlung bestätigen Sie bitte den sofortigen Bearbeitungsbeginn.</p>
+
+    <label class="order-check">
+      <input type="checkbox" id="chk-waiver">
+      <span>Ich verlange ausdrücklich, dass mit der Erstellung schon vor Ablauf der Widerrufsfrist begonnen wird. Mir ist bekannt, dass mein Widerrufsrecht mit Beginn der Ausführung erlischt.</span>
+    </label>
+
+    <label class="order-check optional">
+      <input type="checkbox" id="chk-review">
+      <span>Ich bin einverstanden, nach der Lieferung einmalig eine E-Mail mit der Bitte um eine Bewertung zu erhalten. Freiwillig, jederzeit widerrufbar.</span>
+    </label>
+
+    <a id="order-pay" class="order-pay disabled" href="#" aria-disabled="true"><span>Weiter zur Zahlung →</span></a>
+    <p class="order-foot">Mit „Weiter zur Zahlung" akzeptieren Sie die <a href="agb.html" target="_blank" rel="noopener">AGB</a> und die <a href="widerruf.html" target="_blank" rel="noopener">Widerrufsbelehrung</a>. Es gilt die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a>.</p>
+  </div>
+</div>
+
+<script>
+// Bestell-Schritt: Widerrufs-Verzicht vor Zahlung
+let orderUrl = "";
+function openOrder(name, price, url){
+  orderUrl = url;
+  document.getElementById('order-title').textContent = name + ' · ' + price;
+  document.getElementById('chk-waiver').checked = false;
+  document.getElementById('chk-review').checked = false;
+  updatePay();
+  document.getElementById('modal-order').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeOrder(){
+  document.getElementById('modal-order').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function updatePay(){
+  const ok = document.getElementById('chk-waiver').checked;
+  const btn = document.getElementById('order-pay');
+  if(ok){
+    btn.classList.remove('disabled');
+    btn.setAttribute('href', orderUrl);
+    btn.setAttribute('target','_blank');
+    btn.setAttribute('rel','noopener');
+    btn.removeAttribute('aria-disabled');
+  } else {
+    btn.classList.add('disabled');
+    btn.setAttribute('href','#');
+    btn.setAttribute('aria-disabled','true');
+    btn.removeAttribute('target');
+  }
+}
+document.addEventListener('change', e => { if(e.target && e.target.id === 'chk-waiver') updatePay(); });
+document.addEventListener('click', e => {
+  const btn = e.target.closest && e.target.closest('#order-pay');
+  if(btn){
+    if(btn.classList.contains('disabled')) e.preventDefault();
+    else closeOrder();   // Stripe öffnet in neuem Tab, Modal schließt
+  }
+});
+
+// Modal schließen: Klick auf Hintergrund / Escape
+document.querySelectorAll('.modal').forEach(m=>{
+  m.addEventListener('click',e=>{ if(e.target===m){ m.classList.remove('open'); document.body.style.overflow=''; } });
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.querySelectorAll('.modal.open').forEach(m=>m.classList.remove('open')); document.body.style.overflow=''; } });
+
+// Reveal-on-scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('v');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach((el, i) => {
+  el.style.transitionDelay = ((i % 3) * 0.08) + 's';
+  observer.observe(el);
+});
+
+// Nav shrink on scroll
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 24) nav.classList.add('shrunk');
+  else nav.classList.remove('shrunk');
+}, { passive: true });
+
+// Mobile burger
+const burger = document.getElementById('burger');
+const navLinks = document.getElementById('navLinks');
+burger.addEventListener('click', () => {
+  navLinks.classList.toggle('open');
+});
+navLinks.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => navLinks.classList.remove('open'));
+});
+
+</script>
+
+<!-- Händlerbund Widerrufsbutton-Widget -->
+<script async src="https://connect.haendlerbund.de/widgets/revocation-button.js"></script>
+
+</body>
+</html>

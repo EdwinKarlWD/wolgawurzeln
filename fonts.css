@@ -1,0 +1,22 @@
+/* Lokale Schriften – ersetzt Google Fonts CDN (DSGVO) */
+@font-face{
+  font-family:"Cinzel";
+  src:url("fonts/cinzel-var.woff2") format("woff2");
+  font-weight:400 900;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:"EB Garamond";
+  src:url("fonts/ebgaramond-var.woff2") format("woff2");
+  font-weight:400 800;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:"EB Garamond";
+  src:url("fonts/ebgaramond-italic-var.woff2") format("woff2");
+  font-weight:400 800;
+  font-style:italic;
+  font-display:swap;
+}
