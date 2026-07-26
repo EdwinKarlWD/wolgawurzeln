@@ -752,6 +752,37 @@ h1.hero-title .gold-strong { font-weight:900; }
   padding-top:8px; border-top:1px solid var(--rule-soft);
 }
 
+/* ─────────── FAQ ─────────── */
+.faq-section {
+  padding:130px 32px;
+  background:var(--navy);
+}
+.faq-inner { max-width:820px; margin:0 auto; }
+.faq-list { margin-top:50px; border-top:1px solid var(--rule); }
+.faq-item { border-bottom:1px solid var(--rule); }
+.faq-item summary {
+  list-style:none; cursor:pointer; position:relative;
+  padding:22px 44px 22px 0;
+  font-family:"Cinzel",serif; font-size:15px; letter-spacing:0.5px;
+  color:var(--paper);
+  transition:color .2s;
+}
+.faq-item summary::-webkit-details-marker { display:none; }
+.faq-item summary::after {
+  content:"+"; position:absolute; right:4px; top:50%; transform:translateY(-50%);
+  color:var(--gold); font-size:22px; font-weight:400; line-height:1;
+}
+.faq-item[open] summary::after { content:"–"; }
+.faq-item[open] summary, .faq-item summary:hover { color:var(--gold-light); }
+.faq-body { padding:0 0 26px; }
+.faq-body p { color:var(--paper-dim); font-size:15.5px; line-height:1.7; max-width:720px; }
+
+.pkg-gift {
+  margin-top:24px; text-align:center;
+  font-size:14.5px; line-height:1.6; color:var(--paper-dim);
+  max-width:640px; margin-left:auto; margin-right:auto;
+}
+
 /* ─────────── CONTACT ─────────── */
 .contact-section {
   padding:130px 32px;
@@ -886,7 +917,7 @@ footer {
   .hero-slogan { font-size:18px; padding-left:18px; }
   .btn { padding:13px 22px; font-size:10.5px; letter-spacing:2.5px; }
 
-  .mission-section, .about-section, .process-section, .packages-section, .contact-section { padding:80px 20px; }
+  .mission-section, .about-section, .process-section, .packages-section, .faq-section, .contact-section { padding:80px 20px; }
   .mission-year { font-size:120px; }
   .stat-strip { grid-template-columns:1fr 1fr; }
   .process-grid { grid-template-columns:1fr; }
@@ -1038,12 +1069,12 @@ footer {
     <span></span><span></span><span></span>
   </button>
   <ul class="nav-links" id="navLinks">
-    <li><a href="#mission">1941</a></li>
+    <li><a href="#mission">Geschichte</a></li>
     <li><a href="#ueber">Über mich</a></li>
     <li><a href="#ablauf">Ablauf</a></li>
     <li><a href="#pakete">Pakete</a></li>
+    <li><a href="#faq">FAQ</a></li>
     <li><a href="stammbaum-magel.html">Stammbaum</a></li>
-    <li><a href="widerruf.html">Widerruf</a></li>
     <li><a href="mailto:edwin@wolgawurzeln.de" class="nav-cta">Anfragen</a></li>
   </ul>
 </nav>
@@ -1240,11 +1271,13 @@ footer {
           <div class="package-divider"></div>
           <ul class="package-features">
             <li class="bold">Bis zu 4 Nachnamen — die Linien Ihrer vier Großeltern</li>
+            <li>Ab dem 5. Nachnamen: +15 € je weiterer Name</li>
             <li>Alles aus dem Herkunftsbericht, für jede Linie</li>
             <li class="bold">Ihre Familiengeschichte erzählt — was Ihre Familie in Deportation und Trudarmee durchlebte</li>
             <li>Karte Ihrer Herkunftsdörfer + dokumentierte Deportationsroute</li>
             <li>Zeitleiste von der Auswanderung bis zur Rückkehr</li>
             <li>Ausführliches, gestaltetes PDF</li>
+            <li>Auf Wunsch als gedruckte Ausgabe — auf Anfrage</li>
           </ul>
           <p class="package-note">Die ganze Familiengeschichte erzählt, mit Karte und Zeitleiste.</p>
           <a href="#" class="package-cta is-primary" onclick="openOrder('Familiengeschichte','69 €','https://buy.stripe.com/9B6cMYc4C8gwc6xceM6Vq00');return false;"><span>Jetzt bestellen · 69 €</span></a>
@@ -1261,6 +1294,7 @@ footer {
         Unsicher, welches Paket passt? Schreiben Sie mir Ihren Nachnamen. Die Ersteinschätzung ist kostenlos.
         <button type="button" onclick="window.open('https://wa.me/491735412807?text=Hallo%20Edwin%2C%20welches%20Paket%20passt%20zu%20mir%3F%20Mein%20Nachname%3A%20','_blank')">Nachname per WhatsApp senden →</button>
       </p>
+      <p class="pkg-gift reveal">Auch als Geschenk: Auf Wunsch stelle ich den Bericht auf den Namen des Beschenkten aus — zum runden Geburtstag, zu Weihnachten oder einfach so.</p>
     </div>
 
     <!-- TRUST STRIP -->
@@ -1290,7 +1324,7 @@ footer {
     <!-- INDIVIDUELLE RECHERCHE (Hinweis) -->
     <div class="custom-note reveal">
       <div class="custom-note-label">Mehr als Geschichte?</div>
-      <p>Sie suchen konkrete Vorfahren mit Namen, Daten und Dokumenten? Für einzelne Familien übernehme ich eine individuelle Tiefenrecherche in digital zugänglichen Quellen wie veröffentlichten Siedlerlisten, digitalisierten Kirchenbüchern und Gedenkbüchern. Umfang und Preis nach kostenlosem Erstgespräch, denn jede Familie ist anders. Keine Archivanfragen nach Russland; gefunden wird, was die zugänglichen Quellen hergeben, und ich sage Ihnen vorab ehrlich, wo die Grenzen liegen.</p>
+      <p>Sie suchen konkrete Vorfahren mit Namen, Daten und Dokumenten? Für einzelne Familien übernehme ich eine individuelle Tiefenrecherche in digital zugänglichen Quellen wie veröffentlichten Siedlerlisten, digitalisierten Kirchenbüchern und Gedenkbüchern. Ab 149 € — Umfang und Preis nach kostenlosem Erstgespräch, denn jede Familie ist anders. Keine Archivanfragen nach Russland; gefunden wird, was die zugänglichen Quellen hergeben, und ich sage Ihnen vorab ehrlich, wo die Grenzen liegen.</p>
       <a href="mailto:edwin@wolgawurzeln.de?subject=Individuelle%20Recherche%20%E2%80%93%20Erstgespr%C3%A4ch">Erstgespräch anfragen →</a>
     </div>
 
@@ -1309,7 +1343,7 @@ footer {
       <div class="photo-card"><div class="photo-frame"><img src="tl-1.jpg" alt="Manifest Katharinas II. — die deutschstämmige Zarin lädt deutsche Bauern an die Wolga ein" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1763</span><div class="caption-title">Manifest Katharinas II. — die deutschstämmige Zarin lädt deutsche Bauern an die Wolga ein</div><div class="caption-source">Historische Aufnahme</div></div></div>
       <div class="photo-card"><div class="photo-frame"><img src="tl-2.jpg" alt="Auswanderungswelle nach Amerika und Argentinien aus den Wolgakolonien" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1850</span><div class="caption-title">Auswanderungswelle nach Amerika und Argentinien aus den Wolgakolonien</div><div class="caption-source">Historische Aufnahme</div></div></div>
       <div class="photo-card"><div class="photo-frame"><img src="tl-3.jpg" alt="ASSR der Wolgadeutschen — eigene Republik, eigene Schulen, eigene Sprache" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1924</span><div class="caption-title">ASSR der Wolgadeutschen — eigene Republik, eigene Schulen, eigene Sprache</div><div class="caption-source">Historische Aufnahme</div></div></div>
-      <div class="photo-card"><div class="photo-frame"><img src="tl-4.jpg" alt="28. August · Stalins Erlass — Deportation aus den Wolgadörfern in den Wintertagen" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1941</span><div class="caption-title">28. August · Stalins Erlass — Deportation aus den Wolgadörfern in den Wintertagen</div><div class="caption-source">Historische Aufnahme</div></div></div>
+      <div class="photo-card"><div class="photo-frame"><img src="tl-4.jpg" alt="28. August · Stalins Erlass — die Transporte rollen im September und Oktober" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1941</span><div class="caption-title">28. August · Stalins Erlass — die Transporte rollen im September und Oktober</div><div class="caption-source">Historische Aufnahme</div></div></div>
       <div class="photo-card"><div class="photo-frame"><img src="tl-5.jpg" alt="Trudarmee — deutsche Männer und Familien werden in sowjetische Arbeitslager mobilisiert" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1942</span><div class="caption-title">Trudarmee — deutsche Männer und Familien werden in sowjetische Arbeitslager mobilisiert</div><div class="caption-source">Historische Aufnahme</div></div></div>
       <div class="photo-card"><div class="photo-frame"><img src="tl-6.jpg" alt="Spätaussiedler — Rückkehr nach Deutschland nach 49 Jahren Exil" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1990</span><div class="caption-title">Spätaussiedler — Rückkehr nach Deutschland nach 49 Jahren Exil</div><div class="caption-source">Historische Aufnahme</div></div></div>
 
@@ -1317,10 +1351,46 @@ footer {
       <div class="photo-card"><div class="photo-frame"><img src="tl-1.jpg" alt="Manifest Katharinas II. — die deutschstämmige Zarin lädt deutsche Bauern an die Wolga ein" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1763</span><div class="caption-title">Manifest Katharinas II. — die deutschstämmige Zarin lädt deutsche Bauern an die Wolga ein</div><div class="caption-source">Historische Aufnahme</div></div></div>
       <div class="photo-card"><div class="photo-frame"><img src="tl-2.jpg" alt="Auswanderungswelle nach Amerika und Argentinien aus den Wolgakolonien" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1850</span><div class="caption-title">Auswanderungswelle nach Amerika und Argentinien aus den Wolgakolonien</div><div class="caption-source">Historische Aufnahme</div></div></div>
       <div class="photo-card"><div class="photo-frame"><img src="tl-3.jpg" alt="ASSR der Wolgadeutschen — eigene Republik, eigene Schulen, eigene Sprache" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1924</span><div class="caption-title">ASSR der Wolgadeutschen — eigene Republik, eigene Schulen, eigene Sprache</div><div class="caption-source">Historische Aufnahme</div></div></div>
-      <div class="photo-card"><div class="photo-frame"><img src="tl-4.jpg" alt="28. August · Stalins Erlass — Deportation aus den Wolgadörfern in den Wintertagen" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1941</span><div class="caption-title">28. August · Stalins Erlass — Deportation aus den Wolgadörfern in den Wintertagen</div><div class="caption-source">Historische Aufnahme</div></div></div>
+      <div class="photo-card"><div class="photo-frame"><img src="tl-4.jpg" alt="28. August · Stalins Erlass — die Transporte rollen im September und Oktober" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1941</span><div class="caption-title">28. August · Stalins Erlass — die Transporte rollen im September und Oktober</div><div class="caption-source">Historische Aufnahme</div></div></div>
       <div class="photo-card"><div class="photo-frame"><img src="tl-5.jpg" alt="Trudarmee — deutsche Männer und Familien werden in sowjetische Arbeitslager mobilisiert" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1942</span><div class="caption-title">Trudarmee — deutsche Männer und Familien werden in sowjetische Arbeitslager mobilisiert</div><div class="caption-source">Historische Aufnahme</div></div></div>
       <div class="photo-card"><div class="photo-frame"><img src="tl-6.jpg" alt="Spätaussiedler — Rückkehr nach Deutschland nach 49 Jahren Exil" loading="lazy"></div><div class="photo-caption"><span class="caption-year">1990</span><div class="caption-title">Spätaussiedler — Rückkehr nach Deutschland nach 49 Jahren Exil</div><div class="caption-source">Historische Aufnahme</div></div></div>
     
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── FAQ ─────────── -->
+<section class="faq-section" id="faq">
+  <div class="faq-inner">
+    <div class="section-label reveal">Häufige Fragen</div>
+    <h2 class="section-title reveal">Woher ich das weiß —<br>und woher nicht.</h2>
+    <p class="section-sub reveal">Die Fragen, die mir am häufigsten gestellt werden. Ehrlich beantwortet, denn genau davon lebt diese Arbeit.</p>
+
+    <div class="faq-list">
+      <details class="faq-item reveal">
+        <summary>Welche Quellen nutzt du für die Recherche?</summary>
+        <div class="faq-body"><p>Ausschließlich publizierte und damit überprüfbare Quellen: die Einwanderungslisten 1764–1767 (Igor Pleve), die Revisionsliste von 1798 (Brent Mai), die Auswanderungslisten von Karl Stumpp, Koloniechroniken, Ortslexika und die dokumentierten Bestände der Fachportale. Für viele Familiennamen verzeichnen diese Quellen sogar den Herkunftsort in Deutschland vor der Auswanderung.</p></div>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Arbeitest du mit Kirchenbüchern, EWZ-Akten oder Archiven in Russland?</summary>
+        <div class="faq-body"><p>Nicht in den Paketen — und das sage ich lieber vorab, als es zu behaupten. Herkunftsbericht und Familiengeschichte sind Kontextrecherche aus publizierten Quellen. Recherche in digitalisierten Kirchenbüchern und weiteren zugänglichen Beständen ist Teil der individuellen Tiefenrecherche. Archivanfragen nach Russland übernehme ich nicht.</p></div>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Bekomme ich zu jeder Aussage eine Quellenangabe?</summary>
+        <div class="faq-body"><p>Ja. Jede zentrale Aussage im Bericht trägt eine Quellenziffer, am Ende steht das vollständige Quellenverzeichnis. Was sich nicht eindeutig belegen lässt, ist als Einschätzung gekennzeichnet. Sie sehen also immer, was Quelle ist und was Einordnung. Genau so aufgebaut sind auch die Beispiel-PDFs bei den Paketen.</p></div>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Sind die Beispiel-PDFs echte Kundenberichte?</summary>
+        <div class="faq-body"><p>Nein, aus Datenschutzgründen bewusst nicht. Die dargestellten Personen sind frei gestaltet und mit * gekennzeichnet. Alle Angaben zu Kolonien, Familiennamen und historischen Ereignissen darin sind dagegen echt und belegt. Aufbau, Umfang und Quellenarbeit entsprechen exakt einem beauftragten Bericht.</p></div>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Was, wenn die Quellen zu meinem Namen nichts hergeben?</summary>
+        <div class="faq-body"><p>Das kläre ich, bevor Sie zahlen: Die Ersteinschätzung ist kostenlos, und ich sage Ihnen ehrlich, was möglich ist und was nicht. Gibt eine beauftragte Recherche weniger her als zugesagt, erstatte ich anteilig.</p></div>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Ich habe mehr als vier Nachnamen — geht das?</summary>
+        <div class="faq-body"><p>Ja. Die Familiengeschichte deckt bis zu vier Nachnamen ab, jeder weitere kostet 15 € zusätzlich. Bei sehr vielen Linien lohnt oft der Blick, welche vier den Kern Ihrer Familie ausmachen — auch dazu berate ich kostenlos.</p></div>
+      </details>
     </div>
   </div>
 </section>
@@ -1486,6 +1556,22 @@ navLinks.querySelectorAll('a').forEach(a => {
 
 <!-- Händlerbund Widerrufsbutton-Widget -->
 <script async src="https://connect.haendlerbund.de/widgets/revocation-button.js"></script>
+
+<!-- FAQ Schema für Suchmaschinen -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Welche Quellen nutzt du für die Recherche?", "acceptedAnswer": {"@type": "Answer", "text": "Ausschließlich publizierte und überprüfbare Quellen: die Einwanderungslisten 1764–1767 (Igor Pleve), die Revisionsliste von 1798 (Brent Mai), die Auswanderungslisten von Karl Stumpp, Koloniechroniken, Ortslexika und die dokumentierten Bestände der Fachportale."}},
+    {"@type": "Question", "name": "Arbeitest du mit Kirchenbüchern, EWZ-Akten oder Archiven in Russland?", "acceptedAnswer": {"@type": "Answer", "text": "Nicht in den Paketen. Herkunftsbericht und Familiengeschichte sind Kontextrecherche aus publizierten Quellen. Recherche in digitalisierten Kirchenbüchern ist Teil der individuellen Tiefenrecherche. Archivanfragen nach Russland werden nicht übernommen."}},
+    {"@type": "Question", "name": "Bekomme ich zu jeder Aussage eine Quellenangabe?", "acceptedAnswer": {"@type": "Answer", "text": "Ja. Jede zentrale Aussage im Bericht trägt eine Quellenziffer, am Ende steht das vollständige Quellenverzeichnis. Nicht eindeutig belegbare Aussagen sind als Einschätzung gekennzeichnet."}},
+    {"@type": "Question", "name": "Sind die Beispiel-PDFs echte Kundenberichte?", "acceptedAnswer": {"@type": "Answer", "text": "Nein, aus Datenschutzgründen nicht. Die dargestellten Personen sind frei gestaltet und mit * gekennzeichnet. Alle Angaben zu Kolonien, Familiennamen und historischen Ereignissen sind echt und belegt."}},
+    {"@type": "Question", "name": "Was, wenn die Quellen zu meinem Namen nichts hergeben?", "acceptedAnswer": {"@type": "Answer", "text": "Die Ersteinschätzung ist kostenlos und ehrlich. Gibt eine beauftragte Recherche weniger her als zugesagt, wird anteilig erstattet."}},
+    {"@type": "Question", "name": "Ich habe mehr als vier Nachnamen, geht das?", "acceptedAnswer": {"@type": "Answer", "text": "Ja. Die Familiengeschichte deckt bis zu vier Nachnamen ab, jeder weitere kostet 15 € zusätzlich."}}
+  ]
+}
+</script>
 
 </body>
 </html>
