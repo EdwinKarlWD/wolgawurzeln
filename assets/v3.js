@@ -66,7 +66,7 @@
     function setA(a, ok, href) { if (!a) return; a.setAttribute('aria-disabled', ok ? 'false' : 'true'); if (ok) a.setAttribute('href', href); else a.removeAttribute('href'); }
     function upd() {
       var ok = !!(cur && w.checked && sname());
-      if (hint) { hint.classList.toggle('off', ok); hint.textContent = !cur ? '' : !sname() && !w.checked ? 'Bitte oben den Nachnamen eintragen und den Bearbeitungsbeginn bestätigen, dann werden die Bestellknöpfe frei.' : !sname() ? 'Bitte oben den Nachnamen der Familie eintragen, dann werden die Bestellknöpfe frei.' : 'Bitte den Bearbeitungsbeginn bestätigen (Kästchen oben), dann werden die Bestellknöpfe frei.'; }
+      if (hint) { hint.classList.toggle('off', ok); hint.textContent = !cur ? '' : !sname() && !w.checked ? 'Bitte oben den Nachnamen eintragen und den Bearbeitungsbeginn bestätigen, dann wird der Bestellknopf frei.' : !sname() ? 'Bitte oben den Nachnamen der Familie eintragen, dann wird der Bestellknopf frei.' : 'Bitte den Bearbeitungsbeginn bestätigen (Kästchen oben), dann wird der Bestellknopf frei.'; }
       if (!ok) { setA(pay, false); setA(wa, false); setA(ml, false); return; }
       var ts = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15);
       setA(pay, true, cur.url + '?locale=de&client_reference_id=' + encodeURIComponent([cur.code, sref(sname()), 'verzicht-ja', 'fotobuch-' + (bk && bk.checked ? 'ja' : 'nein'), ts].join('_')));
