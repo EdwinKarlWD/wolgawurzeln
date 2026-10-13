@@ -185,8 +185,8 @@
 
   /* Was die Familie wissen möchte, passend zu den Paketen */
   var WANT = {
-    hb: { t: 'Aus welcher Kolonie stammt mein Name?', n: 'Herkunftsbericht', price: '39 €', d: 'Kolonie, Herkunft in Deutschland und der Weg der Familie bis heute, jede Angabe mit Quelle. Als PDF in 3 bis 5 Tagen.', order: true },
-    fg: { t: 'Woher stammen alle Linien unserer Familie?', n: 'Familiengeschichte', price: '69 €', d: 'Bis zu vier Nachnamen als erzählte Familiengeschichte mit Karte und Zeitleiste. Als PDF in 5 bis 8 Tagen.', order: true },
+    hb: { t: 'Aus welcher Kolonie stammt mein Name?', n: 'Herkunftsbericht', price: '49 €', d: 'Kolonie, Herkunft in Deutschland und der Weg der Familie bis heute, jede Angabe mit Quelle. Als PDF in 3 bis 5 Tagen.', order: true },
+    fg: { t: 'Woher stammen alle Linien unserer Familie?', n: 'Familiengeschichte', price: '89 €', d: 'Recherche zu bis zu vier Nachnamen: Kolonie und Herkunft jeder Linie, mit Karte und Zeitleiste. Als PDF in 5 bis 8 Tagen.', order: true },
     ez: { t: 'Wer genau waren meine Vorfahren?', n: 'Einzelfallrecherche', price: '149 € für 3 Stunden', d: 'Gezielte Suche nach Ihren Vorfahren mit Namen und Daten in Kirchenbüchern, Listen und Archivakten. Weitere Stunden nur nach Ihrer Freigabe. Vorab erhalten Sie ein Angebot.', order: false, cta: 'Anfrage per WhatsApp' },
     tr: { t: 'Was steht in einem alten Dokument?', n: 'Transkription', price: 'Preis nach Sichtung', d: 'Alte deutsche Schrift und russische Handschrift, übertragen und erklärt. Schicken Sie ein Foto des Dokuments, Sie erhalten vorab ein Angebot.', order: false, cta: 'Dokument per WhatsApp schicken' }
   };
