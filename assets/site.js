@@ -52,8 +52,8 @@
   var od = document.getElementById('order');
   if (od && od.showModal) {
     var P = {
-      hb: { art: 'den', name: 'Herkunftsbericht', price: '39 €', time: 'Lieferung als PDF in 3 bis 5 Tagen.', code: 'HB39', url: 'https://buy.stripe.com/aFa00cb0y8gw8UlceM6Vq01' },
-      fg: { art: 'die', name: 'Familiengeschichte', price: '69 €', time: 'Lieferung als PDF in 5 bis 8 Tagen.', code: 'FG69', url: 'https://buy.stripe.com/9B6cMYc4C8gwc6xceM6Vq00' }
+      hb: { art: 'den', name: 'Herkunftsbericht', price: '49 €', time: 'Lieferung als PDF in 3 bis 5 Tagen.', code: 'HB49', url: 'https://buy.stripe.com/8x214gd8G68o6MddiQ6Vq02' },
+      fg: { art: 'die', name: 'Familiengeschichte', price: '89 €', time: 'Lieferung als PDF in 5 bis 8 Tagen.', code: 'FG89', url: 'https://buy.stripe.com/8x2aEQ9WueEUgmN92A6Vq03' }
     };
     var cur = null, w = od.querySelector('#chk-waiver'), bk = od.querySelector('#chk-book'), pay = od.querySelector('#order-pay'), wa = od.querySelector('#order-wa'), ml = od.querySelector('#order-mail'), nm = od.querySelector('#order-name'), kn = od.querySelector('#order-know'), hint = od.querySelector('#order-hint');
     function sname() { return nm ? nm.value.trim() : ''; }
