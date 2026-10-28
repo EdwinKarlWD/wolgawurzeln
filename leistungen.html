@@ -188,21 +188,36 @@
   <div class="dlg-box">
     <button class="dlg-close" type="button" aria-label="Schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <h2 id="order-title">Auftrag</h2>
-    <p class="dlg-sub"><span id="order-time"></span> Nach der Bestellung meldet sich Wolgawurzeln bei Ihnen, meist innerhalb von 24 Stunden, und geht Namen und Angaben mit Ihnen durch, bevor die Recherche beginnt.</p>
+    <div id="order-form">
+    <p class="dlg-sub"><span id="order-time"></span> Nach der Bestellung meldet sich Wolgawurzeln per E-Mail bei Ihnen, meist innerhalb von 24 Stunden, und geht Namen und Angaben mit Ihnen durch, bevor die Recherche beginnt.</p>
     <div class="dlg-fields">
       <label class="dlg-f" for="order-name"><span>Nachname der Familie</span><input id="order-name" type="text" autocomplete="family-name" autocapitalize="words" spellcheck="false" placeholder="zum Beispiel Schäfer oder Шефер"></label>
+      <div class="dlg-2">
+        <label class="dlg-f" for="order-email"><span>Ihre E-Mail</span><input id="order-email" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="name@beispiel.de"></label>
+        <label class="dlg-f" for="order-phone"><span>Telefon oder WhatsApp <small>freiwillig</small></span><input id="order-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="für kurze Rückfragen"></label>
+      </div>
       <label class="dlg-f" for="order-know"><span>Was Sie schon wissen, falls vorhanden</span><textarea id="order-know" rows="2" placeholder="Dorf, Region, Vornamen, Jahreszahlen"></textarea></label>
     </div>
     <p class="dlg-note">Sie bestellen einen digitalen Inhalt. Vor der Bestellung bestätigen Sie bitte den sofortigen Bearbeitungsbeginn.</p>
     <label class="check"><input type="checkbox" id="chk-waiver"><span>Ich verlange ausdrücklich, dass mit der Erstellung schon vor Ablauf der Widerrufsfrist begonnen wird. Mir ist bekannt, dass mein Widerrufsrecht mit Beginn der Ausführung erlischt.</span></label>
     <label class="check check-book"><input type="checkbox" id="chk-book"><span class="bk-txt"><b>Zusätzlich als gedrucktes Fotobuch, 29&nbsp;€.</b> Ideal als Geschenk. Versand in Deutschland inklusive, ins Ausland auf Anfrage. Bezahlt wird es gesondert, nachdem Sie den Bericht als PDF gesehen haben.</span><svg class="bk-ico" viewBox="0 0 34 42" width="30" height="37" aria-hidden="true" focusable="false"><rect x="7" y="4" width="25" height="35" rx="1" fill="#EFE6D3" stroke="#C9B48A" stroke-width=".8"/><rect x="3.5" y="2" width="25" height="35" rx="1" fill="#0F2342"/><rect x="5.5" y="4" width="21" height="31" fill="none" stroke="#C9A84C" stroke-width=".7"/><path d="M3.5 9.5h2.2M3.5 29.5h2.2" stroke="#D9BC62" stroke-width="1.2"/><path d="M12 9.5h8v6.2c0 2.8-1.9 4.4-4 5.3-2.1-.9-4-2.5-4-5.3z" fill="none" stroke="#D9BC62" stroke-width="1"/><path d="M12 11.6h8" stroke="#D9BC62" stroke-width="1.6"/><path d="M10.5 25.5h11M12.5 28.5h7" stroke="#D9BC62" stroke-width=".9" stroke-linecap="round"/></svg></label>
     <figure class="gw gw-row"><a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener"><img src="img/gewaehrleistung-de-300.jpg" width="150" height="212" alt="Hinweis zur gesetzlichen Gewährleistung, zum Vergrößern öffnen" loading="lazy" decoding="async"></a><figcaption>Gesetzliche Gewährleistung für das gedruckte Fotobuch. <a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener">Hinweis vergrößern</a></figcaption></figure>
-    <div class="dlg-pay">
-      <a id="order-pay" class="btn btn-seal" role="button" aria-disabled="true" target="_blank" rel="noopener">Bestellen und bezahlen</a>
+    <div class="dlg-paybar">
+      <div class="dlg-pay">
+        <a id="order-pay" class="btn btn-seal" role="button" aria-disabled="true" target="_blank" rel="noopener">Bestellen und bezahlen</a>
+      </div>
+      <p class="dlg-hint" id="order-hint" aria-live="polite">Bitte oben den Nachnamen eintragen, dann wird der Bestellknopf frei.</p>
     </div>
-    <p class="dlg-hint" id="order-hint" aria-live="polite">Bitte oben den Nachnamen eintragen und den Bearbeitungsbeginn bestätigen, dann wird der Bestellknopf frei.</p>
     <p class="dlg-alt">Bezahlt wird auf einer gesicherten Bezahlseite, mit Karte, Klarna und weiteren Verfahren. Lieber per Überweisung oder PayPal? Dann <a id="order-wa" aria-disabled="true" target="_blank" rel="noopener">per WhatsApp bestellen</a> oder <a id="order-mail" aria-disabled="true">per Mail</a>, Sie erhalten die Zahlungsdaten.</p>
     <p class="dlg-foot">Es gelten unsere <a href="agb.html" target="_blank" rel="noopener">AGB</a>. Hinweise zum <a href="widerruf.html" target="_blank" rel="noopener">Widerrufsrecht</a> und zum <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutz</a>.</p>
+    </div>
+    <div id="order-done" class="dlg-done" hidden>
+      <p class="dlg-done-k">Ihre Bestellnummer</p>
+      <p class="dlg-done-no num" id="order-no"></p>
+      <p class="dlg-done-t" id="order-done-t"></p>
+      <p class="dlg-done-s">Wolgawurzeln meldet sich meist innerhalb von 24 Stunden per E-Mail bei Ihnen. Falls etwas nicht geklappt hat, bestellen Sie bitte nicht ein zweites Mal, sondern schreiben Sie kurz mit Ihrer Bestellnummer an <a href="mailto:edwin@wolgawurzeln.de">edwin@wolgawurzeln.de</a>.</p>
+      <div class="dlg-pay"><a id="order-again" class="btn" rel="noopener">Bezahlseite erneut öffnen</a><button type="button" class="btn ghost" data-close>Schließen</button></div>
+    </div>
   </div>
 </dialog>
 <dialog class="dlg dlg-lb" id="lb" aria-label="Seitenansicht">

@@ -34,7 +34,7 @@
 
   /* Dialoge */
   document.querySelectorAll('dialog.dlg').forEach(function (d) {
-    d.addEventListener('click', function (e) { if (e.target === d || e.target.closest('.dlg-close')) d.close(); });
+    d.addEventListener('click', function (e) { if (e.target === d || e.target.closest('.dlg-close,[data-close]')) d.close(); });
   });
   var lb = document.getElementById('lb');
   if (lb && lb.showModal) {
@@ -48,52 +48,127 @@
     });
   }
 
-  /* Auftrag: vorzeitiger Beginn bestätigen, dann Bezahlseite */
+  /* Auftrag: Angaben, vorzeitiger Beginn, dann Bezahlseite */
+  var W3F_KEY = ''; /* Web3Forms Zugangsschlüssel. Leer: keine Formularmail, alles andere läuft. */
   var od = document.getElementById('order');
   if (od && od.showModal) {
     var P = {
-      hb: { art: 'den', name: 'Herkunftsbericht', price: '49 €', time: 'Lieferung als PDF in 3 bis 5 Tagen.', code: 'HB49', url: 'https://buy.stripe.com/8x214gd8G68o6MddiQ6Vq02' },
-      fg: { art: 'die', name: 'Familiengeschichte', price: '89 €', time: 'Lieferung als PDF in 5 bis 8 Tagen.', code: 'FG89', url: 'https://buy.stripe.com/8x2aEQ9WueEUgmN92A6Vq03' }
+      hb: { key: 'hb', art: 'den', name: 'Herkunftsbericht', price: '49 €', time: 'Lieferung als PDF in 3 bis 5 Tagen.', code: 'HB49', url: 'https://buy.stripe.com/8x214gd8G68o6MddiQ6Vq02' },
+      fg: { key: 'fg', art: 'die', name: 'Familiengeschichte', price: '89 €', time: 'Lieferung als PDF in 5 bis 8 Tagen.', code: 'FG89', url: 'https://buy.stripe.com/8x2aEQ9WueEUgmN92A6Vq03' }
     };
-    var cur = null, w = od.querySelector('#chk-waiver'), bk = od.querySelector('#chk-book'), pay = od.querySelector('#order-pay'), wa = od.querySelector('#order-wa'), ml = od.querySelector('#order-mail'), nm = od.querySelector('#order-name'), kn = od.querySelector('#order-know'), hint = od.querySelector('#order-hint');
-    function sname() { return nm ? nm.value.trim() : ''; }
-    function sref(v) { var t = v.replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/Ä/g, 'Ae').replace(/Ö/g, 'Oe').replace(/Ü/g, 'Ue').replace(/ß/g, 'ss'); try { t = t.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) {} t = t.replace(/[^A-Za-z0-9_-]+/g, '-').replace(/^-+|-+$/g, ''); return t ? t.slice(0, 40) : 'kyrillisch'; }
+    var q = function (s) { return od.querySelector(s); };
+    var cur = null, ono = '', lastPre = '', w = q('#chk-waiver'), bk = q('#chk-book'), pay = q('#order-pay'), wa = q('#order-wa'), ml = q('#order-mail'), nm = q('#order-name'), em = q('#order-email'), ph = q('#order-phone'), kn = q('#order-know'), hint = q('#order-hint'), oform = q('#order-form'), done = q('#order-done');
+    var val = function (x) { return x ? x.value.trim() : ''; };
+    var sname = function () { return val(nm).replace(/\s+/g, ' '); };
+    var mailOk = function () { return !em || /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val(em)); };
+    var CYR = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюяіїєґ', LAT = ['a','b','w','g','d','e','jo','sch','s','i','i','k','l','m','n','o','p','r','s','t','u','f','ch','z','tsch','sch','schtsch','','y','','e','ju','ja','i','ji','je','g'];
+    function translit(v) {
+      return v.replace(/[Ѐ-ӿ]/g, function (c) {
+        var l = c.toLowerCase(), i = CYR.indexOf(l); if (i < 0) return '';
+        var t = LAT[i]; return c !== l && t ? t.charAt(0).toUpperCase() + t.slice(1) : t;
+      });
+    }
+    function sref(v) {
+      var t = translit(v).replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/Ä/g, 'Ae').replace(/Ö/g, 'Oe').replace(/Ü/g, 'Ue').replace(/ß/g, 'ss');
+      try { t = t.normalize('NFD').replace(/[̀-ͯ]/g, ''); } catch (e) {}
+      t = t.replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 100).replace(/-+$/, '');
+      return t || 'name-unbekannt';
+    }
+    function newNo() {
+      var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; }, A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', r = '', x = null;
+      try { x = new Uint8Array(4); crypto.getRandomValues(x); } catch (e) { x = null; }
+      for (var i = 0; i < 4; i++) r += A.charAt((x ? x[i] : Math.floor(Math.random() * 256)) % A.length);
+      return 'WW-' + String(d.getFullYear()).slice(2) + p(d.getMonth() + 1) + p(d.getDate()) + '-' + r;
+    }
     var WAIVE = 'Ich verlange ausdrücklich, dass mit der Erstellung schon vor Ablauf der Widerrufsfrist begonnen wird. Mir ist bekannt, dass mein Widerrufsrecht mit Beginn der Ausführung erlischt.';
+    function ref() { return [ono, cur.code, sref(sname()), 'verzicht-ja', 'fotobuch-' + (bk && bk.checked ? 'ja' : 'nein')].join('_').slice(0, 200); }
     function msg() {
-      return 'Hallo Edwin, ich möchte ' + (cur.art || 'den') + ' ' + cur.name + ' (' + cur.price + ') bestellen und per Überweisung oder PayPal bezahlen.' +
-        (bk && bk.checked ? ' Zusätzlich hätte ich gern das gedruckte Fotobuch (29 €).' : '') + ' ' + WAIVE + ' Nachname der Familie: ' + sname() + '.' + (kn && kn.value.trim() ? ' Das weiß ich schon: ' + kn.value.trim() : '');
+      var L = ['Bestellnummer: ' + ono, 'Nachname der Familie: ' + sname(), 'E-Mail: ' + val(em)];
+      if (val(ph)) L.push('Telefon: ' + val(ph));
+      if (val(kn)) L.push('Das weiß ich schon: ' + val(kn));
+      return 'Hallo Edwin, ich möchte ' + cur.art + ' ' + cur.name + ' (' + cur.price + ') bestellen und per Überweisung oder PayPal bezahlen.' +
+        (bk && bk.checked ? ' Zusätzlich hätte ich gern das gedruckte Fotobuch (29 €).' : '') + '\n\n' + L.join('\n') + '\n\n' + WAIVE;
     }
     function setA(a, ok, href) { if (!a) return; a.setAttribute('aria-disabled', ok ? 'false' : 'true'); if (ok) a.setAttribute('href', href); else a.removeAttribute('href'); }
+    function missing() { return !sname() ? 'name' : !mailOk() ? 'email' : !w.checked ? 'waiver' : ''; }
+    var HINT = {
+      name: 'Bitte oben den Nachnamen der Familie eintragen, dann wird der Bestellknopf frei.',
+      email: 'Bitte Ihre E-Mail eintragen, damit wir uns bei Ihnen melden können. Dann wird der Bestellknopf frei.',
+      waiver: 'Bitte den Bearbeitungsbeginn bestätigen (Kästchen oben), dann wird der Bestellknopf frei.'
+    };
     function upd() {
-      var ok = !!(cur && w.checked && sname());
-      if (hint) { hint.classList.toggle('off', ok); hint.textContent = !cur ? '' : !sname() && !w.checked ? 'Bitte oben den Nachnamen eintragen und den Bearbeitungsbeginn bestätigen, dann wird der Bestellknopf frei.' : !sname() ? 'Bitte oben den Nachnamen der Familie eintragen, dann wird der Bestellknopf frei.' : 'Bitte den Bearbeitungsbeginn bestätigen (Kästchen oben), dann wird der Bestellknopf frei.'; }
-      if (!ok) { setA(pay, false); setA(wa, false); setA(ml, false); return; }
-      var ts = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15);
-      setA(pay, true, cur.url + '?locale=de&client_reference_id=' + encodeURIComponent([cur.code, sref(sname()), 'verzicht-ja', 'fotobuch-' + (bk && bk.checked ? 'ja' : 'nein'), ts].join('_')));
-      setA(wa, true, 'https://wa.me/491735412807?text=' + encodeURIComponent(msg()));
-      setA(ml, true, 'mailto:edwin@wolgawurzeln.de?subject=' + encodeURIComponent('Bestellung ' + cur.name) + '&body=' + encodeURIComponent(msg()));
+      var m = cur ? missing() : 'name';
+      if (hint) { hint.classList.toggle('off', !m); hint.textContent = m ? HINT[m] : ''; }
+      if (m) { setA(pay, false); setA(wa, false); setA(ml, false); return; }
+      setA(pay, true, cur.url + '?locale=de&client_reference_id=' + encodeURIComponent(ref()) + (val(em) ? '&prefilled_email=' + encodeURIComponent(val(em)) : ''));
+      setA(wa, true, 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg()));
+      setA(ml, true, 'mailto:edwin@wolgawurzeln.de?subject=' + encodeURIComponent('Bestellung ' + ono + ': ' + cur.name) + '&body=' + encodeURIComponent(msg()));
+    }
+    function flag(el) { var f = el && el.closest('.dlg-f'); if (!f) return; el.focus(); f.classList.add('miss'); setTimeout(function () { f.classList.remove('miss'); }, 1400); }
+    function send(via) {
+      if (!W3F_KEY || !window.fetch || !window.FormData) return;
+      var fd = new FormData(), add = function (k, v) { fd.append(k, v); };
+      add('access_key', W3F_KEY);
+      add('subject', 'Bestellung ' + ono + ': ' + cur.name + ', ' + sname());
+      add('from_name', 'Wolgawurzeln Bestellung');
+      add('email', val(em));
+      add('Bestellnummer', ono);
+      add('Paket', cur.name + ' (' + cur.price + ')');
+      add('Zahlweg', via);
+      add('Nachname der Familie', sname());
+      add('Telefon', val(ph) || 'keine Angabe');
+      add('Was bekannt ist', val(kn) || 'keine Angabe');
+      add('Fotobuch (29 €)', bk && bk.checked ? 'ja' : 'nein');
+      add('Vorzeitiger Beginn', 'bestätigt: ' + WAIVE);
+      add('Stripe Referenz', ref());
+      add('Seite', location.href.split('#')[0]);
+      add('Zeit', new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin' }));
+      try { fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd, headers: { Accept: 'application/json' } }).catch(function () {}); } catch (e) {}
+    }
+    function remember() { try { localStorage.setItem('ww_order', JSON.stringify({ no: ono, p: cur.key, book: !!(bk && bk.checked), t: Date.now() })); } catch (e) {} }
+    var DONE = {
+      pay: ['Die gesicherte Bezahlseite ist in einem neuen Fenster geöffnet. Nach der Zahlung sehen Sie unsere Bestätigungsseite.', 'Bezahlseite erneut öffnen'],
+      wa: ['WhatsApp ist mit Ihrer Bestellung geöffnet. Bitte senden Sie die Nachricht dort ab, Sie erhalten dann die Zahlungsdaten.', 'WhatsApp erneut öffnen'],
+      mail: ['Ihr Mailprogramm ist mit Ihrer Bestellung geöffnet. Bitte senden Sie die Mail ab, Sie erhalten dann die Zahlungsdaten.', 'Mail erneut öffnen']
+    };
+    function showDone(kind, a) {
+      if (!done || !oform) { od.close(); return; }
+      q('#order-no').textContent = ono;
+      q('#order-done-t').textContent = DONE[kind][0];
+      var ag = q('#order-again');
+      ag.textContent = DONE[kind][1]; ag.setAttribute('href', a.getAttribute('href'));
+      if (kind === 'mail') ag.removeAttribute('target'); else ag.setAttribute('target', '_blank');
+      oform.hidden = true; done.hidden = false; od.scrollTop = 0;
     }
     document.querySelectorAll('[data-order]').forEach(function (b) {
       b.addEventListener('click', function (e) {
         e.preventDefault(); cur = P[b.getAttribute('data-order')]; if (!cur) return;
-        od.querySelector('#order-title').textContent = 'Auftrag: ' + cur.name + ', ' + cur.price;
-        od.querySelector('#order-time').textContent = cur.time;
+        ono = newNo();
+        q('#order-title').textContent = 'Auftrag: ' + cur.name + ', ' + cur.price;
+        q('#order-time').textContent = cur.time;
         w.checked = false; if (bk) bk.checked = b.hasAttribute('data-book');
-        if (nm && !nm.value) { var pre = b.getAttribute('data-name') || (document.getElementById('fz-name') || {}).value || ''; nm.value = pre.trim(); }
-        upd(); od.showModal(); if (nm && !nm.value) setTimeout(function () { nm.focus(); }, 60);
+        var fz = window.__fz && window.__fz.st ? window.__fz.st().name : '';
+        var pre = (b.getAttribute('data-name') || fz || (document.getElementById('fz-name') || {}).value || '').replace(/\s+/g, ' ').trim();
+        if (nm && pre && pre !== lastPre) { nm.value = pre; lastPre = pre; }
+        if (oform) oform.hidden = false; if (done) done.hidden = true;
+        upd(); od.showModal(); od.scrollTop = 0;
+        if (nm && !sname()) setTimeout(function () { nm.focus(); }, 60);
       });
     });
     [w, bk].forEach(function (x) { if (x) x.addEventListener('change', upd); });
-    [nm, kn].forEach(function (x) { if (x) x.addEventListener('input', upd); });
-    [pay, wa, ml].forEach(function (a) {
-      if (!a) return;
+    [nm, em, ph, kn].forEach(function (x) { if (x) x.addEventListener('input', upd); });
+    [[pay, 'pay', 'Karte, Klarna oder andere Verfahren über Stripe (Zahlung gestartet)'], [wa, 'wa', 'Überweisung oder PayPal, Bestellung per WhatsApp'], [ml, 'mail', 'Überweisung oder PayPal, Bestellung per Mail']].forEach(function (x) {
+      var a = x[0]; if (!a) return;
       a.addEventListener('click', function (e) {
         if (a.getAttribute('aria-disabled') === 'true') {
           e.preventDefault();
-          if (nm && !sname()) { nm.focus(); nm.closest('.dlg-f').classList.add('miss'); setTimeout(function () { nm.closest('.dlg-f').classList.remove('miss'); }, 1200); return; }
+          var m = missing();
+          if (m === 'name') return flag(nm);
+          if (m === 'email') return flag(em);
           w.focus(); w.closest('.check').classList.add('nudge'); setTimeout(function () { w.closest('.check').classList.remove('nudge'); }, 900); return;
         }
-        upd(); setTimeout(function () { od.close(); }, 400);
+        upd(); send(x[2]); remember();
+        setTimeout(function () { showDone(x[1], a); }, 250);
       });
     });
   }
