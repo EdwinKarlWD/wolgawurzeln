@@ -1682,3 +1682,25 @@ body.bf-fade .bf,body.bf-fade .hdr .brand{transition:opacity .4s var(--ease)}
 .fz-open .fz-vh::before{background-color:#8C6A2F;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.2 9.2a2.9 2.9 0 1 1 4 2.7c-.8.4-1.2 1-1.2 1.8v.6'/%3E%3Cpath d='M12 18.2h.01'/%3E%3C/svg%3E")}
 .fz-no .fz-vh::before{background-color:var(--seal);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M12 6.5v7.5'/%3E%3Cpath d='M12 18h.01'/%3E%3C/svg%3E")}
 .fz-no .fz-again{margin-top:2px}
+
+/* Bestelldialog 10/2026: Kontaktfelder, Bezahlleiste, Bestätigung */
+.dlg-2{display:grid;gap:12px}
+@media (min-width:520px){.dlg-2{grid-template-columns:1.2fr 1fr}}
+.dlg-f small{font-weight:400;font-size:13px;color:var(--ink-3)}
+.dlg-f.miss input,.dlg-f.miss textarea{border-color:var(--seal);box-shadow:0 0 0 3px rgba(158,42,43,.15)}
+.dlg-paybar{position:sticky;bottom:0;z-index:2;margin:18px -28px 0;padding:12px 28px 14px;background:var(--card);box-shadow:0 -14px 18px -16px rgba(10,24,49,.4)}
+.dlg-paybar .dlg-pay{margin-top:0}
+.dlg-paybar .dlg-hint{margin-top:8px}
+.dlg-done{padding-top:4px}
+.dlg-done-k{margin-top:16px;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.dlg-done-no{margin-top:4px;font-size:30px;font-weight:700;letter-spacing:.04em;color:var(--navy)}
+.dlg-done-t{margin-top:14px;font-size:16.5px;line-height:1.5;color:var(--ink)}
+.dlg-done-s{margin-top:10px;font-size:15px;line-height:1.5;color:var(--ink-2)}
+.dlg-done-s a{color:var(--navy);font-weight:600}
+.dk-no{margin-top:14px;font-size:17px;color:var(--on-2)}
+.dk-no b{margin-left:8px;font-size:24px;letter-spacing:.04em;color:#fff}
+.lg a.btn,.lg a.btn:hover{color:#fff}
+.lg ol.dk-steps{list-style:none;margin-left:0;padding-left:0;display:grid;gap:14px;counter-reset:dk}
+.lg ol.dk-steps li{position:relative;padding-left:40px;counter-increment:dk}
+.lg ol.dk-steps li::before{content:counter(dk);position:absolute;left:0;top:.1em;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:14px;font-weight:700}
+.lg ol.dk-steps li strong{display:block}
