@@ -193,7 +193,26 @@
   };
   var KNOW = { jahre: 'Geburtsjahre der Großeltern', ort: 'Geburtsort oder Dorf', doku: 'Alte Dokumente oder Fotos' };
 
-  var st = { name: '', reg: '', want: '', know: {} };
+  var st = { name: '', names: [], reg: '', want: '', know: {} };
+  /* Mehrere Nachnamen: einzeln einordnen. Vornamen, Vatersnamen und Namenszusätze fallen weg. */
+  var FIRST = {}; ('anna maria marie olga irina natalia natalja natalie elena helena jelena tatjana tatiana svetlana swetlana ludmila ljudmila galina valentina lidia lydia nina ekaterina katharina katharine katarina katja lena emma amalia elisabeth elizabeth margarete margaretha frieda erna lilli lilia larissa alla wera vera sofia sophie julia oksana inna tamara raisa rosa luise louise alexandra '
+    + 'alexander andreas andrej andrei viktor victor wladimir vladimir sergej sergei sergey nikolai nikolaj peter pjotr johann johannes heinrich jakob jacob david eduard waldemar woldemar alexej aleksej juri jurij michael michail dmitri dmitrij igor oleg artur arthur edwin paul georg friedrich konrad conrad eugen jewgeni evgeni ivan iwan iwanowitsch robert rudolf otto emil wilhelm karl carl franz walter valeri valerij anatoli gennadi leonid boris pavel pawel stepan konstantin roman denis maxim maksim ilja ilya anton '
+    + 'анна мария ольга ирина наталья наталия елена татьяна светлана людмила галина валентина лидия нина екатерина эмма амалия елизавета лариса алла вера софия юлия оксана инна тамара раиса роза '
+    + 'александр андрей виктор владимир сергей николай пётр петр иван яков давид эдуард вальдемар алексей юрий михаил дмитрий игорь олег артур евгений генрих фридрих иоганн роберт рудольф отто эмиль вильгельм карл франц валерий анатолий геннадий леонид борис павел степан константин роман денис максим илья антон').split(' ').forEach(function (k) { FIRST[k] = 1; });
+  function splitNames(v) {
+    var parts = v.split(/[\s,;\/&+]+/).filter(function (p) { return p && !/^(und|and|и|oder|или|von|van|vom|de|der|zu)$/i.test(p); });
+    parts = parts.filter(function (p) { return !/(ович|евич|овна|евна|ична|owitsch|ewitsch|owna|ewna)$/i.test(p) || parts.length === 1; });
+    var fam = parts.filter(function (p) { return !FIRST[p.toLowerCase().replace(/ё/g, 'е')]; });
+    if (!fam.length) fam = parts.slice(-1);
+    return fam.length ? uniq(fam) : [v];
+  }
+  function analyseAll() {
+    var all = (st.names.length ? st.names : [st.name]).map(analyse), good = all.filter(function (x) { return x.kind !== 'bad'; });
+    var a = good.length ? good[0] : all[0];
+    a.all = all;
+    if (!good.length) a.kind = 'bad';
+    return a;
+  }
 
   /* Interne Einstufung für die Anfrage: 1 sehr gute Voraussetzungen, 2 gut, 3 offen */
   function stufe(a) {
@@ -215,7 +234,7 @@
   function knownList() { return Object.keys(KNOW).filter(function (k) { return st.know[k]; }); }
   function leadText(a, intro) {
     var code = (st.want ? st.want.toUpperCase() : 'NP') + stufe(a);
-    var L = ['Hallo Edwin, ' + intro + ' (Namensprüfung ' + code + ').', '', 'Nachname: ' + st.name];
+    var L = ['Hallo Edwin, ' + intro + ' (Namensprüfung ' + code + ').', '', (st.names.length > 1 ? 'Nachnamen: ' : 'Nachname: ') + st.name];
     if (st.reg) L.push('Region: ' + REG[st.reg].t);
     if (st.want) L.push('Interesse: ' + WANT[st.want].n);
     var k = knownList();
@@ -334,8 +353,21 @@
     return null;
   }
 
+  function oneLine(x) {
+    var n = '<b>' + esc(x.name) + '</b>: ';
+    if (x.kind === 'bad') return n + 'so nicht zuzuordnen, bitte Schreibweise prüfen';
+    if (x.russian || x.kind === 'ru') return n + 'russische oder ukrainische Namensform, die deutsche Linie liegt dann oft bei Mutter oder Großmutter';
+    if (x.kind === 'unklar') return n + 'keine typisch deutsche Namensform, vorab kurz prüfen';
+    if (x.cyr) return n + 'wahrscheinlich ' + x.forms.map(esc).join(', ');
+    return n + 'in russischen Akten zum Beispiel als <span lang="ru">' + x.forms.map(esc).join(' oder ') + '</span>' + (x.menno ? ', verbreitet unter Russlandmennoniten' : '');
+  }
   function factsHTML(a) {
     var facts = [];
+    if (a.all && a.all.length > 1) {
+      facts.push('<li><span class="fz-k">' + a.all.length + ' Nachnamen</span>' + a.all.map(oneLine).join('<br>') + '</li>');
+      facts.push('<li><span class="fz-k">Passend dazu</span>' + (a.all.length <= 4 ? 'Die Familiengeschichte untersucht bis zu vier Linien in einem Bericht, mit Karte und Zeitleiste.' : 'Für mehr als vier Namen stellen wir eine individuelle Recherche zusammen, den Rahmen erfahren Sie vorher.') + '</li>');
+      return facts.join('');
+    }
     if (a.russian || (a.kind === 'unklar' && !a.cyr)) { /* keine Umschrift anzeigen */ }
     else if (a.cyr) facts.push('<li><span class="fz-k">Deutsche Schreibweise</span>Wahrscheinlich <b>' + a.forms.map(esc).join('</b>, <b>') + '</b>. In russischen Akten wurden deutsche Namen nach Gehör geschrieben, deshalb gibt es oft mehrere Formen.</li>');
     else facts.push('<li><span class="fz-k">In russischen Akten</span>Zum Beispiel als <b lang="ru">' + a.forms.map(esc).join('</b> oder <b lang="ru">') + '</b>. Unter diesen Schreibweisen wird in Archiven in Russland gesucht. <a href="wissen/namen-in-russischen-akten.html">Mehr zu Namen in russischen Akten</a></li>');
@@ -373,7 +405,7 @@
 
   function render() {
     var prevBox = out.querySelector('.fz-res'), keep = prevBox ? prevBox.scrollTop : 0;
-    var a = analyse(st.name);
+    var a = analyseAll();
     if (a.kind === 'bad') {
       out.innerHTML =
         '<div class="fz-res">' +
@@ -412,7 +444,7 @@
     e.preventDefault();
     var v = (inp.value || '').replace(/\s+/g, ' ').trim();
     if (v.length < 2) { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); inp.focus(); return; }
-    st.name = v; st.want = ''; st.know = {};
+    st.names = splitNames(v); st.name = st.names.join(', '); st.want = st.names.length > 4 ? 'ez' : st.names.length > 1 ? 'fg' : ''; st.know = {};
     inp.blur();
     var done = false, go = function () { if (!done) { done = true; render(); } };
     loadNM().then(go);
@@ -443,7 +475,7 @@
     }
   });
   var cl = box.querySelector('.fz-close');
-  if (cl) cl.addEventListener('click', function () { out.innerHTML = ''; box.classList.remove('has-res'); st = { name: '', reg: '', want: '', know: {} }; w.dispatchEvent(new Event('fz:change')); });
+  if (cl) cl.addEventListener('click', function () { out.innerHTML = ''; box.classList.remove('has-res'); st = { name: '', names: [], reg: '', want: '', know: {} }; w.dispatchEvent(new Event('fz:change')); });
 
   /* für Tests */
   w.__fz = { deToRu: deToRu, ruToDe: ruToDe, analyse: analyse, stufe: stufe, nameKind: nameKind, loadNM: loadNM, st: function () { return st; } };
