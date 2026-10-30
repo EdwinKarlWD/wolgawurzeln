@@ -72,7 +72,7 @@
 <li><strong>Recherche.</strong> Danach beginnt die Arbeit an Ihrem Bericht. <span id="dk-time">Der Herkunftsbericht kommt in 3 bis 5 Tagen, die Familiengeschichte in 5 bis 8 Tagen als PDF.</span></li>
 <li><strong>Lieferung mit Rechnung.</strong> Sie erhalten den Bericht als PDF per E-Mail, die Rechnung kommt zusammen mit der Lieferung.</li>
 </ol>
-<p id="dk-book" hidden>Das gedruckte Fotobuch bezahlen Sie gesondert, nachdem Sie den Bericht als PDF gesehen haben.</p>
+<p id="dk-book" hidden>Ihr gedrucktes Fotobuch ist mitbezahlt. Es wird gedruckt, sobald Ihr Bericht fertig ist, und an die angegebene Adresse geschickt.</p>
 <h2>Noch etwas ergänzen?</h2>
 <p>Ihnen fällt noch ein Dorf, ein Vorname oder ein Geburtsjahr ein? Schreiben Sie es gern an <a href="mailto:edwin@wolgawurzeln.de">edwin@wolgawurzeln.de</a> oder per <a href="https://wa.me/491735412807" target="_blank" rel="noopener">WhatsApp</a>, am besten mit Ihrer Bestellnummer. Jedes Detail hilft bei der Recherche.</p>
 <p><a class="btn" href="index.html">Zur Startseite</a></p>
@@ -90,7 +90,7 @@
   var k = p || (o && o.p);
   if (T[k]) document.getElementById('dk-time').textContent = T[k];
   if (o && o.no) { var n = document.getElementById('dk-no'); n.querySelector('b').textContent = o.no; n.hidden = false; }
-  if (o && o.book) document.getElementById('dk-book').hidden = false;
+  if ((o && o.book) || /[?&]fb=1/.test(location.search)) document.getElementById('dk-book').hidden = false;
 })();
 </script>
 <footer class="ftr">
