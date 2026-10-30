@@ -1704,3 +1704,8 @@ body.bf-fade .bf,body.bf-fade .hdr .brand{transition:opacity .4s var(--ease)}
 .lg ol.dk-steps li{position:relative;padding-left:40px;counter-increment:dk}
 .lg ol.dk-steps li::before{content:counter(dk);position:absolute;left:0;top:.1em;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:14px;font-weight:700}
 .lg ol.dk-steps li strong{display:block}
+
+/* Archivanfrage als fünftes Paket (30.10.2026) */
+@media (min-width:1181px){.pick-opts{grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}}
+@media (max-width:1180px) and (min-width:881px){.pick-opts{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:880px){.pick-opts button:last-child:nth-child(odd){grid-column:1/-1}}
