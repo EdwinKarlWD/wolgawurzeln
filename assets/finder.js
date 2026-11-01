@@ -206,6 +206,16 @@
     if (!fam.length) fam = parts.slice(-1);
     return fam.length ? uniq(fam) : [v];
   }
+  /* Anonyme Statistik der Namensprüfung: nur die Eingaben, keine IP, keine Cookies */
+  var NP_API = 'https://wolgawurzeln-api.edwin3222.workers.dev/np', SID = Math.random().toString(36).slice(2, 10);
+  function npLog(art) {
+    try {
+      if (!st.name || !/wolgawurzeln\.de$/.test(location.hostname)) return;
+      var body = JSON.stringify({ art: art, name: st.name, reg: st.reg, want: st.want, sid: SID, page: location.pathname });
+      if (navigator.sendBeacon) navigator.sendBeacon(NP_API, new Blob([body], { type: 'text/plain' }));
+      else fetch(NP_API, { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'text/plain' } });
+    } catch (e) {}
+  }
   function analyseAll() {
     var all = (st.names.length ? st.names : [st.name]).map(analyse), good = all.filter(function (x) { return x.kind !== 'bad'; });
     var a = good.length ? good[0] : all[0];
@@ -445,20 +455,24 @@
     var v = (inp.value || '').replace(/\s+/g, ' ').trim();
     if (v.length < 2) { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); inp.focus(); return; }
     st.names = splitNames(v); st.name = st.names.join(', '); st.want = st.names.length > 4 ? 'ez' : st.names.length > 1 ? 'fg' : ''; st.know = {};
+    npLog('pruefung');
     inp.blur();
     var done = false, go = function () { if (!done) { done = true; render(); } };
     loadNM().then(go);
     setTimeout(go, 2500);
   });
   out.addEventListener('click', function (e) {
+    var lk = e.target.closest('a[href^="https://wa.me"], a[href^="mailto:"]');
+    if (lk) npLog(/^mailto/.test(lk.getAttribute('href')) ? 'mail' : 'whatsapp');
     var b = e.target.closest('[data-reg]');
-    if (b) { st.reg = b.getAttribute('data-reg'); render(); showRec('.fz-q-w'); return; }
+    if (b) { st.reg = b.getAttribute('data-reg'); npLog('region'); render(); showRec('.fz-q-w'); return; }
     var wb = e.target.closest('[data-want]');
-    if (wb) { var k = wb.getAttribute('data-want'); st.want = st.want === k ? '' : k; render(); showRec(); return; }
+    if (wb) { var k = wb.getAttribute('data-want'); st.want = st.want === k ? '' : k; if (st.want) npLog('wunsch'); render(); showRec(); return; }
     var kb = e.target.closest('[data-know]');
     if (kb) { var q = kb.getAttribute('data-know'); st.know[q] = !st.know[q]; render(); return; }
     var ob = e.target.closest('[data-fz-order]');
     if (ob) {
+      npLog('bestellen');
       var trg = d.querySelector('.pk-act [data-order="' + ob.getAttribute('data-fz-order') + '"]'), kn = d.getElementById('order-know'), nm = d.getElementById('order-name');
       if (nm) nm.value = st.name;
       if (kn && !kn.value.trim()) kn.value = knowSummary();
