@@ -158,6 +158,28 @@
       });
     });
     [w, bk].forEach(function (x) { if (x) x.addEventListener('change', upd); });
+    /* Persönlicher Bestelllink aus der Ersten Einschätzung: ?bestellen=hb&b=<Schlüssel> öffnet den Auftrag mit Name, Mail und Vorgang */
+    (function () {
+      var u; try { u = new URLSearchParams(location.search); } catch (e) { return; }
+      var pk = u.get('bestellen'), tk = u.get('b');
+      if (!pk || !P[pk]) return;
+      try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {}
+      var start = function (dt) {
+        var b = document.querySelector('.pk-act [data-order="' + pk + '"]'); if (!b) return;
+        b.click();
+        if (!dt || !dt.np) return;
+        if (nm && dt.name) { nm.value = dt.name; lastPre = dt.name; }
+        if (em && dt.email) em.value = dt.email;
+        if (kn) kn.value = ['Vorgang ' + dt.np, dt.notiz].filter(Boolean).join('. ');
+        ono = dt.np.replace(/\s+/g, '');
+        upd();
+        if (w) setTimeout(function () { w.focus(); }, 80);
+      };
+      if (!tk || !window.fetch) { start(null); return; }
+      fetch('https://wolgawurzeln-api.edwin3222.workers.dev/bestellung?b=' + encodeURIComponent(tk))
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(start, function () { start(null); });
+    })();
     [nm, em, ph, kn].forEach(function (x) { if (x) x.addEventListener('input', upd); });
     [[pay, 'pay', 'Karte, Klarna oder andere Verfahren über Stripe (Zahlung gestartet)'], [wa, 'wa', 'Überweisung oder PayPal, Bestellung per WhatsApp'], [ml, 'mail', 'Überweisung oder PayPal, Bestellung per Mail']].forEach(function (x) {
       var a = x[0]; if (!a) return;
