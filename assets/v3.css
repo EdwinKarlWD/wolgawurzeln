@@ -1709,3 +1709,24 @@ body.bf-fade .bf,body.bf-fade .hdr .brand{transition:opacity .4s var(--ease)}
 @media (min-width:1181px){.pick-opts{grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}}
 @media (max-width:1180px) and (min-width:881px){.pick-opts{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:880px){.pick-opts button:last-child:nth-child(odd){grid-column:1/-1}}
+
+
+/* Erste Einschätzung als PDF per Mail (11.11.2026) */
+.fz-pdf{display:grid;grid-template-columns:74px 1fr;gap:14px;margin-top:14px;padding:14px 14px 12px;border:1px solid var(--line-2);border-left:3px solid var(--navy);background:#FFFDF9}
+.fz-pdf-blatt{position:relative;width:74px;height:104px;background:#F6F2EB;border:1px solid var(--line-2);box-shadow:0 1px 0 rgba(15,35,66,.08);padding:9px 7px;overflow:hidden}
+.fz-pdf-blatt b{display:block;font:600 9px/1.15 var(--serif);color:var(--navy);margin:5px 0 5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fz-pdf-blatt i{display:block}
+.fz-pdf-blatt .k{width:14px;height:3px;background:var(--navy)}
+.fz-pdf-blatt .h{height:26px;background:var(--navy)}
+.fz-pdf-blatt .l{height:3px;margin-top:5px;background:var(--line-2)}
+.fz-pdf-blatt .l.s{width:60%;background:var(--seal)}
+.fz-pdf .fz-rk{color:var(--navy)}
+.fz-pdf-f{display:grid;gap:8px;margin-top:10px}
+.fz-pdf-f input[type=email],.fz-pdf-f textarea{width:100%;min-height:48px;padding:11px 13px;border:1.5px solid var(--line-2);border-radius:0;background:var(--paper);font:400 16px/1.4 var(--sans);color:var(--ink)}
+.fz-pdf-f textarea{min-height:0;resize:vertical}
+.fz-pdf-f .btn{width:100%;min-height:48px;border-radius:0;justify-content:center}
+.fz-pdf-f .btn[disabled]{opacity:.7;cursor:progress}
+.fz-pdf-err{font-size:14px;color:var(--seal-2)}
+.fz-hp{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;opacity:0}
+.fz-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:520px){.fz-pdf{grid-template-columns:1fr}.fz-pdf-blatt{display:none}}
