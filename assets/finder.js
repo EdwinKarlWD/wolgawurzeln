@@ -1,5 +1,6 @@
 /* Wolgawurzeln: Namensprüfung auf der Titelseite.
-   Läuft vollständig im Browser, es wird nichts gespeichert oder gesendet.
+   Die Einschätzung läuft im Browser. Gesendet wird nur die anonyme Statistik (npLog, keine IP, keine Cookies)
+   und, wenn jemand die Erste Einschätzung als PDF anfordert, die Anfrage mit Mailadresse an den Worker.
    Die Anfrage per WhatsApp oder Mail trägt eine Kennung (z. B. HB1): Paket plus Stufe 1 sehr gute, 2 gute, 3 offene Voraussetzungen. */
 (function () {
   'use strict';
@@ -193,7 +194,7 @@
   };
   var KNOW = { jahre: 'Geburtsjahre der Großeltern', ort: 'Geburtsort oder Dorf', doku: 'Alte Dokumente oder Fotos' };
 
-  var st = { name: '', names: [], reg: '', want: '', know: {} };
+  var st = { name: '', names: [], reg: '', want: '', know: {}, pdf: {} };
   /* Mehrere Nachnamen: einzeln einordnen. Vornamen, Vatersnamen und Namenszusätze fallen weg. */
   var FIRST = {}; ('anna maria marie olga irina natalia natalja natalie elena helena jelena tatjana tatiana svetlana swetlana ludmila ljudmila galina valentina lidia lydia nina ekaterina katharina katharine katarina katja lena emma amalia elisabeth elizabeth margarete margaretha frieda erna lilli lilia larissa alla wera vera sofia sophie julia oksana inna tamara raisa rosa luise louise alexandra '
     + 'alexander andreas andrej andrei viktor victor wladimir vladimir sergej sergei sergey nikolai nikolaj peter pjotr johann johannes heinrich jakob jacob david eduard waldemar woldemar alexej aleksej juri jurij michael michail dmitri dmitrij igor oleg artur arthur edwin paul georg friedrich konrad conrad eugen jewgeni evgeni ivan iwan iwanowitsch robert rudolf otto emil wilhelm karl carl franz walter valeri valerij anatoli gennadi leonid boris pavel pawel stepan konstantin roman denis maxim maksim ilja ilya anton '
@@ -216,6 +217,80 @@
       else fetch(NP_API, { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'text/plain' } });
     } catch (e) {}
   }
+  /* Erste Einschätzung als PDF per Mail. Ohne Turnstile Schlüssel bleibt der Block ausgeblendet. */
+  var EZ_API = 'https://wolgawurzeln-api.edwin3222.workers.dev/einschaetzung', TS_KEY = '';
+  function quelle() {
+    try {
+      var u = new URLSearchParams(location.search), q = u.get('utm_source') || u.get('quelle');
+      if (q) return q.slice(0, 40);
+      var r = d.referrer ? new URL(d.referrer).hostname.replace(/^www\./, '') : '';
+      return r && !/wolgawurzeln\.de$/.test(r) ? r.slice(0, 40) : '';
+    } catch (e) { return ''; }
+  }
+  function pdfNamen(a) {
+    return (a.all || [a]).filter(function (x) { return x.kind !== 'bad'; }).slice(0, 4).map(function (x) {
+      return { name: x.name, art: (x.russian || x.kind === 'ru') ? 'ru' : (x.kind === 'unklar' ? 'unklar' : 'de'), dict: !!x.dict, formen: (x.russian || x.kind === 'ru') ? [] : (x.forms || []).slice(0, 2) };
+    });
+  }
+  function pdfHTML(a) {
+    if (!TS_KEY || !st.reg || a.kind === 'bad') return '';
+    var p = st.pdf, nm = esc((a.all && a.all.length > 1 ? a.all.map(function (x) { return x.name; }).join(', ') : a.name) || st.name);
+    var blatt = '<div class="fz-pdf-blatt" aria-hidden="true"><i class="k"></i><b>' + nm + '</b><i class="h"></i><i class="l"></i><i class="l"></i><i class="l s"></i></div>';
+    if (p.done) return '<div class="fz-pdf">' + blatt + '<div class="fz-pdf-x"><p class="fz-rk">' + (p.done === 'gesendet' ? 'Ist unterwegs' : 'Angekommen') + '</p><p class="fz-rn">Ihre Erste Einschätzung</p>' +
+      '<p class="fz-rd">' + (p.done === 'gesendet' ? 'Die Einschätzung ist an <b>' + esc(p.mail) + '</b> unterwegs. Falls sie in ein paar Minuten nicht da ist, schauen Sie bitte im Spamordner nach.' : 'Ihre Anfrage ist bei uns angekommen. Die Einschätzung kommt in Kürze per Mail an <b>' + esc(p.mail) + '</b>.') + '</p>' +
+      '<p class="fz-fine">Vorgang ' + esc(p.np || '') + '</p></div></div>';
+    return '<div class="fz-pdf">' + blatt + '<div class="fz-pdf-x"><p class="fz-rk">Kostenlos per Mail</p><p class="fz-rn">Ihre Erste Einschätzung als PDF</p>' +
+      '<p class="fz-rd">Mit Karte, den Schreibweisen in russischen Akten und den Quellen für Ihre Region. Danach meldet sich Edwin Karl persönlich bei Ihnen.</p>' +
+      '<form class="fz-pdf-f" novalidate><label class="fz-sr" for="fz-pm">Ihre Mailadresse</label><input id="fz-pm" type="email" name="mail" placeholder="Ihre Mailadresse" autocomplete="email" inputmode="email" value="' + esc(p.mail || '') + '">' +
+      '<label class="fz-sr" for="fz-pn">Was wissen Sie schon über die Familie?</label><textarea id="fz-pn" name="notiz" rows="2" maxlength="600" placeholder="Was wissen Sie schon über die Familie? Freiwillig">' + esc(p.notiz || '') + '</textarea>' +
+      '<input class="fz-hp" type="text" name="firma" tabindex="-1" autocomplete="off" aria-hidden="true">' +
+      (p.err ? '<p class="fz-pdf-err" role="alert">' + p.err + '</p>' : '') +
+      '<button class="btn btn-seal" type="submit"' + (p.busy ? ' disabled' : '') + '>' + (p.busy ? 'Wird erstellt …' : 'Kostenlos zusenden') + '</button>' +
+      '<p class="fz-fine">Wir nutzen Ihre Angaben nur für diese Einschätzung und eine persönliche Antwort. Keine Werbemails. <a href="datenschutz.html#ersteinschaetzung">Datenschutz</a></p></form></div></div>';
+  }
+  var tsP = null;
+  function loadTS() {
+    if (tsP) return tsP;
+    tsP = new Promise(function (ok, no) {
+      var sc = d.createElement('script'); sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'; sc.async = true;
+      sc.onload = function () { ok(w.turnstile); }; sc.onerror = function () { tsP = null; no(new Error('ts')); };
+      d.head.appendChild(sc);
+    });
+    return tsP;
+  }
+  function tsToken() {
+    return loadTS().then(function (ts) {
+      return new Promise(function (ok, no) {
+        var c = d.getElementById('fz-ts'); if (c) { try { ts.remove('#fz-ts'); } catch (e) {} c.remove(); }
+        c = d.createElement('div'); c.id = 'fz-ts'; c.style.cssText = 'position:fixed;bottom:12px;right:12px;z-index:60'; d.body.appendChild(c);
+        ts.render(c, { sitekey: TS_KEY, appearance: 'interaction-only', language: 'de', callback: ok, 'error-callback': function () { no(new Error('ts')); }, 'timeout-callback': function () { no(new Error('ts')); } });
+      });
+    });
+  }
+  var PDF_FEHLER = {
+    mail: 'Bitte prüfen Sie die Mailadresse.',
+    limit: 'Für diese Adresse ist heute schon eine Einschätzung unterwegs. Schauen Sie bitte auch im Spamordner nach.',
+    sonst: 'Das hat leider nicht geklappt. Schreiben Sie uns gern direkt an <a href="mailto:edwin@wolgawurzeln.de">edwin@wolgawurzeln.de</a>.'
+  };
+  function pdfSenden(f) {
+    var a = analyseAll(), p = st.pdf;
+    p.mail = (f.mail.value || '').trim(); p.notiz = (f.notiz.value || '').trim(); p.err = '';
+    if (!/^[^\s@<>()",;:]+@[^\s@]+\.[A-Za-z]{2,}$/.test(p.mail)) { p.err = PDF_FEHLER.mail; render(); return; }
+    if (f.firma.value) return;
+    p.busy = true; render(); npLog('pdf');
+    tsToken().then(function (token) {
+      return fetch(EZ_API, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({
+        namen: pdfNamen(a), region: st.reg, wunsch: st.want, email: p.mail, notiz: p.notiz, sid: SID, quelle: quelle(), page: location.pathname, ts: token
+      }) }).then(function (r) { return r.json().catch(function () { return { ok: false }; }); });
+    }).then(function (j) {
+      p.busy = false;
+      if (j && j.np && (j.ok || j.status === 'spaeter')) { p.done = j.ok ? 'gesendet' : 'spaeter'; p.np = j.np; }
+      else p.err = PDF_FEHLER[j && j.grund] || PDF_FEHLER.sonst;
+      render();
+    }).catch(function () { p.busy = false; p.err = PDF_FEHLER.sonst; render(); })
+      .then(function () { var c = d.getElementById('fz-ts'); if (c) c.remove(); });
+  }
+
   function analyseAll() {
     var all = (st.names.length ? st.names : [st.name]).map(analyse), good = all.filter(function (x) { return x.kind !== 'bad'; });
     var a = good.length ? good[0] : all[0];
@@ -441,6 +516,7 @@
       '<div class="fz-q fz-q-w"><p class="fz-ql"><span class="fz-n">2</span>Was möchten Sie herausfinden?</p><div class="fz-chips fz-chips-w">' + wantBtns + '</div></div>' +
       (st.want ? '<div class="fz-q fz-q3"><p class="fz-ql"><span class="fz-n">3</span>Was ist schon bekannt? <small>Freiwillig, mehrere möglich</small></p><div class="fz-chips">' + knowBtns + '</div></div>' : '') +
       '<div class="fz-recwrap">' + recHTML(a) + '</div>' +
+      pdfHTML(a) +
       '<p class="fz-fine">Welche Kolonie es genau ist und welchen Weg Ihre Familie nahm, klärt der Herkunftsbericht.</p>' +
       '</div>';
     var nb = out.querySelector('.fz-res'); if (nb && keep) nb.scrollTop = keep;
@@ -454,7 +530,7 @@
     e.preventDefault();
     var v = (inp.value || '').replace(/\s+/g, ' ').trim();
     if (v.length < 2) { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); inp.focus(); return; }
-    st.names = splitNames(v); st.name = st.names.join(', '); st.want = st.names.length > 4 ? 'ez' : st.names.length > 1 ? 'fg' : ''; st.know = {};
+    st.names = splitNames(v); st.name = st.names.join(', '); st.want = st.names.length > 4 ? 'ez' : st.names.length > 1 ? 'fg' : ''; st.know = {}; st.pdf = {};
     npLog('pruefung');
     inp.blur();
     var done = false, go = function () { if (!done) { done = true; render(); } };
@@ -488,8 +564,18 @@
       if (pk) pk.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   });
+  out.addEventListener('submit', function (e) {
+    var f = e.target.closest('.fz-pdf-f');
+    if (!f) return;
+    e.preventDefault();
+    if (!st.pdf.busy) pdfSenden(f);
+  });
+  out.addEventListener('input', function (e) {
+    if (e.target.id === 'fz-pm') st.pdf.mail = e.target.value;
+    if (e.target.id === 'fz-pn') st.pdf.notiz = e.target.value;
+  });
   var cl = box.querySelector('.fz-close');
-  if (cl) cl.addEventListener('click', function () { out.innerHTML = ''; box.classList.remove('has-res'); st = { name: '', names: [], reg: '', want: '', know: {} }; w.dispatchEvent(new Event('fz:change')); });
+  if (cl) cl.addEventListener('click', function () { out.innerHTML = ''; box.classList.remove('has-res'); st = { name: '', names: [], reg: '', want: '', know: {}, pdf: {} }; w.dispatchEvent(new Event('fz:change')); });
 
   /* für Tests */
   w.__fz = { deToRu: deToRu, ruToDe: ruToDe, analyse: analyse, stufe: stufe, nameKind: nameKind, loadNM: loadNM, st: function () { return st; } };
