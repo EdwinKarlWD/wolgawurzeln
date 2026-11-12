@@ -450,39 +450,68 @@
   function waLink(a, intro) { return 'https://wa.me/' + WA + '?text=' + encodeURIComponent(leadText(a, intro)); }
   function mailLink(a, intro, subj) { return 'mailto:edwin@wolgawurzeln.de?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(leadText(a, intro)); }
 
-  /* ---------- Ansichten: ein Schritt pro Ansicht. Dunkle Fläche, heller Goldknopf, keine Kästen im Kasten. ---------- */
-  function fakten(a) {
-    var f = [];
+  /* ---------- Ansichten: ein Schritt pro Ansicht, aufgebaut wie die Abläufe großer Portale:
+     Kopf mit Marke, Schrittleiste, Ergebniskarte, Auswahlkacheln, Formularkarte mit festem Knopf. Helle Fläche, alles eckig. ---------- */
+  var SVG = function (cls, box, inner) { return '<svg class="' + cls + '" viewBox="' + box + '" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + inner + '</svg>'; };
+  var X_SVG = SVG('', '0 0 24 24', '<path stroke-width="1.8" stroke-linecap="square" d="M6 6l12 12M18 6 6 18"/>');
+  var HAKEN = '<svg class="ez-ok" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><rect width="20" height="20" fill="currentColor"/><path d="M5 10.4l3.2 3.2L15 6.8" fill="none" stroke="#FFFDF9" stroke-width="2" stroke-linecap="square"/></svg>';
+  var SCHLOSS = SVG('ez-lock', '0 0 20 20', '<rect x="4" y="9" width="12" height="8" stroke-width="1.5"/><path stroke-width="1.5" d="M7 9V6.5a3 3 0 016 0V9"/>');
+  var IC = {
+    wolga: '<path d="M3 8c3 0 3 3 6 3s3-3 6-3 3 3 6 3"/><path d="M3 15c3 0 3 3 6 3s3-3 6-3 3 3 6 3"/>',
+    meer: '<path d="M12 13V4l6 7H8"/><path d="M4 14h16l-2 3H6z"/><path d="M3 20.5c2 0 2-1 4.5-1s2.5 1 4.5 1 2-1 4.5-1 2.5 1 4.5 1"/>',
+    wolhynien: '<path d="M12 3l5 7h-3l4 6H6l4-6H7z"/><path d="M12 16v5"/>',
+    kaukasus: '<path d="M2 19l7-11 4 6 2-3 7 8z"/>',
+    unklar: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>'
+  };
+  var REG_T = { wolga: 'Bei Saratow und Samara', meer: 'Odessa, Bessarabien, Krim, Dnjepr', wolhynien: 'Nordwesten der heutigen Ukraine', kaukasus: 'Tiflis, Aserbaidschan, Nordkaukasus', unklar: 'Wir grenzen die Region mit Ihnen ein' };
+  var IN_LISTEN = '<span class="ez-ja">verzeichnet</span>';
+  /* Zeilen der Ergebniskarte: Bezeichnung und kurzer Wert. Zahlen stehen erst im PDF. */
+  function zeilen(a) {
+    var z = [];
     if (a.all && a.all.length > 1) {
-      f.push([a.all.length + ' Nachnamen', a.all.map(oneLine).join('<br>')]);
-      var hit = a.all.filter(function (x) { return x.pleve; });
-      if (hit.length) f.push(['Ansiedlungslisten 1764 bis 1767', (hit.length === a.all.length ? 'Alle Namen sind' : hit.map(function (x) { return '<b>' + esc(x.name) + '</b>'; }).join(', ').replace(/, (?=[^,]*$)/, ' und ') + (hit.length > 1 ? ' sind' : ' ist')) + ' unter den ersten Siedlern an der Wolga verzeichnet. Die Zahlen dazu stehen in Ihrer Ersteinschätzung.']);
-      if (a.all.length > 4) f.push(['Hinweis', 'Die Ersteinschätzung umfasst die ersten vier Namen. Für mehr als vier Namen stellen wir eine individuelle Recherche zusammen, den Rahmen erfahren Sie vorher.']);
-      return f;
+      a.all.forEach(function (x) {
+        var v = x.kind === 'bad' ? 'bitte Schreibweise prüfen' : (x.russian || x.kind === 'ru') ? 'russische oder ukrainische Namensform' : x.kind === 'unklar' ? 'keine typisch deutsche Namensform' :
+          x.cyr ? 'wahrscheinlich ' + x.forms.map(esc).join(', ') : '<span lang="ru">' + x.forms.map(esc).join(', ') + '</span>';
+        z.push([esc(x.name), v + (x.pleve ? '<br>' + IN_LISTEN + ' in den Ansiedlungslisten' : '')]);
+      });
+      if (a.all.length > 4) z.push(['Hinweis', 'Die Ersteinschätzung umfasst die ersten vier Namen. Für mehr stellen wir eine individuelle Recherche zusammen.']);
+      return z;
     }
     if (a.russian || (a.kind === 'unklar' && !a.cyr)) { /* keine Umschrift anzeigen */ }
-    else if (a.cyr) f.push(['Deutsche Schreibweise', 'Wahrscheinlich <b>' + a.forms.map(esc).join('</b>, <b>') + '</b>. In russischen Akten wurden deutsche Namen nach Gehör geschrieben, deshalb gibt es oft mehrere Formen.']);
-    else f.push(['In russischen Akten', '<b lang="ru">' + a.forms.map(esc).join('</b> oder <b lang="ru">') + '</b>. Unter diesen Schreibweisen wird in Archiven in Russland gesucht.']);
-    if (a.pleve) f.push(['Ansiedlungslisten 1764 bis 1767', 'Unter den ersten Siedlern an der Wolga verzeichnet. Wie viele Familien es waren, welcher Konfession und unter welchen Schreibweisen, steht in Ihrer Ersteinschätzung.']);
-    if (a.menno) f.push(['Hinweis', 'Der Name ist unter den Russlandmennoniten verbreitet, deren Vorfahren ab 1789 aus dem Weichseldelta an den Dnjepr zogen.']);
-    if (!a.pleve) a.colonies.slice(0, 1).forEach(function (c) { f.push(['Gut zu wissen', 'An der Wolga gab es eine Kolonie mit diesem Namen: <a href="wissen/' + c[2] + '.html">' + esc(c[0]) + '</a>, gegründet ' + esc(c[4]) + '. Viele Kolonien trugen den Namen ihres ersten Vorstehers. Ob Ihre Familie von dort stammt, sagt der Name allein noch nicht.']); });
-    if (a.kind === 'unklar') f.push(['Namensform', 'Keine typisch deutsche Namensform. Das schließt eine russlanddeutsche Familie nicht aus: In russischen Akten wurden Namen oft verändert, und häufig liegt die deutsche Linie bei Mutter oder Großmutter.']);
-    if (a.russian) f.push(['Herkunft des Namens', 'Russische oder ukrainische Namensform. In vielen russlanddeutschen Familien liegt die deutsche Linie bei Mutter, Großmutter oder Großvater.']);
-    return f;
+    else if (a.cyr) z.push(['Deutsche Schreibweise', 'wahrscheinlich ' + a.forms.map(esc).join(', ')]);
+    else z.push(['In russischen Akten', '<span lang="ru">' + a.forms.map(esc).join(', ') + '</span>']);
+    if (a.pleve) z.push(['Ansiedlungslisten 1764 bis 1767', IN_LISTEN]);
+    if (a.menno) z.push(['Hinweis', 'unter Russlandmennoniten verbreitet']);
+    if (!a.pleve) a.colonies.slice(0, 1).forEach(function (c) { z.push(['Gut zu wissen', 'Es gab eine Wolgakolonie dieses Namens: <a href="wissen/' + c[2] + '.html">' + esc(c[0]) + '</a>, gegründet ' + esc(c[4]) + '. Ob Ihre Familie von dort stammt, sagt der Name allein noch nicht.']); });
+    if (a.kind === 'unklar') z.push(['Namensform', 'Keine typisch deutsche Form. Häufig liegt die deutsche Linie bei Mutter oder Großmutter.']);
+    if (a.russian) z.push(['Namensform', 'Russisch oder ukrainisch. Häufig liegt die deutsche Linie bei Mutter, Großmutter oder Großvater.']);
+    return z;
   }
-  var X_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>';
-  /* Kopf der Ansicht: Titel und Schließen (nur am Handy sichtbar), darunter der Fortschritt. n = 2 oder 3, 0 ohne Schrittangabe */
+  function kvHTML(z) {
+    return '<dl class="ez-kv">' + z.map(function (x) { return '<div' + (x[1].replace(/<[^>]+>/g, '').length > 34 ? ' class="lang"' : '') + '><dt>' + x[0] + '</dt><dd>' + x[1] + '</dd></div>'; }).join('') + '</dl>';
+  }
+  /* Kopf: Marke und Schließen, darunter die Schrittleiste. n = aktueller Schritt (2, 3), 4 = alles erledigt, 0 = ohne Leiste */
   function kopf(n) {
-    return '<div class="ez-top"><span class="ez-title">Ersteinschätzung</span><button type="button" class="ez-x" aria-label="Ersteinschätzung schließen">' + X_SVG + '</button></div>' +
-      '<div class="ez-prog"' + (n ? ' role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="' + n + '" aria-valuetext="Schritt ' + n + ' von 3"' : '') + '><i style="width:' + (n === 2 ? '66.667' : '100') + '%"></i></div>';
+    var S = ['Name', 'Region', 'Zusendung'];
+    return '<div class="ez-top"><span class="ez-brand"><img src="img/wappen-120.png" alt="" width="27" height="26"><span>Wolgawurzeln</span></span><button type="button" class="ez-x" aria-label="Ersteinschätzung schließen">' + X_SVG + '</button></div>' +
+      (n ? '<ol class="ez-steps" aria-label="Kostenlose Ersteinschätzung in drei Schritten">' + S.map(function (t, i) {
+        var k = i + 1, c = k < n ? 'done' : k === n ? 'on' : '';
+        return '<li' + (c ? ' class="' + c + '"' : '') + (c === 'on' ? ' aria-current="step"' : '') + '><span class="ez-sn">' + (c === 'done' ? '<svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 10.4l3.2 3.2L15 6.8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"/></svg>' : k) + '</span>' + t + '</li>';
+      }).join('') + '</ol>' : '');
   }
-  function nameHTML() { return '<h2 class="ez-name' + (st.name.length > 16 ? ' lang' : '') + '" tabindex="-1">' + esc(st.name) + '</h2>'; }
+  function befundHTML(a) {
+    var treffer = (a.all || [a]).some(function (x) { return x.pleve; });
+    return '<section class="ez-card" aria-label="Erster Befund"><div class="ez-rh">' + (a.kind === 'de' ? HAKEN : '') + '<h2 class="ez-name' + (st.name.length > 16 ? ' lang' : '') + '" tabindex="-1">' + esc(st.name) + '</h2>' +
+      '<button type="button" class="ez-link fz-again">Ändern</button></div>' + kvHTML(zeilen(a)) +
+      (treffer ? '<p class="ez-hint">Zahlen, Konfession und Schreibweisen stehen in Ihrer Ersteinschätzung.</p>' : '') + '</section>';
+  }
   function regionHTML(a) {
-    var rows = Object.keys(REG).map(function (k) { return '<button type="button" class="ez-row" data-reg="' + k + '"' + (st.reg === k ? ' aria-current="true"' : '') + '><span>' + REG[k].t + '</span></button>'; }).join('');
-    return '<div class="ez">' + kopf(2) + '<div class="ez-body"><p class="ez-step">Schritt 2 von 3</p>' + nameHTML() +
-      '<dl class="ez-facts">' + fakten(a).map(function (x) { return '<div><dt>' + x[0] + '</dt><dd>' + x[1] + '</dd></div>'; }).join('') + '</dl>' +
-      '<h3 class="ez-q" id="ez-q">Wo lebte die Familie vor 1941?</h3><div class="ez-rows reg" role="group" aria-labelledby="ez-q">' + rows + '</div>' +
-      '<p class="ez-foot"><button type="button" class="ez-link fz-again">Anderen Namen eingeben</button></p></div></div>';
+    var opts = Object.keys(REG).map(function (k) {
+      return '<button type="button" class="ez-opt" data-reg="' + k + '"' + (st.reg === k ? ' aria-current="true"' : '') + '>' + SVG('ez-ic', '0 0 24 24', IC[k]).replace('<svg', '<svg stroke-width="1.5"') +
+        '<span class="ez-ot"><b>' + REG[k].t + '</b><small>' + REG_T[k] + '</small></span></button>';
+    }).join('');
+    return '<div class="ez">' + kopf(2) + '<div class="ez-body">' + befundHTML(a) +
+      '<h2 class="ez-q" id="ez-q">Wo lebte die Familie vor 1941?</h2><div class="ez-opts" role="group" aria-labelledby="ez-q">' + opts + '</div></div></div>';
   }
   /* Leiser Nebenweg unter dem Formular: direkt bestellen oder gleich fragen */
   function altHTML(a) {
@@ -494,43 +523,44 @@
   function mailHTML(a) {
     var p = st.pdf, v = verdict(a), r = REG[st.reg], haupt;
     var deutsch = (a.all || [a]).some(function (x) { return !(x.russian || x.kind === 'ru'); });
+    var karte = '<section class="ez-card" aria-label="Ihre Angaben"><dl class="ez-kv oben"><div><dt>Name</dt><dd>' + esc(st.name) + '</dd></div>' +
+      '<div><dt>Region</dt><dd>' + (st.reg === 'unklar' ? 'noch offen' : r.t) + '<button type="button" class="ez-link" data-ez-back>Ändern</button></dd></div></dl>' +
+      (v ? '<p class="ez-status">' + (v.c === 'good' ? HAKEN : '') + '<span><b>' + v.h + '.</b> ' + (v.c === 'good' ? v.p.split('. ')[0].replace(/\.?$/, '.') : v.p) + (TS_KEY ? '' : ' ' + r.src + ' <a href="' + r.u + '">' + r.l + '</a>') + '</span></p>' : '') + '</section>';
     if (!TS_KEY) {
-      haupt = '<h3 class="ez-q">Ihre Ersteinschätzung per Nachricht</h3><p class="ez-sub">Schicken Sie uns Ihre Angaben, Edwin Karl antwortet Ihnen persönlich.</p>' +
+      haupt = '<h2 class="ez-q">Ihre Ersteinschätzung per Nachricht</h2><div class="ez-card"><p class="ez-help first">Schicken Sie uns Ihre Angaben, Edwin Karl antwortet Ihnen persönlich.</p>' +
         '<a class="ez-btn" href="' + waLink(a, 'ich möchte eine Ersteinschätzung zu meinem Namen') + '" target="_blank" rel="noopener">Per WhatsApp anfragen</a>' +
-        '<a class="ez-btn line" href="' + mailLink(a, 'ich möchte eine Ersteinschätzung zu meinem Namen', 'Ersteinschätzung: ' + st.name) + '">Per Mail anfragen</a>';
+        '<a class="ez-btn line" href="' + mailLink(a, 'ich möchte eine Ersteinschätzung zu meinem Namen', 'Ersteinschätzung: ' + st.name) + '">Per Mail anfragen</a></div>';
     } else {
-      haupt = '<form class="ez-form fz-pdf-f" novalidate><h3 class="ez-q">Wohin dürfen wir Ihre Ersteinschätzung senden?</h3>' +
-        '<p class="ez-sub">Sie erhalten ein PDF mit Karte, ' + (deutsch ? 'Schreibweisen, dem Abgleich mit den Ansiedlungslisten' : 'einer Einordnung des Namens') + ' und den Quellen für Ihre Region. Danach meldet sich Edwin Karl persönlich.</p>' +
+      haupt = '<h2 class="ez-q">Wohin dürfen wir Ihre Ersteinschätzung senden?</h2>' +
+        '<form class="ez-form fz-pdf-f" novalidate><div class="ez-card">' +
         '<label class="ez-lab" for="fz-pm">Mailadresse</label><input id="fz-pm" type="email" name="mail" autocomplete="email" inputmode="email" enterkeyhint="send" value="' + esc(p.mail || '') + '"' + (p.err ? ' aria-invalid="true" aria-describedby="ez-err"' : '') + '>' +
         (p.err ? '<p class="ez-err" id="ez-err" role="alert">' + p.err + '</p>' : '') +
+        '<p class="ez-help">Sie erhalten ein PDF mit Karte, ' + (deutsch ? 'Schreibweisen' : 'einer Einordnung des Namens') + ' und Quellenlage. Danach meldet sich Edwin Karl persönlich.</p>' +
         '<details class="ez-more"' + (p.more || p.notiz || st.want ? ' open' : '') + '><summary><span>Angaben zur Familie hinzufügen<small>freiwillig</small></span></summary>' +
         '<label class="ez-lab" for="fz-pw">Was möchten Sie herausfinden?</label><select id="fz-pw" name="wunsch"><option value="">Bitte wählen</option>' +
         Object.keys(WANT).map(function (k) { return '<option value="' + k + '"' + (st.want === k ? ' selected' : '') + '>' + WANT[k].t + '</option>'; }).join('') + '</select>' +
         '<label class="ez-lab" for="fz-pn">Was wissen Sie schon über die Familie?</label><textarea id="fz-pn" name="notiz" rows="3" maxlength="600" placeholder="Zum Beispiel Geburtsjahre und Orte der Großeltern">' + esc(p.notiz || '') + '</textarea></details>' +
-        '<input class="fz-hp" type="text" name="firma" tabindex="-1" autocomplete="off" aria-hidden="true">' +
-        '<button class="ez-btn" type="submit"' + (p.busy ? ' disabled' : '') + '>' + (p.busy ? 'Wird erstellt …' : 'Kostenlos zusenden') + '</button>' +
-        '<p class="ez-fine">Wir nutzen Ihre Angaben nur für diese Einschätzung und eine persönliche Antwort. Keine Werbemails. <a href="datenschutz.html#ersteinschaetzung">Datenschutz</a></p></form>';
+        '<input class="fz-hp" type="text" name="firma" tabindex="-1" autocomplete="off" aria-hidden="true"></div>' +
+        '<div class="ez-bar"><button class="ez-btn" type="submit"' + (p.busy ? ' disabled' : '') + '>' + (p.busy ? 'Wird erstellt …' : 'Kostenlos zusenden') + '</button></div>' +
+        '<ul class="ez-trust"><li>Kostenlos und unverbindlich</li><li>Persönliche Antwort</li><li>Keine Werbemails</li></ul>' +
+        '<p class="ez-fine">' + SCHLOSS + '<span>Ihre Angaben nutzen wir nur für diese Einschätzung. <a href="datenschutz.html#ersteinschaetzung">Datenschutz</a></span></p></form>';
     }
-    return '<div class="ez">' + kopf(3) + '<div class="ez-body"><p class="ez-step">Schritt 3 von 3</p>' + nameHTML() +
-      '<p class="ez-ctx"><span>' + (st.reg === 'unklar' ? 'Region noch offen' : r.t) + '</span><button type="button" class="ez-link" data-ez-back>Ändern</button></p>' +
-      (v ? '<div class="ez-verdict"><p class="ez-vh">' + v.h + '</p><p>' + v.p + (TS_KEY ? '' : ' ' + r.src + ' <a href="' + r.u + '">' + r.l + '</a>') + '</p></div>' : '') +
-      haupt + '<div class="fz-altwrap">' + altHTML(a) + '</div></div></div>';
+    return '<div class="ez">' + kopf(3) + '<div class="ez-body">' + karte + haupt + '<div class="fz-altwrap">' + altHTML(a) + '</div></div></div>';
   }
   function fertigHTML(a) {
     var p = st.pdf, ok = p.done === 'gesendet';
-    return '<div class="ez">' + kopf(0) + '<div class="ez-body">' + nameHTML() +
-      '<h3 class="ez-q">' + (ok ? 'Ihre Ersteinschätzung ist unterwegs.' : 'Ihre Anfrage ist angekommen.') + '</h3>' +
-      '<p class="ez-sub">' + (ok ? 'Wir haben sie an <b>' + esc(p.mail) + '</b> geschickt. Falls sie in ein paar Minuten nicht da ist, schauen Sie bitte im Spamordner nach.' : 'Die Einschätzung kommt in Kürze per Mail an <b>' + esc(p.mail) + '</b>.') + ' Danach meldet sich Edwin Karl persönlich bei Ihnen.</p>' +
-      '<p class="ez-meta">Vorgang ' + esc(p.np || '') + '</p>' +
-      '<div class="ez-rows"><a class="ez-row" href="' + waLink(a, 'ich habe eine Frage zu meiner Ersteinschätzung ' + (p.np || '')) + '" target="_blank" rel="noopener"><span>Frage per WhatsApp stellen</span></a>' +
-      '<button type="button" class="ez-row fz-again"><span>Weiteren Namen eingeben</span></button></div></div></div>';
+    return '<div class="ez">' + kopf(4) + '<div class="ez-body"><div class="ez-done">' + HAKEN + '<h2 class="ez-q ez-name" tabindex="-1">' + (ok ? 'Ihre Ersteinschätzung ist unterwegs' : 'Ihre Anfrage ist angekommen') + '</h2></div>' +
+      '<section class="ez-card"><dl class="ez-kv oben"><div><dt>' + (ok ? 'Gesendet an' : 'Mailadresse') + '</dt><dd>' + esc(p.mail) + '</dd></div><div><dt>Name</dt><dd>' + esc(st.name) + '</dd></div><div><dt>Vorgang</dt><dd>' + esc(p.np || '') + '</dd></div></dl></section>' +
+      '<h3 class="ez-h3">So geht es weiter</h3><ol class="ez-next"><li>' + (ok ? 'Das PDF kommt in den nächsten Minuten per Mail. Schauen Sie sonst bitte im Spamordner nach.' : 'Das PDF kommt in Kürze per Mail.') + '</li>' +
+      '<li>Edwin Karl meldet sich danach persönlich bei Ihnen.</li><li>Sie entscheiden in Ruhe, ob Sie eine Recherche möchten.</li></ol>' +
+      '<div class="ez-bar"><button type="button" class="ez-btn" data-ez-close>Fertig</button></div>' +
+      '<p class="ez-foot"><button type="button" class="ez-link fz-again">Weiteren Namen eingeben</button><br><a href="' + waLink(a, 'ich habe eine Frage zu meiner Ersteinschätzung ' + (p.np || '')) + '" target="_blank" rel="noopener">Frage per WhatsApp stellen</a></p></div></div>';
   }
   function badHTML(a) {
-    return '<div class="ez">' + kopf(0) + '<div class="ez-body">' + nameHTML() +
-      '<h3 class="ez-q">Diesen Namen können wir so nicht zuordnen.</h3>' +
-      '<p class="ez-sub">Bitte prüfen Sie die Schreibweise. Geben Sie den Nachnamen so ein, wie er in Urkunden oder alten Pässen steht, gern auch auf Russisch.</p>' +
-      '<div class="ez-rows"><button type="button" class="ez-row fz-again"><span>Anderen Namen eingeben</span></button>' +
-      '<a class="ez-row" href="' + waLink(a, 'mein Name wurde bei der Ersteinschätzung nicht erkannt') + '" target="_blank" rel="noopener"><span>Der Name stimmt so? Schreiben Sie uns</span></a></div></div></div>';
+    return '<div class="ez">' + kopf(0) + '<div class="ez-body"><section class="ez-card"><div class="ez-rh"><h2 class="ez-name' + (st.name.length > 16 ? ' lang' : '') + '" tabindex="-1">' + esc(st.name) + '</h2></div>' +
+      '<p class="ez-status"><span><b>Diesen Namen können wir so nicht zuordnen.</b> Bitte prüfen Sie die Schreibweise. Geben Sie den Nachnamen so ein, wie er in Urkunden oder alten Pässen steht, gern auch auf Russisch.</span></p></section>' +
+      '<div class="ez-bar"><button type="button" class="ez-btn fz-again">Anderen Namen eingeben</button></div>' +
+      '<p class="ez-foot"><a href="' + waLink(a, 'mein Name wurde bei der Ersteinschätzung nicht erkannt') + '" target="_blank" rel="noopener">Der Name stimmt so? Schreiben Sie uns</a></p></div></div>';
   }
 
   /* Die Ersteinschätzung öffnet als eigene Ebene über der Seite: am Handy als ganzer Bildschirm, am Desktop als Fenster
@@ -600,7 +630,7 @@
   out.addEventListener('click', function (e) {
     var lk = e.target.closest('a[href^="https://wa.me"], a[href^="mailto:"]');
     if (lk) npLog(/^mailto/.test(lk.getAttribute('href')) ? 'mail' : 'whatsapp');
-    if (e.target.closest('.ez-x')) { schliessen(); return; }
+    if (e.target.closest('.ez-x, [data-ez-close]')) { schliessen(); return; }
     var b = e.target.closest('[data-reg]');
     if (b) {
       st.reg = b.getAttribute('data-reg'); st.step = 'mail'; npLog('region');
