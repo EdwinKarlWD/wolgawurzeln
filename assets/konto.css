@@ -131,3 +131,4 @@ select.k-in{appearance:none;background:#fff linear-gradient(45deg,transparent 50
   .v-links{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
 }
 .v-ende{margin:0;text-align:right}
+.k-anm{display:block;margin-top:6px;font:400 15px/1.45 var(--sans);color:#1B2233;white-space:pre-line}
