@@ -78,6 +78,7 @@
 
   // Start: Link aus der Mail einlösen, sonst vorhandene Sitzung nutzen, sonst Maske zeigen.
   B.start = function (root, o, bereit) {
+    if (!D.an()) { root.innerHTML = B.kopf() + '<main class="k-login"><section class="k-card"><h1>' + o.titel + '</h1><p>Dieser Bereich wird gerade eingerichtet. Bis dahin erreichen Sie uns unter <a href="mailto:edwin@wolgawurzeln.de">edwin@wolgawurzeln.de</a>.</p></section></main>'; return; }
     var m = /[#&]t=([A-Za-z0-9]{20,64})/.exec(w.location.hash);
     if (m) {
       try { w.history.replaceState(null, '', w.location.pathname); } catch (e) {}
