@@ -46,6 +46,10 @@
       feld('v-geplant', 'Bericht geplant bis', v.geplant, 'date') + '</div>' +
       '<div class="v-feld"><label class="k-lab" for="v-aktuell">Woran gerade gearbeitet wird (sieht der Kunde)</label><textarea class="k-in" id="v-aktuell" rows="2" maxlength="600">' + e(v.aktuell) + '</textarea></div>' +
       (stunden ? '<div class="v-drei">' + feld('v-stdb', 'Stunden beauftragt', B.zahl(v.std.b), 'text', ' inputmode="decimal"') + feld('v-stdv', 'Stunden verbraucht', B.zahl(v.std.v), 'text', ' inputmode="decimal"') + feld('v-preis', 'Preis je weitere Stunde', v.std.preis, 'text', ' inputmode="numeric"') + '</div>' : '') +
+      '<div class="v-feld"><label class="k-lab" for="v-naechster">Empfehlung für den nächsten Schritt (sieht der Kunde, mit Knopf „Angebot anfragen“)</label><textarea class="k-in" id="v-naechster" rows="2" maxlength="600" placeholder="Leer lassen, solange es nichts zu empfehlen gibt">' + e(v.naechster) + '</textarea></div>' +
+      (stunden ? '' : '<label class="v-haken"><input type="checkbox" id="v-buch"' + (v.buch ? ' checked' : '') + '> Gedrucktes Buch ist bestellt (blendet den Hinweis im Kundenbereich aus)</label>') +
+      '<details class="v-mehr"><summary>Kundendaten ändern</summary><div class="v-paar">' + feld('v-kname', 'Name des Kunden', k.name, 'text', ' maxlength="120"') + feld('v-kmail', 'Mailadresse (Anmeldung)', k.email, 'email') + '</div>' +
+      feld('v-ktel', 'Telefon', k.tel) + '<p class="k-fine">Eine neue Mailadresse gilt sofort für die Anmeldung. Gehört sie schon einem anderen Kunden, zieht dieser Vorgang zu ihm um.</p></details>' +
       '<div class="v-feld"><label class="k-lab" for="v-intern">Interne Notiz (sieht nur die Verwaltung)</label><textarea class="k-in" id="v-intern" rows="6" maxlength="2000">' + e(v.intern) + '</textarea></div>' +
       '<label class="v-haken"><input type="checkbox" id="v-melden"> Kunden per Mail informieren, wenn sich der Stand ändert</label>' +
       '<p class="k-err" role="alert"></p><div class="v-knoepfe"><button class="k-btn" type="submit">Speichern</button><button class="k-btn line" type="button" data-a="einladen">Zugangslink senden</button></div>' +
@@ -161,7 +165,8 @@
       var v = vorgang(); los();
       B.ruf('/verwaltung/vorgang', { body: { id: v.id, titel: wert('v-titel'), stufe: Number(wert('v-stufe')), geplant: wert('v-geplant'), aktuell: wert('v-aktuell'), intern: d.getElementById('v-intern').value,
         std_b: d.getElementById('v-stdb') ? wert('v-stdb') : v.std.b, std_v: d.getElementById('v-stdv') ? wert('v-stdv') : v.std.v, std_preis: d.getElementById('v-preis') ? wert('v-preis') : v.std.preis,
-        melden: d.getElementById('v-melden').checked } }).then(function (r) { if (r.st === 200) { S.meldung = 'Gespeichert um ' + B.zeit(new Date().toISOString()).split(', ')[1] + '.'; laden(true); } else fehler(); });
+        naechster: d.getElementById('v-naechster').value, buch: d.getElementById('v-buch') ? d.getElementById('v-buch').checked : v.buch, kunde: { name: wert('v-kname'), email: wert('v-kmail'), tel: wert('v-ktel') },
+        melden: d.getElementById('v-melden').checked } }).then(function (r) { if (r.st === 200) { S.meldung = 'Gespeichert um ' + B.zeit(new Date().toISOString()).split(', ')[1] + '.'; laden(true); } else { if (r.j && r.j.grund === 'kunde') d.querySelector('.v-mehr').open = true; fehler(r.j && r.j.grund === 'kunde' ? 'Bitte Name und Mailadresse des Kunden prüfen.' : ''); } });
     }
     if (art === 'antwort') {
       var text = wert('v-text'); if (text.length < 2) { err.textContent = 'Bitte zuerst die Antwort schreiben.'; return; }
