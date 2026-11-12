@@ -1882,3 +1882,15 @@ display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;overflow-y
 /* ===== Kontaktseite: Anfrageformular neben den Kontaktwegen (12.11.2026) ===== */
 .ask-box .reqform{grid-template-columns:1fr}
 @media (min-width:1100px){.ask-box .reqform{grid-template-columns:1fr 1fr}}
+
+/* ===== Tippflächen am Handy mindestens 44 px (12.11.2026). Gilt für Startseite und die Fußzeile aller Seiten. ===== */
+@media (max-width:1060px){
+  .hdr .brand,.ftr .brand{min-height:44px}
+  .chips a,.pk-link,.reg-go,.portal-links a,.art-all a{display:inline-flex;align-items:center;min-height:44px}
+  .pk-link{display:flex;justify-content:center}
+  .seg button{min-height:44px}
+  .ftr li a{display:inline-flex;align-items:center;min-height:44px}
+  .ftr li{margin:0}
+  .ftr-legal a{display:inline-flex;align-items:center;min-height:44px}
+  #hbRevocationButton{min-height:44px}
+}
