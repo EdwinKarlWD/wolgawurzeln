@@ -307,14 +307,17 @@
       <p class="ru" lang="ru">Можно писать на русском языке, ответ придёт на русском.</p>
     </div>
     <form class="reqform" id="reqform" novalidate>
-      <label>Ihr Name<input name="name" type="text" autocomplete="name" required></label>
-      <label>Nachname der Familie<input name="nachname" type="text" autocomplete="off" required></label>
-      <label class="full">Herkunftsort oder Region, falls bekannt<input name="ort" type="text" autocomplete="off"></label>
-      <label class="full">Ihr Anliegen<textarea name="anliegen" rows="4"></textarea></label>
-      <fieldset><legend>Antwort per</legend><label><input type="radio" name="via" value="wa" checked>WhatsApp</label><label><input type="radio" name="via" value="mail">Mail</label></fieldset>
-      <button class="btn" type="submit">Anfrage senden</button>
-      <p class="fine">Beim Senden öffnet sich WhatsApp oder Ihr Mailprogramm mit der vorbereiteten Nachricht. Es gilt die <a href="datenschutz.html">Datenschutzerklärung</a>.</p>
-    </form>
+        <label>Ihr Name<input name="name" type="text" autocomplete="name" required></label>
+        <label>Mailadresse<input name="email" type="email" autocomplete="email" inputmode="email" required></label>
+        <label>Nachname der Familie<input name="nachname" type="text" autocomplete="off" required></label>
+        <label>Herkunftsort oder Region <small>falls bekannt</small><input name="ort" type="text" autocomplete="off"></label>
+        <label class="full">Ihr Anliegen<textarea name="anliegen" rows="4" maxlength="2000"></textarea></label>
+        <label class="full">Telefon für Rückfragen <small>freiwillig</small><input name="tel" type="tel" autocomplete="tel" inputmode="tel"></label>
+        <input class="fz-hp" type="text" name="firma" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <p class="req-err" role="alert" hidden></p>
+        <button class="btn" type="submit">Anfrage senden</button>
+        <p class="fine">Ihre Anfrage geht direkt an Wolgawurzeln. Sie erhalten eine Eingangsbestätigung per Mail. Es gilt die <a href="datenschutz.html#anfrageformular">Datenschutzerklärung</a>.</p>
+      </form>
   </div>
 </section>
 

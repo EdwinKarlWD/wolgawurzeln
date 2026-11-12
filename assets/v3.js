@@ -279,22 +279,6 @@
   });
 
   /* Anfrageformular: öffnet WhatsApp oder Mail mit vorbereiteter Nachricht */
-  var rf = document.getElementById('reqform');
-  if (rf) {
-    rf.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var v = function (n) { return (rf.elements[n].value || '').trim(); };
-      var must = ['name', 'nachname'], ok = true;
-      must.forEach(function (n) { var el = rf.elements[n]; if (!v(n)) { el.setAttribute('aria-invalid', 'true'); ok = false; } else el.removeAttribute('aria-invalid'); });
-      if (!ok) { rf.querySelector('[aria-invalid="true"]').focus(); return; }
-      var text = 'Anfrage über wolgawurzeln.de\nName: ' + v('name') + '\nNachname(n): ' + v('nachname') + (v('ort') ? '\nHerkunftsort oder Region: ' + v('ort') : '') + (v('anliegen') ? '\nAnliegen: ' + v('anliegen') : '');
-      var via = (rf.querySelector('input[name="via"]:checked') || {}).value;
-      var url = via === 'mail'
-        ? 'mailto:edwin@wolgawurzeln.de?subject=' + encodeURIComponent('Anfrage: ' + v('nachname')) + '&body=' + encodeURIComponent(text)
-        : 'https://wa.me/' + WA + '?text=' + encodeURIComponent(text);
-      if (via === 'mail' || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches)) location.href = url; else window.open(url, '_blank', 'noopener');
-    });
-  }
 })();
 
 /* Wolgawurzeln v3: Kopfzeile, Paketwahl, Kaufleiste, Siegel, Vorbelegung */
