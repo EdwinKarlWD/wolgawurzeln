@@ -1,4 +1,5 @@
 /* Wolgawurzeln: kostenlose Ersteinschätzung auf der Titelseite (Nachname, Region, PDF per Mail).
+   Ablauf in Ansichten: Region (mit erstem Befund), Zusendung, fertig. Am Handy als ganzer Bildschirm über der Seite.
    Der erste Befund läuft im Browser. Gesendet wird nur die anonyme Statistik (npLog, keine IP, keine Cookies)
    und, wenn jemand die Erste Einschätzung als PDF anfordert, die Anfrage mit Mailadresse an den Worker.
    Die Anfrage per WhatsApp oder Mail trägt eine Kennung (z. B. HB1): Paket plus Stufe 1 sehr gute, 2 gute, 3 offene Voraussetzungen. */
@@ -194,7 +195,7 @@
   };
   var KNOW = { jahre: 'Geburtsjahre der Großeltern', ort: 'Geburtsort oder Dorf', doku: 'Alte Dokumente oder Fotos' };
 
-  var st = { name: '', names: [], reg: '', want: '', know: {}, pdf: {} };
+  var st = { name: '', names: [], reg: '', want: '', know: {}, pdf: {}, step: '' };
   /* Mehrere Nachnamen: einzeln einordnen. Vornamen, Vatersnamen und Namenszusätze fallen weg. */
   var FIRST = {}; ('anna maria marie olga irina natalia natalja natalie elena helena jelena tatjana tatiana svetlana swetlana ludmila ljudmila galina valentina lidia lydia nina ekaterina katharina katharine katarina katja lena emma amalia elisabeth elizabeth margarete margaretha frieda erna lilli lilia larissa alla wera vera sofia sophie julia oksana inna tamara raisa rosa luise louise alexandra '
     + 'alexander andreas andrej andrei viktor victor wladimir vladimir sergej sergei sergey nikolai nikolaj peter pjotr johann johannes heinrich jakob jacob david eduard waldemar woldemar alexej aleksej juri jurij michael michail dmitri dmitrij igor oleg artur arthur edwin paul georg friedrich konrad conrad eugen jewgeni evgeni ivan iwan iwanowitsch robert rudolf otto emil wilhelm karl carl franz walter valeri valerij anatoli gennadi leonid boris pavel pawel stepan konstantin roman denis maxim maksim ilja ilya anton '
@@ -232,28 +233,6 @@
       return { name: x.name, art: (x.russian || x.kind === 'ru') ? 'ru' : (x.kind === 'unklar' ? 'unklar' : 'de'), dict: !!x.dict, formen: (x.russian || x.kind === 'ru') ? [] : (x.forms || []).slice(0, 2) };
     });
   }
-  function pdfHTML(a) {
-    if (!st.reg || a.kind === 'bad') return '';
-    if (!TS_KEY) return '<div class="fz-rec"><p class="fz-rk">Persönlich und kostenlos</p><p class="fz-rn">Ihre Ersteinschätzung per Nachricht</p>' +
-      '<p class="fz-rd">Schicken Sie uns Ihre Angaben, Edwin Karl antwortet Ihnen persönlich.</p>' +
-      '<div class="fz-cta"><a class="btn btn-seal" href="' + waLink(a, 'ich möchte eine Ersteinschätzung zu meinem Namen') + '" target="_blank" rel="noopener">Per WhatsApp anfragen</a>' +
-      '<a class="btn ghost" href="' + mailLink(a, 'ich möchte eine Ersteinschätzung zu meinem Namen', 'Ersteinschätzung: ' + st.name) + '">Per Mail anfragen</a></div></div>';
-    var p = st.pdf, nm = esc((a.all && a.all.length > 1 ? a.all.map(function (x) { return x.name; }).join(', ') : a.name) || st.name);
-    var blatt = '<div class="fz-pdf-blatt" aria-hidden="true"><i class="k"></i><b>' + nm + '</b><i class="h"></i><i class="l"></i><i class="l"></i><i class="l s"></i></div>';
-    if (p.done) return '<div class="fz-pdf fz-pdf-ok">' + blatt + '<div class="fz-pdf-x"><p class="fz-rk">' + (p.done === 'gesendet' ? 'Ist unterwegs' : 'Angekommen') + '</p><p class="fz-rn">Ihre Ersteinschätzung</p>' +
-      '<p class="fz-rd">' + (p.done === 'gesendet' ? 'Die Einschätzung ist an <b>' + esc(p.mail) + '</b> unterwegs. Falls sie in ein paar Minuten nicht da ist, schauen Sie bitte im Spamordner nach.' : 'Ihre Anfrage ist bei uns angekommen. Die Einschätzung kommt in Kürze per Mail an <b>' + esc(p.mail) + '</b>.') + '</p>' +
-      '<p class="fz-fine">Vorgang ' + esc(p.np || '') + '</p></div></div>';
-    return '<div class="fz-pdf">' + blatt + '<div class="fz-pdf-x"><p class="fz-rk">Kostenlos per Mail</p><p class="fz-rn">Ihre Ersteinschätzung als PDF</p>' +
-      '<p class="fz-rd">Mit Karte, ' + ((a.all || [a]).some(function (x) { return !(x.russian || x.kind === 'ru'); }) ? 'den Schreibweisen in russischen Akten, dem Abgleich mit den Ansiedlungslisten' : 'einer Einordnung des Namens') + ' und den Quellen für Ihre Region. Danach meldet sich Edwin Karl persönlich bei Ihnen.</p>' +
-      '<form class="fz-pdf-f" novalidate><label class="fz-sr" for="fz-pm">Ihre Mailadresse</label><input id="fz-pm" type="email" name="mail" placeholder="Ihre Mailadresse" autocomplete="email" inputmode="email" value="' + esc(p.mail || '') + '">' +
-      '<label class="fz-sr" for="fz-pw">Was möchten Sie herausfinden?</label><select id="fz-pw" name="wunsch"' + (st.want ? '' : ' class="leer"') + '><option value="">Was möchten Sie herausfinden? Freiwillig</option>' +
-      Object.keys(WANT).map(function (k) { return '<option value="' + k + '"' + (st.want === k ? ' selected' : '') + '>' + WANT[k].t + '</option>'; }).join('') + '</select>' +
-      '<label class="fz-sr" for="fz-pn">Was wissen Sie schon über die Familie?</label><textarea id="fz-pn" name="notiz" rows="2" maxlength="600" placeholder="Was wissen Sie schon über die Familie? Freiwillig">' + esc(p.notiz || '') + '</textarea>' +
-      '<input class="fz-hp" type="text" name="firma" tabindex="-1" autocomplete="off" aria-hidden="true">' +
-      (p.err ? '<p class="fz-pdf-err" role="alert">' + p.err + '</p>' : '') +
-      '<button class="btn btn-seal" type="submit"' + (p.busy ? ' disabled' : '') + '>' + (p.busy ? 'Wird erstellt …' : 'Kostenlos zusenden') + '</button>' +
-      '<p class="fz-fine">Wir nutzen Ihre Angaben nur für diese Einschätzung und eine persönliche Antwort. Keine Werbemails. <a href="datenschutz.html#ersteinschaetzung">Datenschutz</a></p></form></div></div>';
-  }
   var tsP = null;
   function loadTS() {
     if (tsP) return tsP;
@@ -268,7 +247,7 @@
     return loadTS().then(function (ts) {
       return new Promise(function (ok, no) {
         var c = d.getElementById('fz-ts'); if (c) { try { ts.remove('#fz-ts'); } catch (e) {} c.remove(); }
-        c = d.createElement('div'); c.id = 'fz-ts'; c.style.cssText = 'position:fixed;bottom:12px;right:12px;z-index:60'; d.body.appendChild(c);
+        c = d.createElement('div'); c.id = 'fz-ts'; c.style.cssText = 'position:fixed;bottom:12px;right:12px;z-index:400'; d.body.appendChild(c);
         ts.render(c, { sitekey: TS_KEY, appearance: 'interaction-only', language: 'de', callback: ok, 'error-callback': function () { no(new Error('ts')); }, 'timeout-callback': function () { no(new Error('ts')); } });
       });
     });
@@ -315,13 +294,6 @@
     if (st.want) p += 1;
     p += Math.min(knownList().length, 2) * 0.5;
     return p >= 4 ? 1 : p >= 2.5 ? 2 : 3;
-  }
-  /* Empfehlung im Ergebnisfeld sichtbar machen, ohne die Seite zu verschieben */
-  function showRec(sel) {
-    var box2 = out.querySelector('.fz-res'), rc = out.querySelector(sel || '.fz-rec');
-    if (!box2 || !rc) return;
-    var top = rc.offsetTop - box2.offsetTop, need = top + rc.offsetHeight - box2.clientHeight + 8;
-    if (need > box2.scrollTop) { try { box2.scrollTo({ top: need, behavior: 'smooth' }); } catch (e) { box2.scrollTop = need; } }
   }
   function knownList() { return Object.keys(KNOW).filter(function (k) { return st.know[k]; }); }
   function leadText(a, intro) {
@@ -475,106 +447,140 @@
     if (x.cyr) return n + 'wahrscheinlich ' + x.forms.map(esc).join(', ');
     return n + 'in russischen Akten zum Beispiel als <span lang="ru">' + x.forms.map(esc).join(' oder ') + '</span>' + (x.menno ? ', verbreitet unter Russlandmennoniten' : '');
   }
-  var PL_K = '<span class="fz-k">Ansiedlungslisten 1764 bis 1767</span>';
-  function factsHTML(a) {
-    var facts = [];
-    if (a.all && a.all.length > 1) {
-      facts.push('<li><span class="fz-k">' + a.all.length + ' Nachnamen</span>' + a.all.map(oneLine).join('<br>') + '</li>');
-      var hit = a.all.filter(function (x) { return x.pleve; });
-      if (hit.length) facts.push('<li>' + PL_K + (hit.length === a.all.length ? 'Alle Namen sind' : hit.map(function (x) { return '<b>' + esc(x.name) + '</b>'; }).join(', ').replace(/, (?=[^,]*$)/, ' und ') + (hit.length > 1 ? ' sind' : ' ist')) + ' unter den ersten Siedlern an der Wolga verzeichnet. Die Zahlen dazu stehen in Ihrer Ersteinschätzung.</li>');
-      if (a.all.length > 4) facts.push('<li><span class="fz-k">Hinweis</span>Die Ersteinschätzung umfasst die ersten vier Namen. Für mehr als vier Namen stellen wir eine individuelle Recherche zusammen, den Rahmen erfahren Sie vorher.</li>');
-      return facts.join('');
-    }
-    if (a.russian || (a.kind === 'unklar' && !a.cyr)) { /* keine Umschrift anzeigen */ }
-    else if (a.cyr) facts.push('<li><span class="fz-k">Deutsche Schreibweise</span>Wahrscheinlich <b>' + a.forms.map(esc).join('</b>, <b>') + '</b>. In russischen Akten wurden deutsche Namen nach Gehör geschrieben, deshalb gibt es oft mehrere Formen.</li>');
-    else facts.push('<li><span class="fz-k">In russischen Akten</span>Zum Beispiel als <b lang="ru">' + a.forms.map(esc).join('</b> oder <b lang="ru">') + '</b>. Unter diesen Schreibweisen wird in Archiven in Russland gesucht.</li>');
-    if (a.pleve) facts.push('<li>' + PL_K + 'Der Name ist unter den ersten Siedlern an der Wolga verzeichnet. Wie viele Familien es waren, welcher Konfession und unter welchen Schreibweisen, steht in Ihrer Ersteinschätzung.</li>');
-    if (a.menno) facts.push('<li><span class="fz-k">Hinweis</span>Der Name ist unter den Russlandmennoniten verbreitet, deren Vorfahren ab 1789 aus dem Weichseldelta an den Dnjepr zogen.</li>');
-    if (!a.pleve) a.colonies.slice(0, 1).forEach(function (c) { facts.push('<li><span class="fz-k">Gut zu wissen</span>An der Wolga gab es eine Kolonie mit diesem Namen: <a href="wissen/' + c[2] + '.html">' + esc(c[0]) + '</a>, gegründet ' + esc(c[4]) + '. Viele Kolonien trugen den Namen ihres ersten Vorstehers. Ob Ihre Familie von dort stammt, sagt der Name allein noch nicht.</li>'); });
-    if (a.kind === 'unklar') facts.push('<li><span class="fz-k">Namensform</span>Keine typisch deutsche Namensform. Das schließt eine russlanddeutsche Familie nicht aus: In russischen Akten wurden Namen oft verändert, und häufig liegt die deutsche Linie bei Mutter oder Großmutter. <button type="button" class="fz-again">Anderen Namen eingeben</button></li>');
-    if (a.russian) facts.push('<li><span class="fz-k">Herkunft des Namens</span>Russische oder ukrainische Namensform. <button type="button" class="fz-again">Anderen Namen eingeben</button></li>');
-    return facts.join('');
-  }
-  function verdictHTML(a) {
-    var v = verdict(a), r = st.reg ? REG[st.reg] : null;
-    return v ? '<div class="fz-v fz-' + v.c + '"><p class="fz-vh">' + v.h + '</p><p>' + v.p + (r && TS_KEY ? ' Welche Quellen das für Ihre Region sind, steht in Ihrer Ersteinschätzung.' : '') + '</p>' + (r && !TS_KEY ? '<p class="fz-src">' + r.src + ' <a href="' + r.u + '">' + r.l + '</a></p>' : '') + '</div>' : '';
-  }
   function waLink(a, intro) { return 'https://wa.me/' + WA + '?text=' + encodeURIComponent(leadText(a, intro)); }
   function mailLink(a, intro, subj) { return 'mailto:edwin@wolgawurzeln.de?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(leadText(a, intro)); }
-  function recHTML(a) {
-    if (!st.want) return '<p class="fz-alt">Lieber gleich fragen? <a href="' + waLink(a, 'ich habe eine Frage zu meiner Familie') + '" target="_blank" rel="noopener">Nachricht per WhatsApp</a></p>';
-    var W = WANT[st.want];
-    var intro = W.order ? 'ich interessiere mich für ' + (st.want === 'hb' ? 'den ' : 'die ') + W.n : 'ich interessiere mich für eine ' + W.n;
-    if (a.kind !== 'de') {
-      var ask = 'ich interessiere mich für ' + (W.order ? (st.want === 'hb' ? 'den ' : 'die ') : 'eine ') + W.n + ' und möchte vorab wissen, ob sich mein Name zuordnen lässt';
-      return '<div class="fz-rec"><p class="fz-rk">Vor dem Auftrag</p>' +
-        '<p class="fz-rn">' + W.n + ' <b class="num">' + W.price + '</b></p><p class="fz-rd">Bei dieser Namensform schauen wir vorab kostenlos, ob sie in russlanddeutschen Familien vorkommt. So bestellen Sie nur, was auch Ergebnisse bringt.</p>' +
-        '<div class="fz-cta"><a class="btn btn-seal" href="' + waLink(a, ask) + '" target="_blank" rel="noopener">Vorab prüfen lassen</a>' +
-        (W.order ? '<button type="button" class="btn ghost" data-fz-order="' + st.want + '">Direkt bestellen</button>' : '<a class="btn ghost" href="' + mailLink(a, ask, 'Anfrage ' + W.n + ': ' + st.name) + '">Anfrage per Mail</a>') +
-        '</div></div>';
-    }
-    return '<div class="fz-rec"><p class="fz-rk">Passend zu Ihrer Frage</p>' +
-      '<p class="fz-rn">' + W.n + ' <b class="num">' + W.price + '</b></p><p class="fz-rd">' + W.d + '</p>' +
-      '<div class="fz-cta">' + (W.order
-        ? '<button type="button" class="btn btn-seal" data-fz-order="' + st.want + '">' + W.n + ' bestellen</button><a class="btn ghost" href="' + waLink(a, intro) + '" target="_blank" rel="noopener">Vorher eine Frage stellen</a>'
-        : '<a class="btn btn-seal" href="' + waLink(a, intro) + '" target="_blank" rel="noopener">' + W.cta + '</a><a class="btn ghost" href="' + mailLink(a, intro, 'Anfrage ' + W.n + ': ' + st.name) + '">Anfrage per Mail</a>') +
-      '</div></div>';
-  }
 
-  /* Fortschritt: 1 Nachname, 2 Region, 3 Zusendung */
-  function stepsHTML(n) {
-    return '<ol class="fz-steps">' + ['Nachname', 'Region', 'Zusendung'].map(function (t, i) {
-      var c = i + 1 < n ? 'done' : i + 1 === n ? 'on' : '';
-      return '<li' + (c ? ' class="' + c + '"' : '') + (c === 'on' ? ' aria-current="step"' : '') + '><span>' + (i + 1) + '</span>' + t + '</li>';
-    }).join('') + '</ol>';
+  /* ---------- Ansichten: ein Schritt pro Ansicht. Dunkle Fläche, heller Goldknopf, keine Kästen im Kasten. ---------- */
+  function fakten(a) {
+    var f = [];
+    if (a.all && a.all.length > 1) {
+      f.push([a.all.length + ' Nachnamen', a.all.map(oneLine).join('<br>')]);
+      var hit = a.all.filter(function (x) { return x.pleve; });
+      if (hit.length) f.push(['Ansiedlungslisten 1764 bis 1767', (hit.length === a.all.length ? 'Alle Namen sind' : hit.map(function (x) { return '<b>' + esc(x.name) + '</b>'; }).join(', ').replace(/, (?=[^,]*$)/, ' und ') + (hit.length > 1 ? ' sind' : ' ist')) + ' unter den ersten Siedlern an der Wolga verzeichnet. Die Zahlen dazu stehen in Ihrer Ersteinschätzung.']);
+      if (a.all.length > 4) f.push(['Hinweis', 'Die Ersteinschätzung umfasst die ersten vier Namen. Für mehr als vier Namen stellen wir eine individuelle Recherche zusammen, den Rahmen erfahren Sie vorher.']);
+      return f;
+    }
+    if (a.russian || (a.kind === 'unklar' && !a.cyr)) { /* keine Umschrift anzeigen */ }
+    else if (a.cyr) f.push(['Deutsche Schreibweise', 'Wahrscheinlich <b>' + a.forms.map(esc).join('</b>, <b>') + '</b>. In russischen Akten wurden deutsche Namen nach Gehör geschrieben, deshalb gibt es oft mehrere Formen.']);
+    else f.push(['In russischen Akten', '<b lang="ru">' + a.forms.map(esc).join('</b> oder <b lang="ru">') + '</b>. Unter diesen Schreibweisen wird in Archiven in Russland gesucht.']);
+    if (a.pleve) f.push(['Ansiedlungslisten 1764 bis 1767', 'Unter den ersten Siedlern an der Wolga verzeichnet. Wie viele Familien es waren, welcher Konfession und unter welchen Schreibweisen, steht in Ihrer Ersteinschätzung.']);
+    if (a.menno) f.push(['Hinweis', 'Der Name ist unter den Russlandmennoniten verbreitet, deren Vorfahren ab 1789 aus dem Weichseldelta an den Dnjepr zogen.']);
+    if (!a.pleve) a.colonies.slice(0, 1).forEach(function (c) { f.push(['Gut zu wissen', 'An der Wolga gab es eine Kolonie mit diesem Namen: <a href="wissen/' + c[2] + '.html">' + esc(c[0]) + '</a>, gegründet ' + esc(c[4]) + '. Viele Kolonien trugen den Namen ihres ersten Vorstehers. Ob Ihre Familie von dort stammt, sagt der Name allein noch nicht.']); });
+    if (a.kind === 'unklar') f.push(['Namensform', 'Keine typisch deutsche Namensform. Das schließt eine russlanddeutsche Familie nicht aus: In russischen Akten wurden Namen oft verändert, und häufig liegt die deutsche Linie bei Mutter oder Großmutter.']);
+    if (a.russian) f.push(['Herkunft des Namens', 'Russische oder ukrainische Namensform. In vielen russlanddeutschen Familien liegt die deutsche Linie bei Mutter, Großmutter oder Großvater.']);
+    return f;
+  }
+  var X_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  /* Kopf der Ansicht: Titel und Schließen (nur am Handy sichtbar), darunter der Fortschritt. n = 2 oder 3, 0 ohne Schrittangabe */
+  function kopf(n) {
+    return '<div class="ez-top"><span class="ez-title">Ersteinschätzung</span><button type="button" class="ez-x" aria-label="Ersteinschätzung schließen">' + X_SVG + '</button></div>' +
+      '<div class="ez-prog"' + (n ? ' role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="' + n + '" aria-valuetext="Schritt ' + n + ' von 3"' : '') + '><i style="width:' + (n === 2 ? '66.667' : '100') + '%"></i></div>';
+  }
+  function nameHTML() { return '<h2 class="ez-name' + (st.name.length > 16 ? ' lang' : '') + '" tabindex="-1">' + esc(st.name) + '</h2>'; }
+  function regionHTML(a) {
+    var rows = Object.keys(REG).map(function (k) { return '<button type="button" class="ez-row" data-reg="' + k + '"' + (st.reg === k ? ' aria-current="true"' : '') + '><span>' + REG[k].t + '</span></button>'; }).join('');
+    return '<div class="ez">' + kopf(2) + '<div class="ez-body"><p class="ez-step">Schritt 2 von 3</p>' + nameHTML() +
+      '<dl class="ez-facts">' + fakten(a).map(function (x) { return '<div><dt>' + x[0] + '</dt><dd>' + x[1] + '</dd></div>'; }).join('') + '</dl>' +
+      '<h3 class="ez-q" id="ez-q">Wo lebte die Familie vor 1941?</h3><div class="ez-rows reg" role="group" aria-labelledby="ez-q">' + rows + '</div>' +
+      '<p class="ez-foot"><button type="button" class="ez-link fz-again">Anderen Namen eingeben</button></p></div></div>';
   }
   /* Leiser Nebenweg unter dem Formular: direkt bestellen oder gleich fragen */
   function altHTML(a) {
-    var W = st.want ? WANT[st.want] : null, t = '';
-    if (W && W.order && a.kind === 'de') t = 'Sie wissen schon, was Sie möchten? <button type="button" class="fz-again fz-direkt" data-fz-order="' + st.want + '">' + W.n + ' für ' + W.price + ' direkt bestellen</button><br>';
-    if (!TS_KEY) return t ? '<p class="fz-alt">' + t.replace(/<br>$/, '') + '</p>' : '';
-    return '<p class="fz-alt">' + t + 'Lieber gleich fragen? <a href="' + waLink(a, 'ich habe eine Frage zu meiner Familie') + '" target="_blank" rel="noopener">Nachricht per WhatsApp</a></p>';
+    var W = st.want ? WANT[st.want] : null, t = [];
+    if (W && W.order && a.kind === 'de') t.push('<button type="button" class="ez-link" data-fz-order="' + st.want + '">' + W.n + ' für ' + W.price + ' direkt bestellen</button>');
+    if (TS_KEY) t.push('<a href="' + waLink(a, 'ich habe eine Frage zu meiner Familie') + '" target="_blank" rel="noopener">Lieber gleich per WhatsApp fragen</a>');
+    return t.length ? '<p class="ez-foot">' + t.join('<br>') + '</p>' : '';
   }
+  function mailHTML(a) {
+    var p = st.pdf, v = verdict(a), r = REG[st.reg], haupt;
+    var deutsch = (a.all || [a]).some(function (x) { return !(x.russian || x.kind === 'ru'); });
+    if (!TS_KEY) {
+      haupt = '<h3 class="ez-q">Ihre Ersteinschätzung per Nachricht</h3><p class="ez-sub">Schicken Sie uns Ihre Angaben, Edwin Karl antwortet Ihnen persönlich.</p>' +
+        '<a class="ez-btn" href="' + waLink(a, 'ich möchte eine Ersteinschätzung zu meinem Namen') + '" target="_blank" rel="noopener">Per WhatsApp anfragen</a>' +
+        '<a class="ez-btn line" href="' + mailLink(a, 'ich möchte eine Ersteinschätzung zu meinem Namen', 'Ersteinschätzung: ' + st.name) + '">Per Mail anfragen</a>';
+    } else {
+      haupt = '<form class="ez-form fz-pdf-f" novalidate><h3 class="ez-q">Wohin dürfen wir Ihre Ersteinschätzung senden?</h3>' +
+        '<p class="ez-sub">Sie erhalten ein PDF mit Karte, ' + (deutsch ? 'Schreibweisen, dem Abgleich mit den Ansiedlungslisten' : 'einer Einordnung des Namens') + ' und den Quellen für Ihre Region. Danach meldet sich Edwin Karl persönlich.</p>' +
+        '<label class="ez-lab" for="fz-pm">Mailadresse</label><input id="fz-pm" type="email" name="mail" autocomplete="email" inputmode="email" enterkeyhint="send" value="' + esc(p.mail || '') + '"' + (p.err ? ' aria-invalid="true" aria-describedby="ez-err"' : '') + '>' +
+        (p.err ? '<p class="ez-err" id="ez-err" role="alert">' + p.err + '</p>' : '') +
+        '<details class="ez-more"' + (p.more || p.notiz || st.want ? ' open' : '') + '><summary><span>Angaben zur Familie hinzufügen<small>freiwillig</small></span></summary>' +
+        '<label class="ez-lab" for="fz-pw">Was möchten Sie herausfinden?</label><select id="fz-pw" name="wunsch"><option value="">Bitte wählen</option>' +
+        Object.keys(WANT).map(function (k) { return '<option value="' + k + '"' + (st.want === k ? ' selected' : '') + '>' + WANT[k].t + '</option>'; }).join('') + '</select>' +
+        '<label class="ez-lab" for="fz-pn">Was wissen Sie schon über die Familie?</label><textarea id="fz-pn" name="notiz" rows="3" maxlength="600" placeholder="Zum Beispiel Geburtsjahre und Orte der Großeltern">' + esc(p.notiz || '') + '</textarea></details>' +
+        '<input class="fz-hp" type="text" name="firma" tabindex="-1" autocomplete="off" aria-hidden="true">' +
+        '<button class="ez-btn" type="submit"' + (p.busy ? ' disabled' : '') + '>' + (p.busy ? 'Wird erstellt …' : 'Kostenlos zusenden') + '</button>' +
+        '<p class="ez-fine">Wir nutzen Ihre Angaben nur für diese Einschätzung und eine persönliche Antwort. Keine Werbemails. <a href="datenschutz.html#ersteinschaetzung">Datenschutz</a></p></form>';
+    }
+    return '<div class="ez">' + kopf(3) + '<div class="ez-body"><p class="ez-step">Schritt 3 von 3</p>' + nameHTML() +
+      '<p class="ez-ctx"><span>' + (st.reg === 'unklar' ? 'Region noch offen' : r.t) + '</span><button type="button" class="ez-link" data-ez-back>Ändern</button></p>' +
+      (v ? '<div class="ez-verdict"><p class="ez-vh">' + v.h + '</p><p>' + v.p + (TS_KEY ? '' : ' ' + r.src + ' <a href="' + r.u + '">' + r.l + '</a>') + '</p></div>' : '') +
+      haupt + '<div class="fz-altwrap">' + altHTML(a) + '</div></div></div>';
+  }
+  function fertigHTML(a) {
+    var p = st.pdf, ok = p.done === 'gesendet';
+    return '<div class="ez">' + kopf(0) + '<div class="ez-body">' + nameHTML() +
+      '<h3 class="ez-q">' + (ok ? 'Ihre Ersteinschätzung ist unterwegs.' : 'Ihre Anfrage ist angekommen.') + '</h3>' +
+      '<p class="ez-sub">' + (ok ? 'Wir haben sie an <b>' + esc(p.mail) + '</b> geschickt. Falls sie in ein paar Minuten nicht da ist, schauen Sie bitte im Spamordner nach.' : 'Die Einschätzung kommt in Kürze per Mail an <b>' + esc(p.mail) + '</b>.') + ' Danach meldet sich Edwin Karl persönlich bei Ihnen.</p>' +
+      '<p class="ez-meta">Vorgang ' + esc(p.np || '') + '</p>' +
+      '<div class="ez-rows"><a class="ez-row" href="' + waLink(a, 'ich habe eine Frage zu meiner Ersteinschätzung ' + (p.np || '')) + '" target="_blank" rel="noopener"><span>Frage per WhatsApp stellen</span></a>' +
+      '<button type="button" class="ez-row fz-again"><span>Weiteren Namen eingeben</span></button></div></div></div>';
+  }
+  function badHTML(a) {
+    return '<div class="ez">' + kopf(0) + '<div class="ez-body">' + nameHTML() +
+      '<h3 class="ez-q">Diesen Namen können wir so nicht zuordnen.</h3>' +
+      '<p class="ez-sub">Bitte prüfen Sie die Schreibweise. Geben Sie den Nachnamen so ein, wie er in Urkunden oder alten Pässen steht, gern auch auf Russisch.</p>' +
+      '<div class="ez-rows"><button type="button" class="ez-row fz-again"><span>Anderen Namen eingeben</span></button>' +
+      '<a class="ez-row" href="' + waLink(a, 'mein Name wurde bei der Ersteinschätzung nicht erkannt') + '" target="_blank" rel="noopener"><span>Der Name stimmt so? Schreiben Sie uns</span></a></div></div></div>';
+  }
+
+  /* Die Ersteinschätzung öffnet als eigene Ebene über der Seite: am Handy als ganzer Bildschirm, am Desktop als Fenster
+     in der Mitte (eigene Ebene im body, weil die Titelbühne den Inhalt sonst abschneidet). Die Zurück Taste geht einen Schritt zurück. */
+  var sheet = d.createElement('div'), offen = false, hist = 0, still = false, goBtn = form.querySelector('.fz-go');
+  sheet.className = 'fz-sheet'; sheet.setAttribute('role', 'dialog'); sheet.setAttribute('aria-modal', 'true'); sheet.setAttribute('aria-label', 'Kostenlose Ersteinschätzung');
+  d.body.appendChild(sheet); sheet.appendChild(out);
+  function ebene(on) {
+    offen = on;
+    sheet.classList.toggle('on', on);
+    d.documentElement.classList.toggle('fz-lock', on);
+    [].forEach.call(d.body.children, function (el) {
+      if (el === sheet || el.id === 'fz-ts' || el.tagName === 'SCRIPT') return;
+      if (on) el.setAttribute('inert', ''); else el.removeAttribute('inert');
+    });
+    if (on && !hist) { try { history.pushState({ fz: 1 }, ''); hist = 1; } catch (e) {} }
+  }
+  function oben(feld) {
+    sheet.scrollTop = 0;
+    var ez = out.querySelector('.ez'); if (ez) ez.scrollTop = 0;
+    var breit = w.matchMedia && w.matchMedia('(min-width: 881px)').matches;
+    var f = (feld && breit && d.getElementById(feld)) || out.querySelector('.ez-name');
+    if (f) { try { f.focus({ preventScroll: true }); } catch (e) {} }
+  }
+  function leeren() {
+    out.innerHTML = '';
+    st = { name: '', names: [], reg: '', want: '', know: {}, pdf: {}, step: '' };
+    ebene(false);
+    if (goBtn) { try { goBtn.focus({ preventScroll: true }); } catch (e) {} }
+    w.dispatchEvent(new Event('fz:change'));
+  }
+  function schliessen() {
+    if (hist) { var n = hist; hist = 0; still = true; try { history.go(-n); } catch (e) { still = false; } }
+    leeren();
+  }
+  w.addEventListener('popstate', function () {
+    if (still) { still = false; return; }
+    if (!hist) return;
+    hist--;
+    if (hist === 1 && st.step === 'mail' && !st.pdf.done) { st.step = 'region'; render(); oben(); return; }
+    if (hist) { var n = hist; hist = 0; still = true; try { history.go(-n); } catch (e) { still = false; } }
+    hist = 0; leeren();
+  });
+  d.addEventListener('keydown', function (e) { if (e.key === 'Escape' && offen) schliessen(); });
+  sheet.addEventListener('click', function (e) { if (e.target === sheet || e.target === out) schliessen(); });
+
   function render() {
-    var prevBox = out.querySelector('.fz-res'), keep = prevBox ? prevBox.scrollTop : 0;
     var a = analyseAll();
-    if (a.kind === 'bad') {
-      out.innerHTML =
-        '<div class="fz-res">' +
-        '<p class="fz-h">Ersteinschätzung für <b>' + esc(st.name) + '</b></p>' +
-        '<div class="fz-v fz-no"><p class="fz-vh">Diesen Namen können wir so nicht zuordnen</p><p>Bitte prüfen Sie die Schreibweise. Geben Sie den Nachnamen so ein, wie er in Urkunden oder alten Pässen steht, gern auch auf Russisch.</p>' +
-        '<p><button type="button" class="fz-again">Anderen Namen eingeben</button></p></div>' +
-        '<p class="fz-alt">Der Name stimmt so? <a href="' + waLink(a, 'mein Name wurde bei der Ersteinschätzung nicht erkannt') + '" target="_blank" rel="noopener">Schreiben Sie uns</a></p>' +
-        '</div>';
-      box.classList.add('has-res');
-      w.dispatchEvent(new Event('fz:change'));
-      return;
-    }
-    var kopf = '<p class="fz-h">Ihre Ersteinschätzung für <b>' + esc(st.name) + '</b></p>';
-    if (st.pdf.done) {
-      out.innerHTML = '<div class="fz-res">' + stepsHTML(4) + kopf + pdfHTML(a) +
-        '<p class="fz-alt">Fragen bis dahin? <a href="' + waLink(a, 'ich habe eine Frage zu meiner Ersteinschätzung ' + (st.pdf.np || '')) + '" target="_blank" rel="noopener">Nachricht per WhatsApp</a><br><button type="button" class="fz-again">Weiteren Namen eingeben</button></p>' +
-        '</div>';
-      box.classList.add('has-res');
-      w.dispatchEvent(new Event('fz:change'));
-      return;
-    }
-    var regBtns = Object.keys(REG).map(function (k) { return '<button type="button" class="fz-chip" data-reg="' + k + '" aria-pressed="' + (st.reg === k) + '">' + REG[k].t + '</button>'; }).join('');
-    out.innerHTML =
-      '<div class="fz-res">' +
-      stepsHTML(st.reg ? 3 : 2) + kopf +
-      '<ul class="fz-facts">' + factsHTML(a) + '</ul>' +
-      '<div class="fz-q"><p class="fz-ql">Wo lebte die Familie vor 1941?</p><div class="fz-chips">' + regBtns + '</div>' +
-      (st.reg ? '' : '<p class="fz-fine">Danach kommt Ihre Ersteinschätzung als PDF per Mail: mit Karte, Schreibweisen und der Quellenlage für Ihre Region.</p>') +
-      '</div>' +
-      '<div class="fz-vwrap">' + verdictHTML(a) + '</div>' +
-      (st.reg
-        ? pdfHTML(a) + '<div class="fz-altwrap">' + altHTML(a) + '</div>' +
-          '<p class="fz-fine">Welche Kolonie es genau ist und welchen Weg Ihre Familie nahm, klärt der Herkunftsbericht.</p>'
-        : '') +
-      '</div>';
-    var nb = out.querySelector('.fz-res'); if (nb && keep) nb.scrollTop = keep;
-    box.classList.add('has-res');
+    out.innerHTML = a.kind === 'bad' ? badHTML(a) : st.pdf.done ? fertigHTML(a) : (st.reg && st.step === 'mail') ? mailHTML(a) : regionHTML(a);
+    ebene(true);
     w.dispatchEvent(new Event('fz:change'));
   }
 
@@ -584,40 +590,42 @@
     e.preventDefault();
     var v = (inp.value || '').replace(/\s+/g, ' ').trim();
     if (v.length < 2) { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); inp.focus(); return; }
-    st.names = splitNames(v); st.name = st.names.join(', '); st.want = st.names.length > 4 ? 'ez' : st.names.length > 1 ? 'fg' : ''; st.know = {}; st.pdf = {};
+    st.names = splitNames(v); st.name = st.names.join(', '); st.want = st.names.length > 4 ? 'ez' : st.names.length > 1 ? 'fg' : ''; st.know = {}; st.pdf = {}; st.step = 'region';
     npLog('pruefung');
     inp.blur();
-    var done = false, go = function () { if (!done) { done = true; render(); } };
+    var done = false, go = function () { if (!done) { done = true; render(); oben(); } };
     loadNM().then(go);
     setTimeout(go, 2500);
   });
   out.addEventListener('click', function (e) {
     var lk = e.target.closest('a[href^="https://wa.me"], a[href^="mailto:"]');
     if (lk) npLog(/^mailto/.test(lk.getAttribute('href')) ? 'mail' : 'whatsapp');
+    if (e.target.closest('.ez-x')) { schliessen(); return; }
     var b = e.target.closest('[data-reg]');
-    if (b) { st.reg = b.getAttribute('data-reg'); npLog('region'); render(); showRec('.fz-pdf, .fz-rec'); return; }
-    var wb = e.target.closest('[data-want]');
-    if (wb) { var k = wb.getAttribute('data-want'); st.want = st.want === k ? '' : k; if (st.want) npLog('wunsch'); render(); showRec('.fz-pdf, .fz-rec'); return; }
-    var kb = e.target.closest('[data-know]');
-    if (kb) { var q = kb.getAttribute('data-know'); st.know[q] = !st.know[q]; render(); return; }
+    if (b) {
+      st.reg = b.getAttribute('data-reg'); st.step = 'mail'; npLog('region');
+      if (hist === 1) { try { history.pushState({ fz: 2 }, ''); hist = 2; } catch (er) {} }
+      render(); oben('fz-pm'); return;
+    }
+    if (e.target.closest('[data-ez-back]')) {
+      if (hist === 2) history.back();
+      else { st.step = 'region'; render(); oben(); }
+      return;
+    }
     var ob = e.target.closest('[data-fz-order]');
     if (ob) {
       npLog('bestellen');
-      var trg = d.querySelector('.pk-act [data-order="' + ob.getAttribute('data-fz-order') + '"]'), kn = d.getElementById('order-know'), nm = d.getElementById('order-name');
-      if (nm) nm.value = st.name;
-      if (kn && !kn.value.trim()) kn.value = [knowSummary(), st.pdf.notiz || ''].filter(Boolean).join('. ');
+      var art = ob.getAttribute('data-fz-order'), name = st.name, wissen = [knowSummary(), st.pdf.notiz || ''].filter(Boolean).join('. ');
+      schliessen();
+      var trg = d.querySelector('.pk-act [data-order="' + art + '"]'), kn = d.getElementById('order-know'), nm = d.getElementById('order-name');
+      if (nm) nm.value = name;
+      if (kn && !kn.value.trim()) kn.value = wissen;
       if (trg) trg.click();
       return;
     }
-    if (e.target.closest('.fz-again')) { inp.value = ''; inp.focus(); return; }
-    var g = e.target.closest('[data-fz-go]');
-    if (g) {
-      e.preventDefault();
-      var pk = d.getElementById('pakete'), pick = d.querySelector('[data-pick="' + g.getAttribute('data-fz-go') + '"]');
-      if (pick) pick.click();
-      if (pk) pk.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (e.target.closest('.fz-again')) { schliessen(); inp.value = ''; inp.focus(); return; }
   });
+  out.addEventListener('toggle', function (e) { if (e.target.classList && e.target.classList.contains('ez-more')) st.pdf.more = e.target.open; }, true);
   out.addEventListener('submit', function (e) {
     var f = e.target.closest('.fz-pdf-f');
     if (!f) return;
@@ -626,7 +634,7 @@
   });
   out.addEventListener('change', function (e) {
     if (e.target.id !== 'fz-pw') return;
-    st.want = e.target.value; e.target.classList.toggle('leer', !st.want);
+    st.want = e.target.value;
     if (st.want) npLog('wunsch');
     var aw = out.querySelector('.fz-altwrap'); if (aw) aw.innerHTML = altHTML(analyseAll());
   });
@@ -635,11 +643,8 @@
     if (e.target.id === 'fz-pn') st.pdf.notiz = e.target.value;
   });
   var cl = box.querySelector('.fz-close');
-  if (cl) cl.addEventListener('click', function () { out.innerHTML = ''; box.classList.remove('has-res'); st = { name: '', names: [], reg: '', want: '', know: {}, pdf: {} }; w.dispatchEvent(new Event('fz:change')); });
-
-  var goBtn = form.querySelector('.fz-go');
-  if (goBtn) w.addEventListener('fz:change', function () { goBtn.textContent = box.classList.contains('has-res') ? 'Ändern' : 'Starten'; });
+  if (cl) cl.addEventListener('click', schliessen);
 
   /* für Tests */
-  w.__fz = { deToRu: deToRu, ruToDe: ruToDe, analyse: analyse, stufe: stufe, nameKind: nameKind, loadNM: loadNM, st: function () { return st; } };
+  w.__fz = { deToRu: deToRu, ruToDe: ruToDe, analyse: analyse, stufe: stufe, nameKind: nameKind, loadNM: loadNM, st: function () { return st; }, close: schliessen };
 })();
