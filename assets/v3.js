@@ -49,7 +49,6 @@
   }
 
   /* Auftrag: Angaben, vorzeitiger Beginn, dann Bezahlseite */
-  var W3F_KEY = ''; /* Web3Forms Zugangsschlüssel. Leer: keine Formularmail, alles andere läuft. */
   var od = document.getElementById('order');
   if (od && od.showModal) {
     var P = {
@@ -107,25 +106,11 @@
       setA(ml, true, 'mailto:edwin@wolgawurzeln.de?subject=' + encodeURIComponent('Bestellung ' + ono + ': ' + cur.name) + '&body=' + encodeURIComponent(msg()));
     }
     function flag(el) { var f = el && el.closest('.dlg-f'); if (!f) return; el.focus(); f.classList.add('miss'); setTimeout(function () { f.classList.remove('miss'); }, 1400); }
-    function send(via) {
-      if (!W3F_KEY || !window.fetch || !window.FormData) return;
-      var fd = new FormData(), add = function (k, v) { fd.append(k, v); };
-      add('access_key', W3F_KEY);
-      add('subject', 'Bestellung ' + ono + ': ' + cur.name + ', ' + sname());
-      add('from_name', 'Wolgawurzeln Bestellung');
-      add('email', val(em));
-      add('Bestellnummer', ono);
-      add('Paket', cur.name + ' (' + cur.price + ')');
-      add('Zahlweg', via);
-      add('Nachname der Familie', sname());
-      add('Telefon', val(ph) || 'keine Angabe');
-      add('Was bekannt ist', val(kn) || 'keine Angabe');
-      add('Fotobuch (29 €)', bk && bk.checked ? 'ja' : 'nein');
-      add('Vorzeitiger Beginn', 'bestätigt: ' + WAIVE);
-      add('Stripe Referenz', ref());
-      add('Seite', location.href.split('#')[0]);
-      add('Zeit', new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin' }));
-      try { fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd, headers: { Accept: 'application/json' } }).catch(function () {}); } catch (e) {}
+    /* Bestellung zusätzlich an den eigenen Dienst melden: Mail an Wolgawurzeln, Eingangsbestätigung an den Kunden, Vorgang im Kundenbereich. */
+    function send(weg) {
+      var D = window.WW_DIENST; if (!D || !D.an() || !window.fetch) return;
+      var daten = { nr: ono, paket: cur.key, name: sname(), email: val(em), tel: val(ph), wissen: val(kn), fotobuch: !!(bk && bk.checked), weg: weg, ref: ref() };
+      D.token().then(function (ts) { daten.ts = ts; return D.ruf('/auftrag', { body: daten }); }).catch(function () {});
     }
     function remember() { try { localStorage.setItem('ww_order', JSON.stringify({ no: ono, p: cur.key, book: !!(bk && bk.checked), t: Date.now() })); } catch (e) {} }
     var DONE = {
@@ -176,12 +161,12 @@
         if (w) setTimeout(function () { w.focus(); }, 80);
       };
       if (!tk || !window.fetch) { start(null); return; }
-      fetch('https://wolgawurzeln-api.edwin3222.workers.dev/bestellung?b=' + encodeURIComponent(tk))
+      fetch((window.WW_DIENST ? window.WW_DIENST.api : 'https://wolgawurzeln-api.edwin3222.workers.dev') + '/bestellung?b=' + encodeURIComponent(tk))
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(start, function () { start(null); });
     })();
     [nm, em, ph, kn].forEach(function (x) { if (x) x.addEventListener('input', upd); });
-    [[pay, 'pay', 'Karte, Klarna oder andere Verfahren über Stripe (Zahlung gestartet)'], [wa, 'wa', 'Überweisung oder PayPal, Bestellung per WhatsApp'], [ml, 'mail', 'Überweisung oder PayPal, Bestellung per Mail']].forEach(function (x) {
+    [[pay, 'pay'], [wa, 'wa'], [ml, 'mail']].forEach(function (x) {
       var a = x[0]; if (!a) return;
       a.addEventListener('click', function (e) {
         if (a.getAttribute('aria-disabled') === 'true') {
@@ -191,7 +176,7 @@
           if (m === 'email') return flag(em);
           w.focus(); w.closest('.check').classList.add('nudge'); setTimeout(function () { w.closest('.check').classList.remove('nudge'); }, 900); return;
         }
-        upd(); send(x[2]); remember();
+        upd(); send(x[1]); remember();
         setTimeout(function () { showDone(x[1], a); }, 250);
       });
     });

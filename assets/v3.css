@@ -1878,3 +1878,7 @@ display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;overflow-y
 .req-ok p{margin-top:10px;font-size:17px;color:var(--ink)}
 .req-ok b{overflow-wrap:anywhere}
 .req-ok .req-nr{font:500 15px/1.3 var(--sans);color:var(--ink-2)}
+
+/* ===== Kontaktseite: Anfrageformular neben den Kontaktwegen (12.11.2026) ===== */
+.ask-box .reqform{grid-template-columns:1fr}
+@media (min-width:1100px){.ask-box .reqform{grid-template-columns:1fr 1fr}}
