@@ -16,7 +16,23 @@
     var pane = root.querySelector('[data-pane="' + name + '"]'); if (pane) pane.scrollTop = 0;
     if (fokus && name === 'nachrichten') { var t = d.getElementById('k-text'); if (t) t.focus(); }
   }
-  var ART_DOK = { bericht: 'Bericht', rechnung: 'Rechnung', quelle: 'Quelle' };
+  var ART_DOK = { bericht: 'Bericht', rechnung: 'Rechnung', quelle: 'Fund aus der Recherche' };
+  // Feste Nachrichten für die beiden Anfragen aus dem Kundenbereich. Kein Kauf, immer zuerst ein Angebot.
+  var FRAGE = { schritt: 'Ich interessiere mich für den vorgeschlagenen nächsten Schritt und bitte um ein unverbindliches Angebot.', buch: 'Ich möchte meinen Bericht zusätzlich als gedrucktes Buch bestellen. Bitte senden Sie mir die Einzelheiten.' };
+  function gefragt(v, art) { return v.nachrichten.filter(function (n) { return n.von === 'kunde' && n.text === FRAGE[art]; }).pop(); }
+  function weiter(v) {
+    if (!v.naechster) return '';
+    var g = gefragt(v, 'schritt');
+    return '<section class="k-card"><h2>Wie es weitergehen kann</h2><p class="k-rat">' + e(v.naechster) + '</p>' +
+      (g ? '<p class="k-status">Angefragt am ' + B.datum(g.zeit) + '. Wir melden uns mit einem Angebot.</p>'
+        : '<button class="k-btn line" type="button" data-frage="schritt">Dazu ein Angebot anfragen</button><p class="k-fine">Unverbindlich. Sie erhalten zuerst ein Angebot und entscheiden dann.</p>') + '</section>';
+  }
+  function buch(v) {
+    if ((v.art !== 'hb' && v.art !== 'fg') || v.buch || !v.dateien.some(function (f) { return f.art === 'bericht'; })) return '';
+    var g = gefragt(v, 'buch');
+    return '<div class="k-buch"><p><b>Als gedrucktes Buch</b>Ihr Bericht als gedrucktes Fotobuch, zum Aufbewahren oder Verschenken. 29 €, Versand in Deutschland kostenlos.</p>' +
+      (g ? '<p class="k-status">Angefragt am ' + B.datum(g.zeit) + '. Wir melden uns mit den Einzelheiten.</p>' : '<button class="k-btn line" type="button" data-frage="buch">Gedrucktes Buch anfragen</button>') + '</div>';
+  }
 
   function laden() {
     return B.ruf('/konto/daten').then(function (r) {
@@ -62,7 +78,7 @@
   function dokumente(v) {
     var von = v.dateien.filter(function (f) { return f.von !== 'kunde' && f.art !== 'quelle'; }), funde = v.dateien.filter(function (f) { return f.von !== 'kunde' && f.art === 'quelle'; }), eigen = v.dateien.filter(function (f) { return f.von === 'kunde'; });
     return '<section class="k-card"><h2>Dokumente</h2>' + (von.length ? '<ul class="k-rows">' + von.map(function (f) { return zeile(f, (ART_DOK[f.art] || 'Dokument') + ' vom ' + B.datum(f.zeit) + ', ' + B.groesse(f.groesse)); }).join('') + '</ul>'
-      : '<p class="k-leer">Hier finden Sie Ihren Bericht und Ihre Rechnung, sobald sie fertig sind.</p>') +
+      : '<p class="k-leer">Hier finden Sie Ihren Bericht und Ihre Rechnung, sobald sie fertig sind.</p>') + buch(v) +
       (funde.length ? '<h3 class="k-sub">Funde aus der Recherche</h3><ul class="k-rows">' + funde.map(function (f) { return zeile(f, 'eingestellt am ' + B.datum(f.zeit) + ', ' + B.groesse(f.groesse)); }).join('') + '</ul>' +
         '<p class="k-fine">Zwischenstand aus der laufenden Arbeit. Die Einordnung aller Funde steht im Bericht.</p>' : '') +
       '<h3 class="k-sub">Ihre Unterlagen</h3>' + (eigen.length ? '<ul class="k-rows">' + eigen.map(function (f) { return zeile(f, 'hochgeladen am ' + B.datum(f.zeit) + ', ' + B.groesse(f.groesse)); }).join('') + '</ul>'
@@ -84,7 +100,7 @@
       (alle.length > 1 ? '<div class="k-wahl">' + alle.map(function (x) { return '<button type="button" data-vorgang="' + x.id + '"' + (x.id === v.id ? ' aria-pressed="true"' : ' aria-pressed="false"') + '>' + e(x.titel) + '</button>'; }).join('') + '</div>' : '') +
       '<h1>' + e(v.titel) + '</h1><p class="k-meta"><span class="k-tag">' + e(v.stufen[v.stufe]) + '</span><span>Vorgang ' + e(v.nr) + '</span>' +
       (v.geplant && v.stufe < v.stufen.length - 1 ? '<span>Bericht geplant bis ' + B.datum(v.geplant) + '</span>' : '') + '</p></div></div>' +
-      '<main class="k-main"><div class="k-col"><div class="k-pane" data-pane="stand">' + verlauf(v) + stunden(v) + '</div><div class="k-pane" data-pane="nachrichten">' + nachrichten(v) + '</div></div>' +
+      '<main class="k-main"><div class="k-col"><div class="k-pane" data-pane="stand">' + verlauf(v) + stunden(v) + weiter(v) + '</div><div class="k-pane" data-pane="nachrichten">' + nachrichten(v) + '</div></div>' +
       '<div class="k-col"><div class="k-pane" data-pane="unterlagen">' + dokumente(v) + '</div><div class="k-pane" data-pane="kontakt">' + partner() + '</div></div></main>' +
       '<nav class="k-nav" aria-label="Bereiche">' + TABS.map(function (t) { return '<button type="button" data-tab="' + t[0] + '">' + t[2] + '<span>' + t[1] + '</span></button>'; }).join('') + '</nav>';
     tab(S.tab);
@@ -92,9 +108,14 @@
   function halten() { var t = d.getElementById('k-text'); if (t) S.entwurf = t.value; }
 
   root.addEventListener('click', function (ev) {
-    var t = ev.target.closest('[data-a],[data-datei],[data-vorgang],[data-tab]'); if (!t) return;
+    var t = ev.target.closest('[data-a],[data-datei],[data-vorgang],[data-tab],[data-frage]'); if (!t) return;
     if (t.dataset.datei) return B.dateiHolen(t.dataset.datei, t.dataset.name, t);
     if (t.dataset.tab) return tab(t.dataset.tab, !!t.dataset.fokus);
+    if (t.dataset.frage) {
+      halten(); t.disabled = true; t.textContent = 'Wird gesendet';
+      B.ruf('/konto/nachricht', { body: { vorgang: S.akt, text: FRAGE[t.dataset.frage] } }).then(function (r) { if (r.st === 401) return raus(); S.tab = r.st === 200 ? 'nachrichten' : S.tab; laden(); });
+      return;
+    }
     halten();
     if (t.dataset.vorgang) { S.akt = Number(t.dataset.vorgang); S.frei = false; S.meldung = ''; S.entwurf = ''; zeigen(); w.scrollTo(0, 0); return; }
     var a = t.dataset.a;
