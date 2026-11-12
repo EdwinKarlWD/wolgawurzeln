@@ -3,13 +3,25 @@
   'use strict';
   var B = w.WW_BEREICH, e = B.e, root = d.getElementById('bereich');
   var TEXT = { titel: 'Kundenbereich', text: 'Geben Sie die Mailadresse ein, mit der Sie bei uns bestellt oder angefragt haben. Wir schicken Ihnen einen Link zur Anmeldung.' };
-  var S = { daten: null, akt: 0, geladen: 0, entwurf: '', frei: false, meldung: '' };
+  var S = { daten: null, akt: 0, geladen: 0, entwurf: '', frei: false, meldung: '', tab: 'stand' };
+  var sv = function (pfad) { return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="square">' + pfad + '</svg>'; };
+  var TABS = [['stand', 'Stand', sv('<path d="M4 6h3M4 12h3M4 18h3M11 6h9M11 12h9M11 18h9"/>')], ['nachrichten', 'Nachrichten', sv('<path d="M4 5h16v11H10l-4 3.5V16H4z"/>')],
+    ['unterlagen', 'Unterlagen', sv('<path d="M6 3h8l4 4v14H6zM14 3v4h4M9 12h6M9 16h6"/>')], ['kontakt', 'Kontakt', sv('<path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4.5 20.5c1-4 4-5.5 7.5-5.5s6.5 1.5 7.5 5.5"/>')]];
+  function raus() { root.className = ''; B.abgelaufen(root, TEXT); }
+  // Am Handy steht die Seite fest, unten wählt eine Leiste den Bereich. Am Desktop sind alle Bereiche zugleich sichtbar.
+  function tab(name, fokus) {
+    S.tab = name; root.setAttribute('data-tab', name);
+    [].forEach.call(root.querySelectorAll('.k-nav button'), function (b) { if (b.dataset.tab === name) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+    var m = root.querySelector('.k-msgs'); if (m) m.scrollTop = m.scrollHeight;
+    var pane = root.querySelector('[data-pane="' + name + '"]'); if (pane) pane.scrollTop = 0;
+    if (fokus && name === 'nachrichten') { var t = d.getElementById('k-text'); if (t) t.focus(); }
+  }
   var ART_DOK = { bericht: 'Bericht', rechnung: 'Rechnung', quelle: 'Quelle' };
 
   function laden() {
     return B.ruf('/konto/daten').then(function (r) {
-      if (r.st === 401) return B.abgelaufen(root, TEXT);
-      if (r.st !== 200 || !r.j) { root.innerHTML = B.kopf() + '<main class="k-login"><section class="k-card"><h1>Keine Verbindung</h1><p>Der Kundenbereich ist gerade nicht erreichbar. Bitte laden Sie die Seite in ein paar Minuten neu.</p></section></main>'; return; }
+      if (r.st === 401) return raus();
+      if (r.st !== 200 || !r.j) { root.className = ''; root.innerHTML = B.kopf() + '<main class="k-login"><section class="k-card"><h1>Keine Verbindung</h1><p>Der Kundenbereich ist gerade nicht erreichbar. Bitte laden Sie die Seite in ein paar Minuten neu.</p></section></main>'; return; }
       if (r.j.admin) { w.location.replace('verwaltung.html'); return; }
       S.daten = r.j; S.geladen = Date.now();
       if (!S.daten.vorgaenge.some(function (v) { return v.id === S.akt; })) S.akt = S.daten.vorgaenge.length ? S.daten.vorgaenge[0].id : 0;
@@ -29,10 +41,10 @@
     }).join('') + '</ol></section>';
   }
   function nachrichten(v) {
-    return '<section class="k-card"><h2>Nachrichten</h2>' + (v.nachrichten.length ? v.nachrichten.map(function (n) {
+    return '<section class="k-card"><h2>Nachrichten</h2><div class="k-msgs">' + (v.nachrichten.length ? v.nachrichten.map(function (n) {
       return '<div class="k-msg' + (n.von === 'kunde' ? ' ich' : '') + '"><small>' + B.zeit(n.zeit) + ', ' + (n.von === 'kunde' ? 'Sie' : 'Wolgawurzeln') + '</small><p>' + e(n.text) + '</p></div>';
     }).join('') : '<p class="k-leer">Noch keine Nachrichten. Wenn Sie etwas ergänzen oder fragen möchten, schreiben Sie uns hier.</p>') +
-      '<form class="k-form" data-f="nachricht"><label class="k-lab" for="k-text">Ihre Nachricht</label><textarea class="k-in" id="k-text" rows="3" maxlength="2000">' + e(S.entwurf) + '</textarea>' +
+      '</div><form class="k-form" data-f="nachricht"><label class="k-lab" for="k-text">Ihre Nachricht</label><textarea class="k-in" id="k-text" rows="2" maxlength="2000">' + e(S.entwurf) + '</textarea>' +
       '<p class="k-err" role="alert"></p><button class="k-btn" type="submit">Nachricht senden</button></form></section>';
   }
   function stunden(v) {
@@ -61,22 +73,28 @@
   }
   function partner() {
     return '<section class="k-card"><h2>Ihr Ansprechpartner</h2><div class="k-pers"><span aria-hidden="true">EK</span><span><b>Edwin Karl</b><small>Ihr Ansprechpartner bei Wolgawurzeln</small></span></div>' +
-      '<p class="k-fine">Antwort in der Regel innerhalb eines Werktags, auf Deutsch, Russisch oder Englisch.</p></section>';
+      '<p class="k-fine">Antwort in der Regel innerhalb eines Werktags, auf Deutsch, Russisch oder Englisch.</p>' +
+      '<button class="k-btn k-handy" type="button" data-tab="nachrichten" data-fokus="1">Nachricht schreiben</button></section>';
   }
   function zeigen() {
     var alle = S.daten.vorgaenge, v = vorgang(), oben = B.kopf('<button class="k-out" type="button" data-a="abmelden">Abmelden</button>');
-    if (!v) { root.innerHTML = oben + '<main class="k-login"><section class="k-card"><h1>Noch kein Vorgang</h1><p>Zu Ihrer Adresse liegt noch kein Vorgang vor. Schreiben Sie uns gern an <a href="mailto:edwin@wolgawurzeln.de">edwin@wolgawurzeln.de</a>.</p></section></main>'; return; }
+    if (!v) { root.className = ''; root.innerHTML = oben + '<main class="k-login"><section class="k-card"><h1>Noch kein Vorgang</h1><p>Zu Ihrer Adresse liegt noch kein Vorgang vor. Schreiben Sie uns gern an <a href="mailto:edwin@wolgawurzeln.de">edwin@wolgawurzeln.de</a>.</p></section></main>'; return; }
+    root.className = 'k-app';
     root.innerHTML = oben + '<div class="k-head"><div><p class="k-eye">' + (alle.length > 1 ? 'Ihre Vorgänge' : 'Ihr Vorgang') + '</p>' +
       (alle.length > 1 ? '<div class="k-wahl">' + alle.map(function (x) { return '<button type="button" data-vorgang="' + x.id + '"' + (x.id === v.id ? ' aria-pressed="true"' : ' aria-pressed="false"') + '>' + e(x.titel) + '</button>'; }).join('') + '</div>' : '') +
       '<h1>' + e(v.titel) + '</h1><p class="k-meta"><span class="k-tag">' + e(v.stufen[v.stufe]) + '</span><span>Vorgang ' + e(v.nr) + '</span>' +
       (v.geplant && v.stufe < v.stufen.length - 1 ? '<span>Bericht geplant bis ' + B.datum(v.geplant) + '</span>' : '') + '</p></div></div>' +
-      '<main class="k-main"><div class="k-col">' + verlauf(v) + nachrichten(v) + '</div><div class="k-col">' + stunden(v) + dokumente(v) + partner() + '</div></main>';
+      '<main class="k-main"><div class="k-col"><div class="k-pane" data-pane="stand">' + verlauf(v) + stunden(v) + '</div><div class="k-pane" data-pane="nachrichten">' + nachrichten(v) + '</div></div>' +
+      '<div class="k-col"><div class="k-pane" data-pane="unterlagen">' + dokumente(v) + '</div><div class="k-pane" data-pane="kontakt">' + partner() + '</div></div></main>' +
+      '<nav class="k-nav" aria-label="Bereiche">' + TABS.map(function (t) { return '<button type="button" data-tab="' + t[0] + '">' + t[2] + '<span>' + t[1] + '</span></button>'; }).join('') + '</nav>';
+    tab(S.tab);
   }
   function halten() { var t = d.getElementById('k-text'); if (t) S.entwurf = t.value; }
 
   root.addEventListener('click', function (ev) {
-    var t = ev.target.closest('[data-a],[data-datei],[data-vorgang]'); if (!t) return;
+    var t = ev.target.closest('[data-a],[data-datei],[data-vorgang],[data-tab]'); if (!t) return;
     if (t.dataset.datei) return B.dateiHolen(t.dataset.datei, t.dataset.name, t);
+    if (t.dataset.tab) return tab(t.dataset.tab, !!t.dataset.fokus);
     halten();
     if (t.dataset.vorgang) { S.akt = Number(t.dataset.vorgang); S.frei = false; S.meldung = ''; S.entwurf = ''; zeigen(); w.scrollTo(0, 0); return; }
     var a = t.dataset.a;
@@ -89,7 +107,7 @@
     var v = vorgang(), status = root.querySelector('.k-status'), knopf = root.querySelector('[data-a="datei"]'); knopf.disabled = true; halten();
     B.hochladen('/konto/hochladen?vorgang=' + v.id, ev.target.files, function (t) { status.textContent = t; }, function (fehler) {
       S.meldung = fehler || 'Hochgeladen. Vielen Dank, wir sehen uns die Unterlagen an.';
-      if (B.sitzung) laden(); else B.abgelaufen(root, TEXT);
+      if (B.sitzung) laden(); else raus();
     });
   });
   root.addEventListener('submit', function (ev) {
@@ -100,11 +118,11 @@
       var text = d.getElementById('k-text').value.trim();
       if (text.length < 2) { err.textContent = 'Bitte schreiben Sie zuerst Ihre Nachricht.'; return; }
       knopf.disabled = true; knopf.textContent = 'Wird gesendet';
-      B.ruf('/konto/nachricht', { body: { vorgang: v.id, text: text } }).then(function (r) { if (r.st === 200) { S.entwurf = ''; laden(); } else if (r.st === 401) B.abgelaufen(root, TEXT); else fehler(r); });
+      B.ruf('/konto/nachricht', { body: { vorgang: v.id, text: text } }).then(function (r) { if (r.st === 200) { S.entwurf = ''; laden(); } else if (r.st === 401) raus(); else fehler(r); });
     }
     if (f.dataset.f === 'freigabe') {
       knopf.disabled = true; knopf.textContent = 'Wird gesendet'; halten();
-      B.ruf('/konto/freigabe', { body: { vorgang: v.id, stunden: Number(d.getElementById('k-std').value) } }).then(function (r) { if (r.st === 200) { S.frei = false; laden(); } else if (r.st === 401) B.abgelaufen(root, TEXT); else fehler(r); });
+      B.ruf('/konto/freigabe', { body: { vorgang: v.id, stunden: Number(d.getElementById('k-std').value) } }).then(function (r) { if (r.st === 200) { S.frei = false; laden(); } else if (r.st === 401) raus(); else fehler(r); });
     }
   });
   d.addEventListener('visibilitychange', function () {
