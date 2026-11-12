@@ -220,6 +220,8 @@
   }
   /* Ersteinschätzung als PDF per Mail. Ohne Turnstile Schlüssel steht an der Stelle die Anfrage per WhatsApp oder Mail. */
   var WD = w.WW_DIENST || {}, EZ_API = (WD.api || 'https://wolgawurzeln-api.edwin3222.workers.dev') + '/einschaetzung', TS_KEY = WD.key || ''; /* Site Key steht in assets/dienst.js */
+  /* Texte, die den Versand per Mail versprechen, erst zeigen, wenn der Dienst eingerichtet ist */
+  if (TS_KEY) [].forEach.call(d.querySelectorAll('[data-mit-dienst]'), function (el) { el.textContent = el.getAttribute('data-mit-dienst'); });
   function quelle() {
     try {
       var u = new URLSearchParams(location.search), q = u.get('utm_source') || u.get('quelle');
