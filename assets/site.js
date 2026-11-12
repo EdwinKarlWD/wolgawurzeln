@@ -87,7 +87,7 @@
       var L = ['Bestellnummer: ' + ono, 'Nachname der Familie: ' + sname(), 'E-Mail: ' + val(em)];
       if (val(ph)) L.push('Telefon: ' + val(ph));
       if (val(kn)) L.push('Das weiß ich schon: ' + val(kn));
-      return 'Hallo Edwin, ich möchte ' + cur.art + ' ' + cur.name + ' (' + cur.price + ') bestellen und per Überweisung oder PayPal bezahlen.' +
+      return 'Guten Tag, ich möchte ' + cur.art + ' ' + cur.name + ' (' + cur.price + ') bestellen und per Überweisung oder PayPal bezahlen.' +
         (bk && bk.checked ? ' Zusätzlich hätte ich gern das gedruckte Fotobuch (29 €).' : '') + '\n\n' + L.join('\n') + '\n\n' + WAIVE;
     }
     function setA(a, ok, href) { if (!a) return; a.setAttribute('aria-disabled', ok ? 'false' : 'true'); if (ok) a.setAttribute('href', href); else a.removeAttribute('href'); }

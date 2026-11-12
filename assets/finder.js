@@ -298,7 +298,7 @@
   function knownList() { return Object.keys(KNOW).filter(function (k) { return st.know[k]; }); }
   function leadText(a, intro) {
     var code = (st.want ? st.want.toUpperCase() : 'NP') + stufe(a);
-    var L = ['Hallo Edwin, ' + intro + ' (Ersteinschätzung ' + code + ').', '', (st.names.length > 1 ? 'Nachnamen: ' : 'Nachname: ') + st.name];
+    var L = ['Guten Tag, ' + intro + ' (Ersteinschätzung ' + code + ').', '', (st.names.length > 1 ? 'Nachnamen: ' : 'Nachname: ') + st.name];
     if (st.reg) L.push('Region: ' + REG[st.reg].t);
     if (st.want) L.push('Interesse: ' + WANT[st.want].n);
     var k = knownList();
@@ -527,7 +527,7 @@
       '<div><dt>Region</dt><dd>' + (st.reg === 'unklar' ? 'noch offen' : r.t) + '<button type="button" class="ez-link" data-ez-back>Ändern</button></dd></div></dl>' +
       (v ? '<p class="ez-status">' + (v.c === 'good' ? HAKEN : '') + '<span><b>' + v.h + '.</b> ' + (v.c === 'good' ? v.p.split('. ')[0].replace(/\.?$/, '.') : v.p) + (TS_KEY ? '' : ' ' + r.src + ' <a href="' + r.u + '">' + r.l + '</a>') + '</span></p>' : '') + '</section>';
     if (!TS_KEY) {
-      haupt = '<h2 class="ez-q">Ihre Ersteinschätzung per Nachricht</h2><div class="ez-card"><p class="ez-help first">Schicken Sie uns Ihre Angaben, Edwin Karl antwortet Ihnen persönlich.</p>' +
+      haupt = '<h2 class="ez-q">Ihre Ersteinschätzung per Nachricht</h2><div class="ez-card"><p class="ez-help first">Schicken Sie uns Ihre Angaben, Wolgawurzeln antwortet Ihnen persönlich.</p>' +
         '<a class="ez-btn" href="' + waLink(a, 'ich möchte eine Ersteinschätzung zu meinem Namen') + '" target="_blank" rel="noopener">Per WhatsApp anfragen</a>' +
         '<a class="ez-btn line" href="' + mailLink(a, 'ich möchte eine Ersteinschätzung zu meinem Namen', 'Ersteinschätzung: ' + st.name) + '">Per Mail anfragen</a></div>';
     } else {
@@ -535,7 +535,7 @@
         '<form class="ez-form fz-pdf-f" novalidate><div class="ez-card">' +
         '<label class="ez-lab" for="fz-pm">Mailadresse</label><input id="fz-pm" type="email" name="mail" autocomplete="email" inputmode="email" enterkeyhint="send" value="' + esc(p.mail || '') + '"' + (p.err ? ' aria-invalid="true" aria-describedby="ez-err"' : '') + '>' +
         (p.err ? '<p class="ez-err" id="ez-err" role="alert">' + p.err + '</p>' : '') +
-        '<p class="ez-help">Sie erhalten ein PDF mit Karte, ' + (deutsch ? 'Schreibweisen' : 'einer Einordnung des Namens') + ' und Quellenlage. Danach meldet sich Edwin Karl persönlich.</p>' +
+        '<p class="ez-help">Sie erhalten ein PDF mit Karte, ' + (deutsch ? 'Schreibweisen' : 'einer Einordnung des Namens') + ' und Quellenlage. Danach meldet sich Wolgawurzeln persönlich bei Ihnen.</p>' +
         '<details class="ez-more"' + (p.more || p.notiz || st.want ? ' open' : '') + '><summary><span>Angaben zur Familie hinzufügen<small>freiwillig</small></span></summary>' +
         '<label class="ez-lab" for="fz-pw">Was möchten Sie herausfinden?</label><select id="fz-pw" name="wunsch"><option value="">Bitte wählen</option>' +
         Object.keys(WANT).map(function (k) { return '<option value="' + k + '"' + (st.want === k ? ' selected' : '') + '>' + WANT[k].t + '</option>'; }).join('') + '</select>' +
@@ -552,7 +552,7 @@
     return '<div class="ez">' + kopf(4) + '<div class="ez-body"><div class="ez-done">' + HAKEN + '<h2 class="ez-q ez-name" tabindex="-1">' + (ok ? 'Ihre Ersteinschätzung ist unterwegs' : 'Ihre Anfrage ist angekommen') + '</h2></div>' +
       '<section class="ez-card"><dl class="ez-kv oben"><div><dt>' + (ok ? 'Gesendet an' : 'Mailadresse') + '</dt><dd>' + esc(p.mail) + '</dd></div><div><dt>Name</dt><dd>' + esc(st.name) + '</dd></div><div><dt>Vorgang</dt><dd>' + esc(p.np || '') + '</dd></div></dl></section>' +
       '<h3 class="ez-h3">So geht es weiter</h3><ol class="ez-next"><li>' + (ok ? 'Das PDF kommt in den nächsten Minuten per Mail. Schauen Sie sonst bitte im Spamordner nach.' : 'Das PDF kommt in Kürze per Mail.') + '</li>' +
-      '<li>Edwin Karl meldet sich danach persönlich bei Ihnen.</li><li>Sie entscheiden in Ruhe, ob Sie eine Recherche möchten.</li></ol>' +
+      '<li>Wolgawurzeln meldet sich danach persönlich bei Ihnen.</li><li>Sie entscheiden in Ruhe, ob Sie eine Recherche möchten.</li></ol>' +
       '<div class="ez-bar"><button type="button" class="ez-btn" data-ez-close>Fertig</button></div>' +
       '<p class="ez-foot"><button type="button" class="ez-link fz-again">Weiteren Namen eingeben</button><br><a href="' + waLink(a, 'ich habe eine Frage zu meiner Ersteinschätzung ' + (p.np || '')) + '" target="_blank" rel="noopener">Frage per WhatsApp stellen</a></p></div></div>';
   }
