@@ -46,11 +46,13 @@
         '<p class="k-fine">Mit der Freigabe beauftragen Sie die gewählten Stunden zu je ' + v.std.preis + ' €. Die Rechnung erhalten Sie mit der Lieferung.</p></form>'
         : '<button class="k-btn line" type="button" data-a="frei-auf">Weitere Stunden freigeben</button><p class="k-fine">' + v.std.preis + ' € je weitere Stunde. Gearbeitet wird erst nach Ihrer Freigabe.</p>') + '</section>';
   }
-  function zeile(f, beschr) { return '<li><span><b>' + e(f.name) + '</b><small>' + beschr + '</small></span><button class="k-link" type="button" data-datei="' + f.id + '" data-name="' + e(f.name) + '">Herunterladen</button></li>'; }
+  function zeile(f, beschr) { return '<li><span><b>' + e(f.name) + '</b><small>' + beschr + '</small>' + (f.notiz ? '<span class="k-anm">' + e(f.notiz) + '</span>' : '') + '</span><button class="k-link" type="button" data-datei="' + f.id + '" data-name="' + e(f.name) + '">Herunterladen</button></li>'; }
   function dokumente(v) {
-    var von = v.dateien.filter(function (f) { return f.von !== 'kunde'; }), eigen = v.dateien.filter(function (f) { return f.von === 'kunde'; });
+    var von = v.dateien.filter(function (f) { return f.von !== 'kunde' && f.art !== 'quelle'; }), funde = v.dateien.filter(function (f) { return f.von !== 'kunde' && f.art === 'quelle'; }), eigen = v.dateien.filter(function (f) { return f.von === 'kunde'; });
     return '<section class="k-card"><h2>Dokumente</h2>' + (von.length ? '<ul class="k-rows">' + von.map(function (f) { return zeile(f, (ART_DOK[f.art] || 'Dokument') + ' vom ' + B.datum(f.zeit) + ', ' + B.groesse(f.groesse)); }).join('') + '</ul>'
       : '<p class="k-leer">Hier finden Sie Ihren Bericht und Ihre Rechnung, sobald sie fertig sind.</p>') +
+      (funde.length ? '<h3 class="k-sub">Funde aus der Recherche</h3><ul class="k-rows">' + funde.map(function (f) { return zeile(f, 'eingestellt am ' + B.datum(f.zeit) + ', ' + B.groesse(f.groesse)); }).join('') + '</ul>' +
+        '<p class="k-fine">Zwischenstand aus der laufenden Arbeit. Die Einordnung aller Funde steht im Bericht.</p>' : '') +
       '<h3 class="k-sub">Ihre Unterlagen</h3>' + (eigen.length ? '<ul class="k-rows">' + eigen.map(function (f) { return zeile(f, 'hochgeladen am ' + B.datum(f.zeit) + ', ' + B.groesse(f.groesse)); }).join('') + '</ul>'
       : '<p class="k-leer">Urkunden, Fotos, alte Briefe: Alles, was Sie zur Familie haben, hilft bei der Recherche.</p>') +
       (S.daten.speicher === false ? '<p class="k-fine">Unterlagen senden Sie uns bitte per Mail an <a href="mailto:edwin@wolgawurzeln.de">edwin@wolgawurzeln.de</a>.</p>'

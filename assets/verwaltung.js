@@ -4,7 +4,7 @@
   var B = w.WW_BEREICH, e = B.e, root = d.getElementById('bereich');
   var TEXT = { titel: 'Verwaltung', text: 'Anmeldung nur mit der Adresse des Betreibers. Der Link kommt per Mail.' };
   var S = { daten: null, tab: 'vorgaenge', akt: 0, filter: 'offen', such: '', neu: null, meldung: '', loesch: 0, weg: false };
-  var ART_DOK = { bericht: 'Bericht', rechnung: 'Rechnung', quelle: 'Quelle', unterlage: 'Unterlage vom Kunden' };
+  var ART_DOK = { bericht: 'Bericht', rechnung: 'Rechnung', quelle: 'Fund aus der Recherche', unterlage: 'Unterlage vom Kunden' };
 
   function laden(behalte) {
     return B.ruf('/verwaltung/daten').then(function (r) {
@@ -15,6 +15,7 @@
     });
   }
   var fertig = function (v) { return v.stufe >= v.stufen.length - 1; };
+  var leer = function (v) { return v.std.b > 0 && v.std.v >= v.std.b && !fertig(v); };
   var wartet = function (v) { var n = v.nachrichten; return n.length && n[n.length - 1].von === 'kunde'; };
   function vorgang() { return S.daten.vorgaenge.filter(function (v) { return v.id === S.akt; })[0]; }
   function gefiltert() {
@@ -31,7 +32,7 @@
     return l.length ? l.map(function (v) {
       return '<li><button type="button" data-vorgang="' + v.id + '"' + (v.id === S.akt ? ' aria-current="true"' : '') + '><b>' + e(v.titel) + '</b>' +
         '<span class="v-zeile"><span>' + e(v.nr) + '</span><span>' + e(v.kunde.name) + '</span></span>' +
-        '<span class="v-zeile"><span class="k-tag' + (fertig(v) ? ' still' : '') + '">' + e(v.stufen[v.stufe]) + '</span>' + (wartet(v) ? '<span class="k-tag rot">Antwort offen</span>' : '') + '</span></button></li>';
+        '<span class="v-zeile"><span class="k-tag' + (fertig(v) ? ' still' : '') + '">' + e(v.stufen[v.stufe]) + '</span>' + (wartet(v) ? '<span class="k-tag rot">Antwort offen</span>' : '') + (leer(v) ? '<span class="k-tag still">Stunden aufgebraucht</span>' : '') + '</span></button></li>';
     }).join('') : '<li class="k-leer">Kein Vorgang in dieser Ansicht.</li>';
   }
   function feld(id, lab, wert, typ, mehr) { return '<div class="v-feld"><label class="k-lab" for="' + id + '">' + lab + '</label><input class="k-in" id="' + id + '" type="' + (typ || 'text') + '" value="' + e(wert) + '"' + (mehr || '') + '></div>'; }
@@ -61,10 +62,11 @@
           '<button class="k-link" type="button" data-datei="' + f.id + '" data-name="' + e(f.name) + '">Herunterladen</button>' +
           '<button class="k-link rot" type="button" data-loesch="' + f.id + '">' + (S.loesch === f.id ? 'Wirklich löschen' : 'Löschen') + '</button></span></li>';
       }).join('') + '</ul>' : '<p class="k-leer">Noch keine Dateien.</p>') +
-      (S.daten.speicher ? '<div class="v-paar v-hoch"><div class="v-feld"><label class="k-lab" for="v-art">Art des Dokuments</label><select class="k-in" id="v-art"><option value="bericht">Bericht</option><option value="rechnung">Rechnung</option><option value="quelle">Quelle</option></select></div>' +
+      (S.daten.speicher ? '<div class="v-paar v-hoch"><div class="v-feld"><label class="k-lab" for="v-art">Art des Dokuments</label><select class="k-in" id="v-art"><option value="bericht">Bericht</option><option value="rechnung">Rechnung</option>' + (stunden ? '<option value="quelle">Fund aus der Recherche</option>' : '') + '</select></div>' +
         '<label class="v-haken"><input type="checkbox" id="v-datei-mail" checked> Kunden per Mail informieren</label></div>' +
+        '<div class="v-feld"><label class="k-lab" for="v-notiz">Anmerkung für den Kunden (freiwillig)</label><input class="k-in" id="v-notiz" type="text" maxlength="400" placeholder="Was das Dokument zeigt, in ein bis zwei Sätzen"></div>' +
         '<input type="file" id="v-datei" multiple accept="' + B.erlaubt + '" hidden><button class="k-btn line" type="button" data-a="datei">Dokument für den Kunden einstellen</button>' +
-        '<p class="k-fine">PDF oder Bild, je Datei bis 15 MB. Keine Scans aus Archion einstellen, die Nutzungsbedingungen erlauben die Weitergabe nicht.</p>'
+        '<p class="k-fine">PDF oder Bild, je Datei bis 15 MB. Keine Scans aus Archion einstellen, die Nutzungsbedingungen erlauben die Weitergabe nicht.' + (stunden ? ' Funde aus der Recherche: nur Geprüftes, am besten ein bis drei Stücke kurz bevor weitere Stunden freizugeben sind.' : '') + '</p>'
         : '<p class="k-note">Der Dateispeicher ist noch nicht eingerichtet. Solange gehen Dokumente per Mail an den Kunden.</p>') + '</section>' +
       '<p class="v-ende"><button class="k-link rot" type="button" data-a="weg">' + (S.weg ? 'Wirklich löschen, mit allen Nachrichten und Dateien' : 'Vorgang löschen') + '</button></p>';
   }
@@ -146,7 +148,7 @@
   root.addEventListener('change', function (ev) {
     if (ev.target.id !== 'v-datei' || !ev.target.files.length) return;
     var v = vorgang(), knopf = root.querySelector('[data-a="datei"]'), alt = knopf.textContent; knopf.disabled = true;
-    B.hochladen('/verwaltung/hochladen?vorgang=' + v.id + '&art=' + wert('v-art') + (d.getElementById('v-datei-mail').checked ? '&melden=1' : ''), ev.target.files, function (t) { knopf.textContent = t; }, function (fehler) {
+    B.hochladen('/verwaltung/hochladen?vorgang=' + v.id + '&art=' + wert('v-art') + (wert('v-notiz') ? '&notiz=' + encodeURIComponent(wert('v-notiz')) : '') + (d.getElementById('v-datei-mail').checked ? '&melden=1' : ''), ev.target.files, function (t) { knopf.textContent = t; }, function (fehler) {
       knopf.textContent = alt; S.meldung = fehler || ''; laden(true);
     });
   });
