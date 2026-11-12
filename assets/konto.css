@@ -116,14 +116,38 @@ select.k-in{appearance:none;background:#fff linear-gradient(45deg,transparent 50
 .v-dl dt{color:var(--i2)}
 .v-dl dd{white-space:pre-line;overflow-wrap:anywhere}
 .v-hoch{align-items:end}
-@media (max-width:899px){.k-col{display:contents}.v-main.hat-detail .v-links{display:none}.v-leer{display:none}}
+.k-nav,.k-handy{display:none}
+.k-pane{display:grid;gap:12px;align-content:start;min-width:0}
+/* Kundenbereich am Handy: feste Seite, unten eine Leiste für Stand, Nachrichten, Unterlagen, Kontakt. Nur der gewählte Bereich ist zu sehen. */
+@media (max-width:899px){
+  .k-col{display:contents}.v-main.hat-detail .v-links{display:none}.v-leer{display:none}
+  .k-app{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+  .k-app .k-top,.k-app .k-head{flex:none}
+  .k-app .k-head>div{padding:12px 16px}
+  .k-app .k-head h1{margin-top:2px;font-size:21px}
+  .k-app .k-meta{margin-top:8px}
+  .k-app .k-main{flex:1;display:block;min-height:0;width:100%;max-width:none;padding:0}
+  .k-app .k-pane{display:none;height:100%;padding:12px 16px;overflow:auto;-webkit-overflow-scrolling:touch}
+  .k-app[data-tab="stand"] [data-pane="stand"],.k-app[data-tab="unterlagen"] [data-pane="unterlagen"],.k-app[data-tab="kontakt"] [data-pane="kontakt"]{display:grid}
+  .k-app[data-tab="nachrichten"] [data-pane="nachrichten"]{display:flex;flex-direction:column;overflow:hidden}
+  .k-app [data-pane="nachrichten"] .k-card{flex:1;display:flex;flex-direction:column;min-height:0}
+  .k-app .k-msgs{flex:1;min-height:0;overflow:auto;margin-top:4px;-webkit-overflow-scrolling:touch}
+  .k-app [data-pane="nachrichten"] .k-form{flex:none;margin-top:8px;border-top:1px solid var(--ln)}
+  .k-app [data-pane="nachrichten"] .k-lab{margin-top:10px}
+  .k-app [data-pane="nachrichten"] .k-btn{margin-top:10px}
+  .k-nav{flex:none;display:grid;grid-template-columns:repeat(4,1fr);padding-bottom:env(safe-area-inset-bottom);border-top:1px solid var(--ln);background:var(--karte)}
+  .k-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:62px;padding:0 2px;border:0;box-shadow:inset 0 3px 0 transparent;background:none;color:var(--i2);font:600 13px/1 var(--sans);cursor:pointer}
+  .k-nav button[aria-current="page"]{box-shadow:inset 0 3px 0 var(--n);color:var(--n)}
+  .k-nav svg{width:23px;height:23px}
+  .k-handy{display:flex}
+}
 @media (min-width:560px){.v-paar,.v-knoepfe{grid-template-columns:1fr 1fr}.v-drei{grid-template-columns:1fr 1fr 1fr}}
 @media (min-width:900px){
   .k-top{padding:0 32px}
   .k-head>div,.k-main,.v-main{padding-left:32px;padding-right:32px}
   .k-head h1{font-size:32px}
   .k-main{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;align-items:start}
-  .k-col{display:grid;gap:16px}
+  .k-col,.k-pane{display:grid;gap:16px;align-content:start}
   .k-card{padding:20px}
   .v-main{max-width:1240px;grid-template-columns:340px minmax(0,1fr);gap:20px;align-items:start}
   .v-main.eins{grid-template-columns:1fr}
