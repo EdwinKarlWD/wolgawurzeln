@@ -30,6 +30,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"ProfessionalService","@id":"https://wolgawurzeln.de/#org","name":"Wolgawurzeln","url":"https://wolgawurzeln.de/","logo":"https://wolgawurzeln.de/logo-full.png","image":"https://wolgawurzeln.de/img/og-wolgawurzeln.jpg","email":"edwin@wolgawurzeln.de","telephone":"+491735412807","founder":{"@type":"Person","name":"Edwin Karl"},"availableLanguage":["de","ru","en"],"description":"Nachschlagewerk und Forschungsdienst zur russlanddeutschen Familiengeschichte."},{"@type":"WebSite","url":"https://wolgawurzeln.de/","name":"Wolgawurzeln","inLanguage":"de","publisher":{"@id":"https://wolgawurzeln.de/#org"}}]}</script>
 <meta name="theme-color" content="#0F2342">
 <link rel="preload" href="fonts/alegreya-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<script>try{var wwA=new URLSearchParams(location.search).get('ansicht');if(wwA)sessionStorage.setItem('ww_ansicht',wwA);else wwA=sessionStorage.getItem('ww_ansicht');if(wwA==='ruhig')document.documentElement.classList.add('ruhig')}catch(e){}</script>
 <link rel="stylesheet" href="assets/v3.css">
 
 </head>
@@ -76,7 +77,7 @@
     <div class="intro-find">
       <div class="fz" id="fz">
         <form class="fz-form" aria-label="Kostenlose Ersteinschätzung" novalidate>
-          <label class="fz-l" for="fz-name"><span class="fz-e">Kostenlose Ersteinschätzung</span><span class="fz-t" data-fam="Woher stammt die Familie {n}?">Woher stammt Ihre Familie?</span><span class="fz-s" data-mit-dienst="Ihr Nachname genügt, gern auch auf Russisch. Das Ergebnis kommt als PDF per Mail.">Ihr Nachname genügt, gern auch auf Russisch. Wolgawurzeln antwortet Ihnen persönlich.</span></label>
+          <label class="fz-l" for="fz-name"><span class="fz-e">Kostenlose Ersteinschätzung</span><span class="fz-t" data-fam="Woher stammt die Familie {n}?">Woher stammt Ihre Familie?</span><span class="fz-s" data-mit-dienst="Ihr Nachname genügt, gern auch auf Russisch. Das Ergebnis kommt als PDF per Mail.">Ihr Nachname genügt, gern auch auf Russisch. Wolgawurzeln antwortet Ihnen persönlich.</span><span class="fz-s fz-s-r" data-mit-dienst="Kostenlos. Ihr Nachname genügt, das Ergebnis kommt als PDF per Mail.">Kostenlos. Ihr Nachname genügt, auch russisch.</span></label>
           <div class="fz-row"><input id="fz-name" name="n" type="text" autocomplete="family-name" autocapitalize="words" spellcheck="false" enterkeyhint="next" placeholder="Nachname"><button class="btn fz-go" type="submit">Starten</button></div>
           <p class="fz-note" data-mit-dienst="Kostenlos und unverbindlich. Ihre Mailadresse brauchen wir erst im letzten Schritt.">Kostenlos und unverbindlich.</p>
           <noscript><p class="fz-note">Die Ersteinschätzung braucht JavaScript. Ohne erreichen Sie Wolgawurzeln per <a href="https://wa.me/491735412807">WhatsApp</a> oder <a href="mailto:edwin@wolgawurzeln.de">Mail</a>.</p></noscript>
