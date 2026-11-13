@@ -931,6 +931,17 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
   w.addEventListener('load', measure);
 })();
 
+/* Verweis auf eine einzelne häufige Frage (href="#faq-..."): Die Frage klappt auf, am Handy werden dafür alle Fragen sichtbar */
+(function () {
+  'use strict';
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('a[href^="#faq-"]') : null; if (!a) return;
+    var z = document.getElementById(a.getAttribute('href').slice(1)); if (!z || z.tagName !== 'DETAILS') return;
+    var f = z.closest('.faq'); if (f) f.classList.add('alle');
+    z.open = true;
+  });
+})();
+
 /* Stufe 2: Startseite am Handy. Häufige Fragen gekürzt, Anfrage kompakt mit Namensfeld. Die Pakete bleiben Karten zum Wischen.
    Gilt nur unter 881 px (Klasse m2 am html Element, die Gestaltung dazu steht am Ende von v3.css). Darüber bleibt alles, wie es ist. */
 (function () {
