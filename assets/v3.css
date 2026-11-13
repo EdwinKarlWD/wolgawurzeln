@@ -63,7 +63,8 @@ a.tl:hover,.prose a:hover{color:var(--gold-dark);text-decoration-color:var(--gol
 .index>div{padding:26px clamp(14px,2vw,28px) 30px 0;border-bottom:1px solid var(--rule)}
 .index>div:not(:nth-child(3n)){border-right:1px solid var(--rule);margin-right:0}
 .index>div:nth-child(3n+2),.index>div:nth-child(3n){padding-left:clamp(14px,2vw,28px)}
-.index h3{font-size:22px;font-weight:600;color:var(--navy)}
+.index h3,.index .ix-h{font-size:22px;font-weight:600;color:var(--navy)}
+.index .ix-h{margin:0;font-family:var(--serif);letter-spacing:-.006em;line-height:1.25}
 .index p{margin-top:6px;font-size:16.5px;line-height:1.5;color:var(--ink-soft)}
 .index ul{margin-top:14px;display:grid;gap:6px;font-size:17px}
 .index li.soon{color:rgba(74,84,112,.7);font-style:italic}
@@ -1473,7 +1474,9 @@ button.pk-gift:hover{background:rgba(158,42,43,.09);border-color:rgba(158,42,43,
 .home-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(32px,5vw,80px);align-items:center}
 .home-acts{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
 .home-acts .btn{white-space:nowrap}
-.home-note{margin-top:22px;font-size:16px;color:var(--cream-faint)}
+.home-note{margin-top:22px;font-size:16px;color:rgba(211,201,184,.78)}
+html:not([lang=de]) .band .label,html:not([lang=de]) .navy .label,.navy .line b{color:#E3CF9A}
+.navy .line em{color:rgba(211,201,184,.78)}
 .home-map{margin:0;max-width:560px;justify-self:end;width:100%}
 .home-map figcaption{margin-top:12px;font-size:14.5px;font-style:italic;color:var(--cream-faint)}
 .sec.navy{background:var(--navy);color:var(--cream);border-top:0}
