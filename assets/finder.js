@@ -579,24 +579,11 @@
         return '<li' + (c ? ' class="' + c + '"' : '') + (c === 'on' ? ' aria-current="step"' : '') + '><span class="ez-sn">' + (c === 'done' ? '<svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 10.4l3.2 3.2L15 6.8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"/></svg>' : k) + '</span>' + t + '</li>';
       }).join('') + '</ol>' : '');
   }
-  /* Schreibweise für das Listenblatt und die Anrede der Seite: Wer klein tippt, bekommt den Namen groß geschrieben */
+  /* Schreibweise für die Anrede der Seite: Wer klein tippt, bekommt den Namen groß geschrieben */
   function gross(x) { x = String(x || ''); return x === x.toLowerCase() ? x.replace(/(^|[\s-])([a-zäöüа-яё])/g, function (m, v, c) { return v + c.toUpperCase(); }) : x; }
-  /* Erster Befund. Bei einem einzelnen deutschen Namen als Listenblatt: Der Name erscheint wie von Hand geschrieben.
-     Die Zeile „Listen der Ansiedlung an der Wolga“ steht nur dort, wo der Name in den Ansiedlungslisten wirklich verzeichnet ist.
-     Sonst ist es ein neutrales Blatt „Familienname“. Das Blatt ist eine Zeichnung, kein Abbild einer Urkunde. */
+  /* Erster Befund: Name, Schreibweisen und der Vermerk aus den Ansiedlungslisten */
   function befundHTML(a) {
     var treffer = (a.all || [a]).some(function (x) { return x.pleve; }), z = zeilen(a);
-    if (a.kind === 'de' && !a.russian && !(a.all && a.all.length > 1)) {
-      var haupt = gross(a.cyr ? a.forms[0] : st.name), neben = a.cyr ? st.name : a.forms.join(', ');
-      z = z.filter(function (x) { return x[0] !== 'In russischen Akten' && x[0] !== 'Deutsche Schreibweise' && x[0] !== 'Ansiedlungslisten 1764 bis 1767'; });
-      return '<section class="ez-card" aria-label="Erster Befund"><div class="ez-blatt' + (a.pleve ? ' liste' : '') + '">' +
-        '<p class="ez-blatt-k">' + (a.pleve ? 'Listen der Ansiedlung an der Wolga, 1764 bis 1767' : 'Familienname') + '</p>' +
-        '<h2 class="ez-name ez-schrift' + (haupt.length > 14 ? ' lang' : '') + '" tabindex="-1">' + esc(haupt) + '</h2>' +
-        (neben ? '<p class="ez-neben"><span' + (a.cyr ? '' : ' lang="ru"') + '>' + esc(neben) + '</span><small>' + (a.cyr ? 'Ihre Schreibweise' : 'in russischen Akten') + '</small></p>' : '') + '</div>' +
-        '<div class="ez-rh ez-rh2">' + (a.pleve ? HAKEN + '<p class="ez-fund">In den Ansiedlungslisten verzeichnet' + (a.cyr && a.forms.length > 1 ? ', mögliche Schreibweisen: ' + a.forms.map(esc).join(', ') : '') + '</p>' : '<p class="ez-fund">' + (a.cyr ? 'Wahrscheinliche deutsche Schreibweise' + (a.forms.length > 1 ? ', auch ' + a.forms.slice(1).map(esc).join(', ') : '') : 'Typisch deutsche Namensform') + '</p>') +
-        '<button type="button" class="ez-link fz-again">Ändern</button></div>' + (z.length ? kvHTML(z) : '') +
-        (treffer ? '<p class="ez-hint">Zahlen, Konfession und Schreibweisen stehen in Ihrer Ersteinschätzung.</p>' : '') + '</section>';
-    }
     return '<section class="ez-card" aria-label="Erster Befund"><div class="ez-rh">' + (a.kind === 'de' ? HAKEN : '') + '<h2 class="ez-name' + (st.name.length > 16 ? ' lang' : '') + '" tabindex="-1">' + esc(st.name) + '</h2>' +
       '<button type="button" class="ez-link fz-again">Ändern</button></div>' + kvHTML(z) +
       (treffer ? '<p class="ez-hint">Zahlen, Konfession und Schreibweisen stehen in Ihrer Ersteinschätzung.</p>' : '') + '</section>';
