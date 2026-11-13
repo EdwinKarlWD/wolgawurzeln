@@ -532,7 +532,9 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
       'float fres=pow(1.0-max(dot(wn,V),0.0),3.0);vec3 R=reflect(-V,wn);float spec=pow(max(dot(R,uSun),0.0),90.0);' +
       'float toSun=pow(max(dot(normalize(vec3(R.x,0.0,R.z)),normalize(vec3(uSun.x,0.0,uSun.z))),0.0),4.0);' +
       'vec3 deep=mix(vec3(0.10,0.24,0.40),vec3(0.04,0.09,0.20),uEv);vec3 sky=mix(vec3(0.56,0.68,0.86),vec3(0.30,0.39,0.60),uEv);vec3 warm=mix(vec3(0.95,0.66,0.55),vec3(1.0,0.70,0.45),uEv);' +
-      'vec3 water=mix(deep,mix(sky,warm,toSun*mix(0.6,0.95,uEv)),mix(0.25+0.6*fres,0.10+0.90*fres,uEv))+spec*vec3(1.0,0.92,0.80)*mix(0.9,1.3,uEv);' +
+      /* Abends spiegelt das Wasser den Himmel nach Höhe: flach gesehen das warme Licht am Horizont, steil gesehen das tiefe Blau darüber */
+      'vec3 skyE=mix(mix(vec3(0.66,0.54,0.52),vec3(1.0,0.72,0.46),toSun),vec3(0.10,0.17,0.34),smoothstep(0.03,0.42,clamp(R.y,0.0,1.0)));' +
+      'vec3 water=mix(deep,mix(mix(sky,warm,toSun*0.6),skyE,uEv),mix(0.25+0.6*fres,0.10+0.90*fres,uEv))+spec*vec3(1.0,0.92,0.80)*mix(0.9,1.3,uEv);' +
       /* Abends: breite Lichtbahn der Sonne auf dem Wasser */
       'water+=uEv*vec3(1.0,0.70,0.42)*pow(max(dot(R,uSun),0.0),12.0)*0.30;' +
       'float shallow=smoothstep(vHW-0.4,vHW,at)*(0.4+0.6*noise(vP.xz*2.2));water=mix(water,mix(vec3(0.36,0.52,0.58),vec3(0.17,0.25,0.36),uEv),shallow*0.4);' +
