@@ -209,15 +209,55 @@
     { k: 'konf', t: 'Welcher Konfession gehörten die Vorfahren an?', h: 'Die meisten Kolonien hatten nur eine Konfession. Das grenzt die Suche ein.', o: KONF }
   ];
   function frAktiv() { return !!st.reg && !!st.fr; }
-  /* Antworten als kurze Zeilen: für die Karte, die Anfrage und den Bestelldialog */
+  /* Was eine Antwort bedeutet: Jede Antwort bekommt ihren eigenen Satz, wo es sinnvoll ist auch je Kombination mit der Region.
+     Nur allgemeine Geschichte und Quellenlage, nie eine Kolonie und bei unbekannter Region kein Gebiet. */
+  function deutLand() {
+    var l = st.fr.land, r = st.reg;
+    if (!l || l === 'sonst') return '';
+    if (l === 'de') return r === 'wolga' ? 'Für Familien von der Wolga ist das ungewöhnlich, denn die Wolgadeutschen wurden 1941 nach Osten deportiert. Wichtig ist dann, wann die Familie die Wolga verlassen hat.'
+      : (r === 'meer' || r === 'wolhynien') ? 'Viele Familien aus dieser Region kamen im Krieg durch die Umsiedlung nach Deutschland. Dazu liegen oft Einbürgerungsakten im Bundesarchiv, die Herkunftsort und Verwandte nennen.'
+      : 'Für Familien, die im Krieg nach Deutschland kamen, liegen oft Einbürgerungsakten im Bundesarchiv. Sie nennen Herkunftsort und Verwandte.';
+    if (l === 'ma') return 'Nach Mittelasien zogen viele deutsche Familien erst nach 1956, als die Sondersiedlung aufgehoben wurde.';
+    if (l === 'ua') return r === 'unklar' ? 'In der Ukraine lagen mehrere deutsche Siedlungsgebiete.' : '';
+    if (r === 'wolga') return 'Die Wolgadeutschen wurden im September 1941 nach Sibirien und Kasachstan deportiert. Die Akten dazu nennen meist das Heimatdorf.';
+    if (r === 'kaukasus') return 'Die Deutschen im Kaukasus wurden im Herbst 1941 deportiert, die meisten nach Kasachstan.';
+    if (r === 'meer') return 'Vom Schwarzen Meer kamen deutsche Familien auf zwei Wegen dorthin: durch die Deportation von 1941 oder durch die Rückführung nach 1945.';
+    if (r === 'wolhynien') return 'Aus Wolhynien kamen deutsche Familien auf mehreren Wegen dorthin: durch die Vertreibung von 1915, die Umsiedlung von 1936 oder die Rückführung nach 1945.';
+    return l === 'kz' ? 'Nach Kasachstan kamen deutsche Familien auf zwei Wegen: als Siedler um 1900 oder durch die Deportation von 1941.'
+      : 'Nach Sibirien und in den Ural kamen deutsche Familien als Siedler um 1900, die meisten aber ab 1941 durch Deportation und Arbeitsarmee.';
+  }
+  function deutKonf() {
+    var c = st.fr.konf, r = st.reg;
+    if (!c || c === 'unklar') return '';
+    if (c === 'menn') return r === 'wolga' ? 'An der Wolga gab es nur wenige mennonitische Siedlungen. Das grenzt die Suche stark ein.'
+      : r === 'meer' ? 'Die mennonitischen Kolonien am Schwarzen Meer gehören zu den am besten dokumentierten überhaupt.'
+      : 'Für mennonitische Familien ist die Quellenlage besonders gut.';
+    if (r === 'wolga') return c === 'kath' ? 'Die katholischen Kolonien waren an der Wolga in der Minderheit. Das grenzt die Suche deutlich ein.'
+      : 'Die meisten Wolgakolonien waren evangelisch. Zusammen mit einem Ortsnamen oder Geburtsjahren hilft die Konfession trotzdem weiter.';
+    if (r === 'unklar') return 'Die meisten Kolonien hatten nur eine Konfession. Das grenzt die möglichen Orte ein.';
+    return 'Die Kolonien waren meist nach Konfession getrennt. Das grenzt die möglichen Orte ein.';
+  }
+  function deutKnow() {
+    var k = st.know, o = k.ort, u = k.doku, j = k.jahre, f = k.fotos, t;
+    if (o && u && j) t = 'Ortsname, Geburtsjahre und Urkunden zusammen sind der beste Ausgangspunkt. Damit lässt sich die Familie gezielt suchen.';
+    else if (o && u) t = 'Der Ortsname zeigt, wo zu suchen ist, und die Urkunden liefern Namen und Daten dazu.';
+    else if (o && j) t = 'Mit Ortsname und Geburtsjahren lässt sich die Familie gezielt in Kirchenbüchern und Listen suchen.';
+    else if (u && j) t = 'In den Urkunden steht meist auch der Geburtsort. Zusammen mit den Geburtsjahren ist das ein guter Einstieg.';
+    else if (o) t = 'Ein Ortsname ist der wichtigste Anhaltspunkt, auch wenn er nur ungefähr bekannt ist.';
+    else if (u) t = 'In Geburtsurkunden und Aussiedlerpapieren steht meist der Geburtsort. Das ist oft der Schlüssel.';
+    else if (j) t = 'Mit Geburtsjahren lassen sich Familien gleichen Namens in den Listen unterscheiden.';
+    else return f ? 'Auf alten Fotos und Briefen stehen oft Ortsnamen, Stempel oder Daten. Ein Blick auf die Rückseite lohnt sich.' : '';
+    return t + (f ? ' Auf alten Fotos und Briefen stehen oft weitere Orte und Daten.' : '');
+  }
+  /* Antworten als kurze Zeilen [Bezeichnung, Antwort, Deutung]: für die Karte, die Anfrage und den Bestelldialog */
   function frAngaben() {
     var t = [], k = knownList();
     if (frAktiv()) {
-      if (st.fr.land === 'de') t.push(['In Deutschland', 'seit dem Krieg oder kurz danach']);
-      else if (st.fr.land && st.fr.land !== 'sonst') t.push(['Ausreise aus', LAND[st.fr.land][0]]);
-      if (st.fr.konf && st.fr.konf !== 'unklar') t.push(['Konfession der Vorfahren', KONF[st.fr.konf][0].toLowerCase()]);
+      if (st.fr.land === 'de') t.push(['In Deutschland', 'seit dem Krieg oder kurz danach', deutLand()]);
+      else if (st.fr.land && st.fr.land !== 'sonst') t.push(['Ausreise aus', LAND[st.fr.land][0], deutLand()]);
+      if (st.fr.konf && st.fr.konf !== 'unklar') t.push(['Konfession der Vorfahren', KONF[st.fr.konf][0].toLowerCase(), deutKonf()]);
     }
-    if (k.length) t.push(['Bekannt oder vorhanden', k.map(function (x) { return KNOW[x]; }).join(', ')]);
+    if (k.length) t.push(['Bekannt oder vorhanden', k.map(function (x) { return KNOW[x]; }).join(', '), frAktiv() ? deutKnow() : '']);
     return t;
   }
 
@@ -466,24 +506,13 @@
     return null;
   }
 
-  /* Einordnung nach dem Fragenkatalog. Vorsichtig formuliert und ohne Kolonie, bei unbekannter Region auch ohne Gebiet:
-     Sie sagt, womit sich die Herkunft klären lässt, nicht woher die Familie kam. */
+  /* Einordnung nach dem Fragenkatalog: Überschrift nach Stärke der Angaben und der Verweis auf das passende Paket.
+     Die Einzelheiten stehen als Deutung bei den Antworten. Vorsichtig formuliert, ohne Kolonie, bei unbekannter Region ohne Gebiet. */
   function einordnung(a) {
     if (!frAktiv() || !st.fr.fertig || a.kind !== 'de' || a.russian) return null;
-    var k = st.know, f = st.fr, s = [], offen = st.reg === 'unklar', h = offen ? 'Das lässt sich klären' : 'Gute Voraussetzungen';
-    if (!offen) s.push('Für diese Region sind die wichtigen Quellen erhalten.');
-    if (k.ort || k.doku) {
-      if (offen) h = 'Ein guter Ausgangspunkt';
-      s.push((k.ort && k.doku ? 'Mit einem Ortsnamen und den Unterlagen der Familie' : k.ort ? 'Mit einem Ortsnamen' : 'Mit Urkunden oder Aussiedlerpapieren') + ' lässt sich die Herkunft meist eingrenzen.');
-    } else if (k.jahre) s.push('Nachname und Geburtsjahre der Großeltern reichen oft, um die Familie in den Akten zu finden.');
-    else s.push('Auch ohne Unterlagen ist die Spur selten verloren.' + (offen ? ' Akten der Sondersiedlung und der Arbeitsarmee nennen meist den Geburtsort.' : ''));
-    if (f.konf === 'menn') s.push('Für mennonitische Familien ist die Quellenlage besonders gut.');
-    else if (f.land === 'de') s.push('Für Familien, die im Krieg nach Deutschland kamen, liegen oft Einbürgerungsakten im Bundesarchiv.');
-    else if (!offen && (f.konf === 'ev' || f.konf === 'kath')) s.push('Region und Konfession zusammen grenzen die möglichen Kolonien weiter ein.');
-    else if (offen && (f.land === 'kz' || f.land === 'ru')) s.push('In Kasachstan und Sibirien lebten deutsche Familien aus zwei Gründen: als Siedler seit etwa 1900 oder durch die Deportation von 1941.');
-    else if (offen && f.land === 'ma') s.push('Nach Mittelasien zogen viele deutsche Familien erst nach 1956, als die Sondersiedlung aufgehoben wurde.');
-    else if (offen && f.land === 'ua') s.push('In der Ukraine lagen mehrere deutsche Siedlungsgebiete.');
-    else if (f.konf === 'ev' || f.konf === 'kath') s.push('Die Konfession grenzt die möglichen Orte ein, weil die meisten Kolonien nur eine Konfession hatten.');
+    var k = st.know, f = st.fr, s = [], offen = st.reg === 'unklar', stark = k.ort || k.doku, etwas = stark || k.jahre || k.fotos || (f.land && f.land !== 'sonst') || (f.konf && f.konf !== 'unklar');
+    var h = offen ? (stark ? 'Ein guter Ausgangspunkt' : 'Das lässt sich klären') : (stark ? 'Sehr gute Voraussetzungen' : 'Gute Voraussetzungen');
+    if (!etwas) s.push('Auch ohne weitere Angaben ist die Spur selten verloren.');
     var n = st.names.length;
     if (n <= 1) s.push('Woher die Familie kam, ist die Frage, der ein Herkunftsbericht nachgeht.');
     else if (n <= 4) s.push('Woher die einzelnen Linien kamen, ist die Frage, der eine Familiengeschichte nachgeht.');
@@ -594,9 +623,9 @@
     var p = st.pdf, v = einordnung(a) || verdict(a), r = REG[st.reg], haupt;
     var deutsch = (a.all || [a]).some(function (x) { return !(x.russian || x.kind === 'ru'); });
     var karte = '<section class="ez-card" aria-label="Ihre Angaben"><dl class="ez-kv oben"><div><dt>Name</dt><dd>' + esc(st.name) + '</dd></div>' +
-      '<div><dt>Region</dt><dd>' + (st.reg === 'unklar' ? 'noch offen' : r.t) + '<button type="button" class="ez-link" data-ez-back>Ändern</button></dd></div>' +
-      (frAktiv() ? frAngaben().map(function (x) { return '<div' + (x[1].length > 30 ? ' class="lang"' : '') + '><dt>' + x[0] + '</dt><dd>' + esc(x[1]) + '</dd></div>'; }).join('') : '') + '</dl>' +
-      (v ? '<p class="ez-status">' + (v.c === 'good' ? HAKEN : '') + '<span><b>' + v.h + '.</b> ' + (v.voll ? v.p : (v.c === 'good' ? v.p.split('. ')[0].replace(/\.?$/, '.') : v.p) + (TS_KEY ? '' : ' ' + r.src + ' <a href="' + r.u + '">' + r.l + '</a>')) + '</span></p>' : '') + '</section>';
+      '<div class="mit"><dt>Region</dt><dd>' + (st.reg === 'unklar' ? 'noch offen' : r.t) + '<button type="button" class="ez-link" data-ez-back>Ändern</button></dd><dd class="ez-deut">' + r.src + '</dd></div>' +
+      (frAktiv() ? frAngaben().map(function (x) { return '<div class="' + (x[1].length > 30 ? 'lang' : 'mit') + '"><dt>' + x[0] + '</dt><dd>' + esc(x[1]) + '</dd>' + (x[2] ? '<dd class="ez-deut">' + x[2] + '</dd>' : '') + '</div>'; }).join('') : '') + '</dl>' +
+      (v ? '<p class="ez-status">' + (v.c === 'good' ? HAKEN : '') + '<span><b>' + v.h + '.</b> ' + (v.voll ? v.p : v.c === 'good' ? v.p.split('. ')[0].replace(/\.?$/, '.') : v.p) + '</span></p>' : '') + '</section>';
     if (!TS_KEY) {
       haupt = '<h2 class="ez-q">Ihre Ersteinschätzung per Nachricht</h2><div class="ez-card"><p class="ez-help first">Schicken Sie uns Ihre Angaben, Wolgawurzeln antwortet Ihnen persönlich.</p>' +
         '<a class="ez-btn" href="' + waLink(a, 'ich möchte eine Ersteinschätzung zu meinem Namen') + '" target="_blank" rel="noopener">Per WhatsApp anfragen</a>' +
@@ -780,5 +809,5 @@
   if (cl) cl.addEventListener('click', schliessen);
 
   /* für Tests */
-  w.__fz = { deToRu: deToRu, ruToDe: ruToDe, analyse: analyse, stufe: stufe, nameKind: nameKind, loadNM: loadNM, st: function () { return st; }, close: schliessen };
+  w.__fz = { ergebnis: function () { var a = analyseAll(), v = einordnung(a) || verdict(a); return [REG[st.reg] ? REG[st.reg].src : ''].concat(frAngaben().map(function (x) { return x[2]; }), v ? [v.h, v.p] : []).join(' | '); }, deToRu: deToRu, ruToDe: ruToDe, analyse: analyse, stufe: stufe, nameKind: nameKind, loadNM: loadNM, st: function () { return st; }, close: schliessen };
 })();
