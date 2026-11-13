@@ -1842,13 +1842,13 @@ display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;overflow-y
 @media (max-width:880px){.av{display:block;margin-top:26px;padding:18px 18px 14px 20px}.av h3{font-size:20px}.av .av-nach{margin-top:14px;padding:14px 0 0;box-shadow:inset 0 1px 0 var(--line-2)}.av .av-grenze{margin-top:14px}}
 /* Ruhige Fassung des ersten Bildschirms, zum Vergleich mit der bisherigen. Greift nur mit der Klasse ruhig am html Element.
    Weniger Text: Zitat, Dachzeile, Hinweis und die drei Punkte fallen weg, im Kästchen bleiben Frage, Feld und eine Zeile.
-   Landschaft im Abendlicht: gedämpfte Farben und ein Schleier in Navy, am Horizont offen, damit das warme Licht bleibt. Dieselbe Animation. */
+   Landschaft im Abendlicht, dieselbe Animation. */
 .fz-s.fz-s-r{display:none}
 .ruhig .intro-sub,.ruhig .fz-e,.ruhig .fz-usp,.ruhig .fz-form>.fz-note,.ruhig .fz-s:not(.fz-s-r){display:none}
 .ruhig .fz-s.fz-s-r{display:block;margin-top:5px}
 .ruhig .fz.has-res .fz-s.fz-s-r{display:none}
-.ruhig .intro-canvas{filter:saturate(.62) brightness(.94)}
-.ruhig .intro-labels::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,21,48,0) 0,rgba(8,21,48,0) calc(var(--hz) - 3%),rgba(11,28,62,.24) calc(var(--hz) + 7%),rgba(8,21,48,.4) 100%)}
+/* Das Abendlicht rechnet die Animation selbst (uEv in assets/v3.js). Hier nur der Himmel dazu: tieferes Blau, warmes Licht am Horizont, Ferne im Dunst. */
+.ruhig .intro-sky{background:radial-gradient(44% 15% at 32% var(--hz),rgba(250,188,120,.62),rgba(250,188,120,0) 76%),linear-gradient(180deg,#050D20 0%,#0B1D3D calc(var(--hz) - 22%),#2C4370 calc(var(--hz) - 6%),#C9A084 calc(var(--hz) - .5%),#84828A calc(var(--hz) + 1.5%),#414C66 calc(var(--hz) + 10%),#1E2A44 100%)}
 .ruhig .intro-labels .il:nth-child(even){display:none}
 .ruhig .intro-labels .il{filter:opacity(.75)}
 
