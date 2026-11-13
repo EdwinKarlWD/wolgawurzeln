@@ -1840,6 +1840,18 @@ display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;overflow-y
 .av .av-nach h4{margin:2px 0 6px;font:700 18px/1.3 var(--sans);letter-spacing:0;text-transform:none;color:var(--navy)}
 .av .av-grenze{grid-column:1/-1;margin-top:18px;padding-top:12px;box-shadow:inset 0 1px 0 var(--line-2);font-size:15.5px;color:var(--ink-3)}
 @media (max-width:880px){.av{display:block;margin-top:26px;padding:18px 18px 14px 20px}.av h3{font-size:20px}.av .av-nach{margin-top:14px;padding:14px 0 0;box-shadow:inset 0 1px 0 var(--line-2)}.av .av-grenze{margin-top:14px}}
+/* Ruhige Fassung des ersten Bildschirms, zum Vergleich mit der bisherigen. Greift nur mit der Klasse ruhig am html Element.
+   Weniger Text: Zitat, Dachzeile, Hinweis und die drei Punkte fallen weg, im Kästchen bleiben Frage, Feld und eine Zeile.
+   Landschaft im Abendlicht: gedämpfte Farben und ein Schleier in Navy, am Horizont offen, damit das warme Licht bleibt. Dieselbe Animation. */
+.fz-s.fz-s-r{display:none}
+.ruhig .intro-sub,.ruhig .fz-e,.ruhig .fz-usp,.ruhig .fz-form>.fz-note,.ruhig .fz-s:not(.fz-s-r){display:none}
+.ruhig .fz-s.fz-s-r{display:block;margin-top:5px}
+.ruhig .fz.has-res .fz-s.fz-s-r{display:none}
+.ruhig .intro-canvas{filter:saturate(.62) brightness(.94)}
+.ruhig .intro-labels::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,21,48,0) 0,rgba(8,21,48,0) calc(var(--hz) - 3%),rgba(11,28,62,.24) calc(var(--hz) + 7%),rgba(8,21,48,.4) 100%)}
+.ruhig .intro-labels .il:nth-child(even){display:none}
+.ruhig .intro-labels .il{filter:opacity(.75)}
+
 /* Tippflächen am Handy auf den Unterseiten: Brotkrumen, Inhaltsverzeichnis und „Alle Kolonien“ mindestens 44 Pixel hoch.
    Bei den Brotkrumen wächst nur die Fläche, die Zeile bleibt so hoch wie vorher. */
 @media (max-width:880px){
