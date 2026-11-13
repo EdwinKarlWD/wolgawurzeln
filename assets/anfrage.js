@@ -2,7 +2,15 @@
    Solange der Dienst nicht freigeschaltet ist, öffnet sich als Ersatz das Mailprogramm mit der fertigen Anfrage. */
 (function (w, d) {
   'use strict';
-  var D = w.WW_DIENST, rf = d.getElementById('reqform'); if (!rf || !D) return;
+  var D = w.WW_DIENST, rf = d.getElementById('reqform'), ordner = d.currentScript && d.currentScript.src ? d.currentScript.src.replace(/[^\/]+$/, '') : 'assets/'; if (!rf || !D) return;
+  /* Herkunftsort: Vorschläge aus den deutschen Siedlungsgebieten. Liste und Logik (assets/orte.js) laden erst beim ersten Antippen. */
+  (function () {
+    var ort = rf.querySelector('input[name=ort]'), geholt = false; if (!ort) return;
+    ort.addEventListener('focus', function () {
+      if (geholt) return; geholt = true;
+      var sk = d.createElement('script'); sk.src = ordner + 'orte.js'; sk.onload = function () { if (w.WW_ORTE) w.WW_ORTE.an(ort); }; d.head.appendChild(sk);
+    });
+  })();
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   function quelle() {
     try {
