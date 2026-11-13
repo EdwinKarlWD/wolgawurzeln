@@ -930,3 +930,68 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
   if (d.fonts && d.fonts.ready) d.fonts.ready.then(measure);
   w.addEventListener('load', measure);
 })();
+
+/* Stufe 2: Startseite am Handy. Pakete als Zeilenliste, häufige Fragen gekürzt, Anfrage kompakt mit Namensfeld.
+   Gilt nur unter 881 px (Klasse m2 am html Element, die Gestaltung dazu steht am Ende von v3.css). Darüber bleibt alles, wie es ist. */
+(function () {
+  'use strict';
+  var d = document, w = window, root = d.documentElement, track = d.getElementById('pk-track');
+  if (!track || !w.matchMedia) return;
+  var mq = w.matchMedia('(max-width: 880px)'), gebaut = false;
+  function el(tag, cls, text) { var e = d.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
+  function bauen() {
+    gebaut = true;
+    /* Pakete: je Paket eine Zeile mit Frage, Name und Preis. Ein Tipp klappt die Einzelheiten auf. */
+    [].forEach.call(track.querySelectorAll('.pk'), function (c) {
+      var id = c.getAttribute('data-pk'), pick = d.querySelector('[data-pick="' + id + '"]'), body = c.querySelector('.pk-body');
+      var b = el('button', 'pk-row'), t = el('span', 'pk-row-t');
+      b.type = 'button'; b.setAttribute('aria-expanded', 'false');
+      if (body) { body.id = 'pk-' + id + '-b'; b.setAttribute('aria-controls', body.id); }
+      t.appendChild(el('small', '', pick ? pick.textContent : '')); t.appendChild(el('b', '', c.getAttribute('data-name')));
+      if (c.querySelector('.seal-badge')) t.appendChild(el('i', '', 'Häufigste Wahl'));
+      b.appendChild(t); b.appendChild(el('span', 'pk-row-p', c.getAttribute('data-price')));
+      c.insertBefore(b, c.firstChild);
+      b.addEventListener('click', function () {
+        var auf = !c.classList.contains('auf');
+        [].forEach.call(track.querySelectorAll('.pk.auf'), function (x) { x.classList.remove('auf'); x.querySelector('.pk-row').setAttribute('aria-expanded', 'false'); });
+        if (auf) { c.classList.add('auf'); b.setAttribute('aria-expanded', 'true'); if (pick && mq.matches) pick.click(); }
+      });
+    });
+    /* Häufige Fragen: alle zu, sechs sichtbar, der Rest auf Knopfdruck */
+    var faq = d.querySelector('.faq-sec .faq');
+    if (faq) {
+      var ds = faq.querySelectorAll('details');
+      [].forEach.call(ds, function (x, i) { x.removeAttribute('open'); if (i >= 6) x.classList.add('faq-mehr'); });
+      if (ds.length > 6) {
+        var fb = el('button', 'btn ghost faq-alle', 'Alle ' + ds.length + ' Fragen anzeigen'); fb.type = 'button';
+        faq.appendChild(fb);
+        fb.addEventListener('click', function () { faq.classList.add('alle'); fb.parentNode.removeChild(fb); var n = faq.querySelector('.faq-mehr summary'); if (n) n.focus(); });
+      }
+    }
+    /* Anfrage: Das Namensfeld startet dieselbe Ersteinschätzung wie oben, das Formular klappt auf Wunsch auf */
+    var an = d.getElementById('anfrage'), rf = d.getElementById('reqform'), fzf = d.querySelector('#fz form'), fzi = d.getElementById('fz-name');
+    if (an && rf && fzf && fzi) {
+      var kurz = el('form', 'an-kurz'), lab = el('label', '', 'Nachname Ihrer Familie'), zeile = el('div'), inp = el('input'), go = el('button', 'btn', 'Starten');
+      kurz.setAttribute('novalidate', ''); lab.htmlFor = 'an-name';
+      inp.id = 'an-name'; inp.type = 'text'; inp.autocomplete = 'family-name'; inp.setAttribute('enterkeyhint', 'go'); inp.placeholder = 'Nachname';
+      go.type = 'submit'; zeile.appendChild(inp); zeile.appendChild(go);
+      kurz.appendChild(lab); kurz.appendChild(zeile); kurz.appendChild(el('p', '', 'Kostenlos und unverbindlich, gern auch auf Russisch.'));
+      var mehr = el('button', 'an-mehr', 'Lieber eine Nachricht schreiben'); mehr.type = 'button'; mehr.setAttribute('aria-expanded', 'false'); mehr.setAttribute('aria-controls', 'reqform');
+      rf.parentNode.insertBefore(kurz, rf); rf.parentNode.insertBefore(mehr, rf);
+      var auf = function (an_) { an.classList.toggle('an-auf', an_); mehr.setAttribute('aria-expanded', an_ ? 'true' : 'false'); };
+      kurz.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (inp.value.replace(/\s+/g, ' ').trim().length < 2) { inp.focus(); return; }
+        fzi.value = inp.value; inp.blur();
+        if (fzf.requestSubmit) fzf.requestSubmit(); else { var s = fzf.querySelector('button[type=submit], .fz-go'); if (s) s.click(); }
+      });
+      mehr.addEventListener('click', function () { auf(!an.classList.contains('an-auf')); });
+      /* Wer aus einem Paket heraus anfragt oder eine Frage stellen will, braucht das Formular */
+      d.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('[data-prefill], .faq-sec a[href="#anfrage"]')) auf(true); });
+      rf.addEventListener('focusin', function () { auf(true); });
+    }
+  }
+  function lage() { root.classList.toggle('m2', mq.matches); if (mq.matches && !gebaut) bauen(); }
+  lage();
+  if (mq.addEventListener) mq.addEventListener('change', lage);
+})();

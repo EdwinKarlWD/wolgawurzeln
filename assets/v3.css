@@ -1907,3 +1907,92 @@ display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;overflow-y
   .ftr-legal a{display:inline-flex;align-items:center;min-height:44px}
   #hbRevocationButton{min-height:44px}
 }
+
+/* ===== Stufe 2 (Vorschau 13.11.2026): Startseite am Handy =====
+   Handlung zuerst: Pakete als Zeilenliste direkt nach dem Einstieg, Ablauf als kurze Liste, Vertrauenspunkte und Regionen
+   als Wischreihen, häufige Fragen gekürzt, Anfrage mit Namensfeld. Greift nur unter 881 px und nur mit der Klasse m2,
+   die assets/v3.js am html Element setzt. Ohne Skript und am Desktop bleibt alles wie zuvor. */
+.pk-row,.faq-alle,.an-kurz,.an-mehr{display:none}
+@media (max-width:880px){
+html.m2 main{display:flex;flex-direction:column}
+html.m2 main>*{order:5}
+html.m2 #intro{order:0}
+html.m2 #pakete{order:1}
+html.m2 main>.steps-sec{order:2}
+html.m2 #start{order:3}
+html.m2 main>.reg-sec{order:4}
+html.m2 main>.rd{order:6}
+html.m2 main>.faq-sec{order:7}
+html.m2 main>.portal{order:8}
+html.m2 #anfrage{order:9}
+html.m2 main>.sec{padding-block:52px}
+
+/* Pakete: eine Zeile je Paket, Einzelheiten klappen auf */
+html.m2 #pakete .pick,html.m2 #pakete .pk-foot{display:none}
+html.m2 #pakete .pk-track{display:block;margin-inline:0;padding:0;overflow:visible;border-top:1px solid var(--line-2)}
+html.m2 #pakete .pk{display:block;flex:none;max-width:none;background:none;box-shadow:none;border-bottom:1px solid var(--line-2);opacity:1;transform:none}
+html.m2 .pk-row{display:flex;align-items:center;gap:14px;width:100%;min-height:78px;padding:13px 2px;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+html.m2 .pk-row::after{content:"";flex:none;width:9px;height:9px;margin:0 6px 5px 0;border-right:1.6px solid var(--navy);border-bottom:1.6px solid var(--navy);transform:rotate(45deg)}
+html.m2 .pk.auf .pk-row::after{margin-bottom:-5px;transform:rotate(-135deg)}
+html.m2 .pk-row-t{flex:1;min-width:0}
+html.m2 .pk-row-t small{display:block;font:400 15px/1.35 var(--sans);color:var(--ink-3)}
+html.m2 .pk-row-t b{display:block;margin-top:2px;font:600 21px/1.2 var(--serif);color:var(--navy)}
+html.m2 .pk-row-t i{display:inline-block;margin-top:6px;padding:2px 8px;box-shadow:inset 0 0 0 1px var(--seal);font:600 13px/1.45 var(--sans);font-style:normal;color:var(--seal)}
+html.m2 .pk-row-p{flex:none;max-width:36%;font:700 17px/1.25 var(--sans);color:var(--navy);text-align:right}
+html.m2 #pakete .pk>.pk-stage,html.m2 #pakete .pk>.seal-badge,html.m2 #pakete .pk>.pk-body{display:none}
+html.m2 #pakete .pk.auf>.pk-body{display:block;padding:2px 2px 22px}
+html.m2 #pakete .pk-body h3,html.m2 #pakete .pk-for{display:none}
+html.m2 #pakete .pk-desc{margin-top:0}
+
+/* Vertrauenspunkte als Wischreihe */
+html.m2 #pakete .trust{display:flex;gap:12px;margin:28px calc(var(--gut) * -1) 0;padding:0 var(--gut) 4px;border-top:0;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--gut);scrollbar-width:none}
+html.m2 #pakete .trust::-webkit-scrollbar{display:none}
+html.m2 #pakete .trust li{flex:0 0 76%;display:block;padding:16px 16px 18px;background:#fff;box-shadow:inset 0 0 0 1px var(--line-2);scroll-snap-align:start}
+html.m2 #pakete .trust li svg{margin-bottom:10px}
+
+/* Ablauf: vier kurze Zeilen */
+html.m2 .steps-sec .ablauf{gap:0}
+html.m2 .steps-sec .ablauf li{align-items:center;min-height:56px}
+html.m2 .steps-sec .ablauf li p{display:none}
+html.m2 .steps-sec .ablauf li h3{margin:0}
+
+/* Nachschlagewerk: Karte kleiner, Archive als eine Zeile zum Wischen */
+html.m2 #start .hero-map{width:64%;margin-inline:auto}
+html.m2 #start .hero-arch{display:flex;align-items:baseline;gap:6px 20px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;margin-inline:calc(var(--gut) * -1);padding-inline:var(--gut)}
+html.m2 #start .hero-arch::-webkit-scrollbar{display:none}
+html.m2 #start .hero-arch span{flex:none}
+
+/* Regionen als Wischreihe */
+html.m2 .reg-sec .regs{display:flex;gap:12px;margin-inline:calc(var(--gut) * -1);padding:0 var(--gut) 4px;border-top:0;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--gut);scrollbar-width:none}
+html.m2 .reg-sec .regs::-webkit-scrollbar{display:none}
+html.m2 .reg-sec .regs li{flex:0 0 72%;display:flex;flex-direction:column;gap:8px;padding:16px;border:0;background:#fff;box-shadow:inset 0 0 0 1px var(--line-2);scroll-snap-align:start}
+html.m2 .reg-sec .regs li .reg-go{margin-top:auto;padding-top:6px}
+
+/* Alte Schrift: erst der Satz, dann das Beispiel, dann der Knopf */
+html.m2 .rd .rd-grid{display:flex;flex-direction:column}
+html.m2 .rd .rd-copy{display:contents}
+html.m2 .rd .rd-copy h2{order:1;text-align:left}
+html.m2 .rd .rd-lead{order:2}
+html.m2 .rd .rd-doc{order:3;margin-top:22px}
+html.m2 .rd .rd-copy .btn{order:4;align-self:flex-start;margin-top:20px}
+html.m2 .rd .rd-list{display:none}
+
+/* Häufige Fragen: sechs sichtbar, der Rest auf Knopfdruck */
+html.m2 .faq-sec .faq-mehr{display:none}
+html.m2 .faq-sec .faq.alle .faq-mehr{display:block}
+html.m2 .faq-alle{display:flex;width:100%;margin-top:20px}
+
+/* Anfrage: Namensfeld startet die Ersteinschätzung, das Formular klappt auf */
+html.m2 #anfrage .req-copy p+p{display:none}
+html.m2 #anfrage.an-auf .req-copy p+p{display:block}
+html.m2 #anfrage:not(.an-auf) #reqform{display:none}
+html.m2 .an-kurz{display:block;margin-top:4px}
+html.m2 .an-kurz label{display:block;margin-bottom:7px;font:600 15.5px/1.3 var(--sans);color:var(--navy)}
+html.m2 .an-kurz div{display:flex;gap:8px}
+html.m2 .an-kurz input{flex:1;min-width:0;min-height:54px;padding:0 14px;border:0;box-shadow:inset 0 0 0 1.5px rgba(27,34,51,.42);background:#fff;color:var(--navy);font:500 18px/1.4 var(--sans);-webkit-appearance:none;appearance:none}
+html.m2 .an-kurz input:focus{outline:0;box-shadow:inset 0 0 0 2.5px var(--navy)}
+html.m2 .an-kurz .btn{flex:none;min-height:54px;padding:0 22px}
+html.m2 .an-kurz p{margin-top:9px;font:400 15px/1.5 var(--sans);color:var(--ink-3)}
+html.m2 .an-mehr{display:inline-flex;align-items:center;min-height:44px;margin-top:8px;padding:0;border:0;background:none;color:var(--navy);font:600 16px/1.3 var(--sans);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer}
+html.m2 #anfrage.an-auf #reqform{margin-top:14px}
+}
