@@ -931,7 +931,7 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
   w.addEventListener('load', measure);
 })();
 
-/* Stufe 2: Startseite am Handy. Pakete als Zeilenliste, häufige Fragen gekürzt, Anfrage kompakt mit Namensfeld.
+/* Stufe 2: Startseite am Handy. Häufige Fragen gekürzt, Anfrage kompakt mit Namensfeld. Die Pakete bleiben Karten zum Wischen.
    Gilt nur unter 881 px (Klasse m2 am html Element, die Gestaltung dazu steht am Ende von v3.css). Darüber bleibt alles, wie es ist. */
 (function () {
   'use strict';
@@ -941,22 +941,6 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
   function el(tag, cls, text) { var e = d.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
   function bauen() {
     gebaut = true;
-    /* Pakete: je Paket eine Zeile mit Frage, Name und Preis. Ein Tipp klappt die Einzelheiten auf. */
-    [].forEach.call(track.querySelectorAll('.pk'), function (c) {
-      var id = c.getAttribute('data-pk'), pick = d.querySelector('[data-pick="' + id + '"]'), body = c.querySelector('.pk-body');
-      var b = el('button', 'pk-row'), t = el('span', 'pk-row-t');
-      b.type = 'button'; b.setAttribute('aria-expanded', 'false');
-      if (body) { body.id = 'pk-' + id + '-b'; b.setAttribute('aria-controls', body.id); }
-      t.appendChild(el('small', '', pick ? pick.textContent : '')); t.appendChild(el('b', '', c.getAttribute('data-name')));
-      if (c.querySelector('.seal-badge')) t.appendChild(el('i', '', 'Häufigste Wahl'));
-      b.appendChild(t); b.appendChild(el('span', 'pk-row-p', c.getAttribute('data-price')));
-      c.insertBefore(b, c.firstChild);
-      b.addEventListener('click', function () {
-        var auf = !c.classList.contains('auf');
-        [].forEach.call(track.querySelectorAll('.pk.auf'), function (x) { x.classList.remove('auf'); x.querySelector('.pk-row').setAttribute('aria-expanded', 'false'); });
-        if (auf) { c.classList.add('auf'); b.setAttribute('aria-expanded', 'true'); if (pick && mq.matches) pick.click(); }
-      });
-    });
     /* Häufige Fragen: alle zu, sechs sichtbar, der Rest auf Knopfdruck */
     var faq = d.querySelector('.faq-sec .faq');
     if (faq) {
