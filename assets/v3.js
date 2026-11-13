@@ -508,15 +508,15 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
     var FS = PREC + 'varying vec3 vP;varying vec3 vN;varying float vT;varying float vHW;varying float vD;uniform vec3 uCam;uniform vec3 uSun;uniform float uT;uniform float uN;uniform float uF;uniform float uA;uniform float uMap;uniform float uEv;' + NOISE +
       'void main(){float at=abs(vT);float shore=smoothstep(vHW-0.04,vHW+0.04,at);vec3 V=normalize(uCam-vP);vec3 n=normalize(mix(normalize(vN),vec3(0.0,1.0,0.0),0.85*smoothstep(24.0,60.0,vD)));float lam=max(dot(n,uSun),0.0);' +
       /* Land: Grundton, Hangschatten */
-      'float hg=clamp(vP.y/0.75,0.0,1.0);float li=0.25+0.75*lam;vec3 grass=mix(vec3(0.30,0.44,0.20),vec3(0.50,0.52,0.30),smoothstep(0.08,0.5,vP.y)*0.8);'+
-      'vec3 land=grass*(0.35+0.85*li);land+=vec3(0.16,0.10,0.03)*max(lam-0.4,0.0)*smoothstep(0.03,0.3,vP.y);' +
+      'float hg=clamp(vP.y/0.75,0.0,1.0);vec3 land=vec3(0.0);vec3 water=vec3(0.0);if(shore>0.002){float li=0.25+0.75*lam;vec3 grass=mix(vec3(0.30,0.44,0.20),vec3(0.50,0.52,0.30),smoothstep(0.08,0.5,vP.y)*0.8);'+
+      'land=grass*(0.35+0.85*li);land+=vec3(0.16,0.10,0.03)*max(lam-0.4,0.0)*smoothstep(0.03,0.3,vP.y);' +
       /* Felder: gedrehtes Gitter, Zellen etwa 0,8 x 1,1 km, mit hellen Feldrainen */
-      'vec2 p=vP.xz;float rg=noise(p*0.03+vec2(11.0,5.0));float an=rg*2.6;vec2 fp=mat2(cos(an),sin(an),-sin(an),cos(an))*p;fp+=0.4*vec2(noise(p*0.45),noise(p*0.45+vec2(7.0,3.0)));' +
+      'vec2 p=vP.xz;float rg=noise(p*0.03+vec2(11.0,5.0));float an=rg*2.6;vec2 fp=mat2(cos(an),sin(an),-sin(an),cos(an))*p;' +
       'vec2 cs=vec2(0.75,1.4)*(0.7+0.7*noise(p*0.02+vec2(3.0,9.0)));vec2 g=fp/cs;float fld=hash(floor(g));float flat_=smoothstep(0.975,0.995,n.y);' +
       'float fm=(1.0-smoothstep(18.0,75.0,vD))*smoothstep(vHW+0.6,vHW+2.0,at)*flat_*(0.6+0.4*step(0.0,-vT));float h3=hash(floor(g)+vec2(5.3,2.1));' +
       'vec3 fc=fld<0.35?vec3(0.36,0.52,0.22):fld<0.6?vec3(0.66,0.60,0.32):fld<0.8?vec3(0.24,0.40,0.17):vec3(0.50,0.42,0.27);fc*=0.9+0.2*h3;land=mix(land,fc*(0.35+0.85*li),fm*0.75);' +
       'vec2 fr=fract(g);float edge=min(min(fr.x,1.0-fr.x)*cs.x,min(fr.y,1.0-fr.y)*cs.y);land=mix(land,vec3(0.62,0.58,0.40)*(0.4+0.8*li),(1.0-smoothstep(0.0,0.03,edge))*fm*0.35*(1.0-smoothstep(5.0,11.0,vD)));' +
-      'float forest=smoothstep(0.60,0.72,0.62*noise(p*0.55+vec2(2.0,8.0))+0.38*noise(p*1.9+vec2(4.0,1.0)))*(1.0-0.65*smoothstep(10.0,32.0,vD))*smoothstep(vHW+0.8,vHW+2.5,at)*(1.0-smoothstep(vHW+9.0,vHW+16.0,at))*(0.35+0.65*step(0.0,-vT))*(1.0-smoothstep(26.0,50.0,vD));land=mix(land,vec3(0.10,0.21,0.09)*(0.5+0.6*li),forest*0.7);' +
+      'float forest=smoothstep(0.58,0.72,noise(p*0.55+vec2(2.0,8.0)))*(1.0-0.65*smoothstep(10.0,32.0,vD))*smoothstep(vHW+0.8,vHW+2.5,at)*(1.0-smoothstep(vHW+9.0,vHW+16.0,at))*(0.35+0.65*step(0.0,-vT))*(1.0-smoothstep(26.0,50.0,vD));land=mix(land,vec3(0.10,0.21,0.09)*(0.5+0.6*li),forest*0.7);' +
       /* Auwald und Baumgruppen am Ufer */
       'float tr=noise(vP.xz*2.6);float au=smoothstep(vHW+2.2,vHW+0.25,at)*shore*(vT<0.0?1.0:0.4)*(0.3+0.7*tr);land=mix(land,vec3(0.12,0.24,0.10)*(0.5+0.6*li),au*0.8);' +
       /* Höhenlinien auf der Bergseite */
@@ -525,19 +525,19 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
       'float bank=smoothstep(vHW+0.32,vHW,at)*shore;land=mix(land,vec3(0.78,0.69,0.50)*(0.55+0.5*li),bank*0.7);' +
       /* Abendlicht (uEv): Farben zurückgenommen, besonnte Hänge warm, Schatten und Ebene kühl, dazu ein warmer Saum an den Hängen zur Sonne */
       'float lumL=dot(land,vec3(0.30,0.59,0.11));vec3 landE=mix(vec3(lumL),land,0.55)*mix(vec3(0.36,0.45,0.68),vec3(1.12,0.86,0.60),smoothstep(0.10,0.62,lam));' +
-      'landE+=vec3(0.22,0.11,0.03)*lam*lam*lam*smoothstep(0.05,0.4,vP.y);land=mix(land,landE,uEv);' +
+      'landE+=vec3(0.22,0.11,0.03)*lam*lam*lam*smoothstep(0.05,0.4,vP.y);land=mix(land,landE,uEv);}' +
       /* Wasser: isotrope Wellen, leichte Strömungsstreifen, Himmelsspiegelung, Sonnenglanz */
-      'vec2 wuv=vP.xz*1.6;float rip=noise(wuv*3.0+vec2(0.0,uT*0.45))+0.5*noise(wuv*7.0+vec2(uT*0.3,uT*0.8))+0.25*noise(wuv*15.0-vec2(uT*0.5,uT*0.3));' +
-      'float cur=noise(vec2(vT*2.6,(vP.z+uT*0.9)*0.3));vec3 wn=normalize(vec3((rip-0.875)*0.34+(cur-0.5)*0.07,1.0,(noise(wuv*5.0+uT*0.4)-0.5)*0.3));' +
+      'if(shore<0.998){vec2 wuv=vP.xz*1.6;float rip=noise(wuv*3.0+vec2(0.0,uT*0.45))+0.5*noise(wuv*7.0+vec2(uT*0.3,uT*0.8));' +
+      'vec3 wn=normalize(vec3((rip-0.75)*0.38,1.0,(noise(wuv*5.0+uT*0.4)-0.5)*0.3));' +
       'float fres=pow(1.0-max(dot(wn,V),0.0),3.0);vec3 R=reflect(-V,wn);float spec=pow(max(dot(R,uSun),0.0),90.0);' +
       'float toSun=pow(max(dot(normalize(vec3(R.x,0.0,R.z)),normalize(vec3(uSun.x,0.0,uSun.z))),0.0),4.0);' +
       'vec3 deep=mix(vec3(0.10,0.24,0.40),vec3(0.04,0.09,0.20),uEv);vec3 sky=mix(vec3(0.56,0.68,0.86),vec3(0.30,0.39,0.60),uEv);vec3 warm=mix(vec3(0.95,0.66,0.55),vec3(1.0,0.70,0.45),uEv);' +
       /* Abends spiegelt das Wasser den Himmel nach Höhe: flach gesehen das warme Licht am Horizont, steil gesehen das tiefe Blau darüber */
       'vec3 skyE=mix(mix(vec3(0.66,0.54,0.52),vec3(1.0,0.72,0.46),toSun),vec3(0.10,0.17,0.34),smoothstep(0.03,0.42,clamp(R.y,0.0,1.0)));' +
-      'vec3 water=mix(deep,mix(mix(sky,warm,toSun*0.6),skyE,uEv),mix(0.25+0.6*fres,0.10+0.90*fres,uEv))+spec*vec3(1.0,0.92,0.80)*mix(0.9,1.3,uEv);' +
+      'water=mix(deep,mix(mix(sky,warm,toSun*0.6),skyE,uEv),mix(0.25+0.6*fres,0.10+0.90*fres,uEv))+spec*vec3(1.0,0.92,0.80)*mix(0.9,1.3,uEv);' +
       /* Abends: breite Lichtbahn der Sonne auf dem Wasser */
       'water+=uEv*vec3(1.0,0.70,0.42)*pow(max(dot(R,uSun),0.0),12.0)*0.30;' +
-      'float shallow=smoothstep(vHW-0.4,vHW,at)*(0.4+0.6*noise(vP.xz*2.2));water=mix(water,mix(vec3(0.36,0.52,0.58),vec3(0.17,0.25,0.36),uEv),shallow*0.4);' +
+      'float shallow=smoothstep(vHW-0.4,vHW,at)*0.7;water=mix(water,mix(vec3(0.36,0.52,0.58),vec3(0.17,0.25,0.36),uEv),shallow*0.4);}' +
       'vec3 col=mix(water,land,shore);' +
       /* Abends: Dunst mit der Entfernung, zur Sonne hin warm, sonst blau */
       'vec3 hzd=normalize(vec3(-V.x,0.0,-V.z));float zs=max(dot(hzd,normalize(vec3(uSun.x,0.0,uSun.z))),0.0);vec3 haze=mix(vec3(0.27,0.34,0.52),vec3(0.86,0.62,0.46),zs*zs);col=mix(col,haze,uEv*0.6*smoothstep(9.0,62.0,vD));' +
@@ -741,7 +741,7 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
     var evS = -1;
     var SUN = [0.72, 0.30, 0.34]; (function () { var l = Math.hypot(SUN[0], SUN[1], SUN[2]); SUN = [SUN[0] / l, SUN[1] / l, SUN[2] / l]; })();
     var guete = 1; /* Anteil der Bildauflösung, sinkt nur auf schwacher Grafik (siehe messen) */
-    function resize() { W = stage.clientWidth; H = stage.clientHeight; dpr = Math.min(w.devicePixelRatio || 1, mobile ? 1.4 : 1.25) * guete; cv.width = Math.max(1, Math.round(W * dpr)); cv.height = Math.max(1, Math.round(H * dpr)); }
+    function resize() { W = stage.clientWidth; H = stage.clientHeight; dpr = Math.min(w.devicePixelRatio || 1, mobile ? 0.85 : 1) * guete; cv.width = Math.max(1, Math.round(W * dpr)); cv.height = Math.max(1, Math.round(H * dpr)); }
     resize();
     w.addEventListener('resize', function () { resize(); if (!running) draw(performance.now()); });
     w.addEventListener('pointermove', function (e) { if (e.pointerType !== 'mouse') return; tmx = e.clientX / w.innerWidth - 0.5; tmy = e.clientY / w.innerHeight - 0.5; }, { passive: true });
@@ -756,7 +756,7 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
     var cand = [], placed = [];
     draw = function (now) {
       var dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
-      if (!reduce) { sCam -= dt * SPEED; if (sCam < SFIN - 3) { sCam = SSTART; loopT = now; } }
+      if (!reduce) { sCam -= dt * SPEED * (evS > 0 ? 1 - 0.2 * evS : 1); if (sCam < SFIN - 3) { sCam = SSTART; loopT = now; } }
       for (var q = 0; q < ROWS; q++) if (rowS[q] > sCam + BACK + RS) { rowS[q] -= ROWS * RS; fillRow(q); upRow(q); far = q; }
       var fade = Math.min(sm((now - loopT) / 1600), 1 - st(SFIN, SFIN - 3, sCam));
       mx += (tmx - mx) * 0.03; my += (tmy - my) * 0.03;
@@ -841,11 +841,19 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
       if (guete <= 0.6 || dt <= 0 || dt > 1000 || now - seit < 1500) return;
       mN++; mSum += Math.min(dt, 400);
       if (mN < 40 && mSum < 2500) return;
-      if (mN >= 5 && mSum / mN > 36) { guete = Math.max(0.6, guete * 0.8); resize(); seit = now - 700; }
+      if (mN >= 5 && mSum / mN > (TAKT ? 52 : 36)) { guete = Math.max(0.6, guete * 0.8); resize(); seit = now - 700; }
       mN = 0; mSum = 0;
     }
-    function loop(now) { if (!running) return; messen(now); draw(now); raf = w.requestAnimationFrame(loop); }
-    function start() { if (running || reduce) return; running = true; last = mLast = seit = performance.now(); mN = 0; mSum = 0; raf = w.requestAnimationFrame(loop); }
+    var TAKT = mobile ? 30 : 0, gezeichnet = 0, RUHE = 12000, aktiv = performance.now(), ruht = false;
+    function regen() { aktiv = performance.now(); if (ruht) { ruht = false; mLast = seit = aktiv; mN = 0; mSum = 0; } }
+    ['scroll', 'pointermove', 'pointerdown', 'touchstart', 'keydown', 'resize'].forEach(function (n) { w.addEventListener(n, regen, { passive: true }); });
+    function loop(now) {
+      if (!running) return;
+      if (now - aktiv > RUHE) { ruht = true; raf = w.requestAnimationFrame(loop); return; }
+      if (TAKT && now - gezeichnet < TAKT) { raf = w.requestAnimationFrame(loop); return; }
+      gezeichnet = now; messen(now); draw(now); raf = w.requestAnimationFrame(loop);
+    }
+    function start() { if (running || reduce) return; running = true; last = mLast = seit = performance.now(); aktiv = last; ruht = false; mN = 0; mSum = 0; raf = w.requestAnimationFrame(loop); }
     function stop() { running = false; if (raf) { w.cancelAnimationFrame(raf); raf = 0; } }
     /* Am Handy liegt die Ersteinschätzung als ganzer Bildschirm über der Bühne: Solange pausiert der Flug. */
     var zu = false;
