@@ -1,5 +1,6 @@
 /* Wolgawurzeln: kostenlose Ersteinschätzung auf der Titelseite (Nachname, Region, PDF per Mail).
-   Ablauf in Ansichten: Region (mit erstem Befund), Zusendung, fertig. Am Handy als ganzer Bildschirm über der Seite.
+   Ablauf in Ansichten: Region (mit erstem Befund), bei unbekannter Region drei kurze Fragen, Zusendung, fertig.
+   Am Handy als ganzer Bildschirm über der Seite.
    Der erste Befund läuft im Browser. Gesendet wird nur die anonyme Statistik (npLog, keine IP, keine Cookies)
    und, wenn jemand die Erste Einschätzung als PDF anfordert, die Anfrage mit Mailadresse an den Worker.
    Die Anfrage per WhatsApp oder Mail trägt eine Kennung (z. B. HB1): Paket plus Stufe 1 sehr gute, 2 gute, 3 offene Voraussetzungen. */
@@ -193,9 +194,33 @@
     ar: { t: 'Wie komme ich an Dokumente aus Russland?', n: 'Archivanfrage', price: 'Festpreis nach Sichtung', d: 'Für Kirchenbucheinträge und Akten, die nicht online liegen, über Kontaktpersonen vor Ort. Sie erhalten eine Kopie des Originals mit Fundstelle, den Festpreis erfahren Sie vorab. Bezahlt wird die Anfrage, nicht der Fund.', order: false, cta: 'Anfrage per WhatsApp' },
     tr: { t: 'Was steht in einem alten Dokument?', n: 'Transkription', price: 'Preis nach Sichtung', d: 'Alte deutsche Schrift und russische Handschrift, übertragen und erklärt. Schicken Sie ein Foto des Dokuments, Sie erhalten vorab ein Angebot.', order: false, cta: 'Dokument per WhatsApp schicken' }
   };
-  var KNOW = { jahre: 'Geburtsjahre der Großeltern', ort: 'Geburtsort oder Dorf', doku: 'Alte Dokumente oder Fotos' };
+  var KNOW = { jahre: 'Geburtsjahre der Großeltern', ort: 'Geburtsort oder Dorf', doku: 'Urkunden oder Aussiedlerpapiere', fotos: 'Alte Fotos oder Briefe' };
 
-  var st = { name: '', names: [], reg: '', want: '', know: {}, pdf: {}, step: '' };
+  /* Fragenkatalog nach „Weiß ich nicht“: drei kurze Fragen, jede lässt sich überspringen.
+     Das Ergebnis nennt bewusst kein Siedlungsgebiet und keine Kolonie, das ist der Herkunftsbericht. Es sagt nur, ob und womit
+     sich die Herkunft klären lässt. Die Antworten gehen mit der Anfrage an Wolgawurzeln. */
+  var LAND = { kz: ['Kasachstan', ''], ru: ['Russland', 'zum Beispiel Sibirien, Altai oder Ural'], ma: ['Mittelasien', 'Kirgisistan, Usbekistan, Tadschikistan'], ua: ['Ukraine', ''], sonst: ['Anderes Land', 'oder nicht bekannt'] };
+  var KONF = { ev: ['Evangelisch', 'lutherisch oder reformiert'], kath: ['Katholisch', ''], menn: ['Mennonitisch', ''], unklar: ['Weiß ich nicht', ''] };
+  var KNOW_B = { ort: 'Ein Geburtsort oder Dorfname' };
+  var KNOW_T = { jahre: '', ort: 'auch ungefähr oder nur vom Erzählen', doku: 'Geburtsurkunde, Registrierschein, Arbeitsbuch', fotos: '' };
+  var FRAGEN = [
+    { k: 'land', t: 'Aus welchem Land kam die Familie nach Deutschland?', h: 'Das zeigt, in welchen Akten die Familie nach 1941 zu finden ist.', o: LAND },
+    { k: 'know', t: 'Was ist in der Familie bekannt oder vorhanden?', h: 'Mehrere Antworten sind möglich.', multi: true },
+    { k: 'konf', t: 'Welcher Konfession gehörten die Vorfahren an?', h: 'Die meisten Kolonien hatten nur eine Konfession. Das grenzt die Suche ein.', o: KONF }
+  ];
+  function frAktiv() { return st.reg === 'unklar' && !!st.fr; }
+  /* Antworten als kurze Zeilen: für die Karte, die Anfrage und den Bestelldialog */
+  function frAngaben() {
+    var t = [], k = knownList();
+    if (frAktiv()) {
+      if (st.fr.land && st.fr.land !== 'sonst') t.push(['Ausreise aus', LAND[st.fr.land][0]]);
+      if (st.fr.konf && st.fr.konf !== 'unklar') t.push(['Konfession der Vorfahren', KONF[st.fr.konf][0].toLowerCase()]);
+    }
+    if (k.length) t.push(['Bekannt oder vorhanden', k.map(function (x) { return KNOW[x]; }).join(', ')]);
+    return t;
+  }
+
+  var st = { name: '', names: [], reg: '', want: '', know: {}, pdf: {}, step: '', fr: null };
   /* Mehrere Nachnamen: einzeln einordnen. Vornamen, Vatersnamen und Namenszusätze fallen weg. */
   var FIRST = {}; ('anna maria marie olga irina natalia natalja natalie elena helena jelena tatjana tatiana svetlana swetlana ludmila ljudmila galina valentina lidia lydia nina ekaterina katharina katharine katarina katja lena emma amalia elisabeth elizabeth margarete margaretha frieda erna lilli lilia larissa alla wera vera sofia sophie julia oksana inna tamara raisa rosa luise louise alexandra '
     + 'alexander andreas andrej andrei viktor victor wladimir vladimir sergej sergei sergey nikolai nikolaj peter pjotr johann johannes heinrich jakob jacob david eduard waldemar woldemar alexej aleksej juri jurij michael michail dmitri dmitrij igor oleg artur arthur edwin paul georg friedrich konrad conrad eugen jewgeni evgeni ivan iwan iwanowitsch robert rudolf otto emil wilhelm karl carl franz walter valeri valerij anatoli gennadi leonid boris pavel pawel stepan konstantin roman denis maxim maksim ilja ilya anton '
@@ -268,7 +293,7 @@
     p.busy = true; render(); npLog('pdf');
     tsToken().then(function (token) {
       return fetch(EZ_API, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({
-        namen: pdfNamen(a), region: st.reg, wunsch: st.want, email: p.mail, notiz: p.notiz, sid: SID, quelle: quelle(), page: location.pathname, ts: token
+        namen: pdfNamen(a), region: st.reg, wunsch: st.want, email: p.mail, notiz: p.notiz, angaben: frAngaben().map(function (x) { return x[0] + ': ' + x[1]; }).join('. '), sid: SID, quelle: quelle(), page: location.pathname, ts: token
       }) }).then(function (r) { return r.json().catch(function () { return { ok: false }; }); });
     }).then(function (j) {
       p.busy = false;
@@ -295,6 +320,7 @@
     if (st.reg && st.reg !== 'unklar') p += 1;
     if (st.want) p += 1;
     p += Math.min(knownList().length, 2) * 0.5;
+    if (frAktiv() && (st.fr.land || st.fr.konf)) p += 0.5;
     return p >= 4 ? 1 : p >= 2.5 ? 2 : 3;
   }
   function knownList() { return Object.keys(KNOW).filter(function (k) { return st.know[k]; }); }
@@ -303,16 +329,14 @@
     var L = ['Guten Tag, ' + intro + ' (Ersteinschätzung ' + code + ').', '', (st.names.length > 1 ? 'Nachnamen: ' : 'Nachname: ') + st.name];
     if (st.reg) L.push('Region: ' + REG[st.reg].t);
     if (st.want) L.push('Interesse: ' + WANT[st.want].n);
-    var k = knownList();
-    if (k.length) L.push('Bekannt: ' + k.map(function (x) { return KNOW[x]; }).join(', '));
+    frAngaben().forEach(function (x) { L.push(x[0] + ': ' + x[1]); });
     L.push('', 'Meine Frage: ');
     return L.join('\n');
   }
   function knowSummary() {
     var t = [];
-    if (st.reg) t.push('Region: ' + REG[st.reg].t);
-    var k = knownList();
-    if (k.length) t.push('Vorhanden: ' + k.map(function (x) { return KNOW[x]; }).join(', '));
+    if (st.reg) t.push('Region: ' + (st.reg === 'unklar' ? 'noch offen' : REG[st.reg].t));
+    frAngaben().forEach(function (x) { t.push(x[0] + ': ' + x[1]); });
     return t.join('. ');
   }
 
@@ -441,6 +465,27 @@
     return null;
   }
 
+  /* Einordnung nach dem Fragenkatalog. Vorsichtig formuliert und ohne Gebiet oder Kolonie: Sie sagt, womit sich die Herkunft
+     klären lässt, nicht woher die Familie kam. */
+  function einordnung(a) {
+    if (!frAktiv() || !st.fr.fertig || a.kind !== 'de' || a.russian) return null;
+    var k = st.know, f = st.fr, s = [], h = 'Das lässt sich klären';
+    if (k.ort || k.doku) {
+      h = 'Ein guter Ausgangspunkt';
+      s.push((k.ort && k.doku ? 'Mit einem Ortsnamen und den Unterlagen der Familie' : k.ort ? 'Mit einem Ortsnamen' : 'Mit Urkunden oder Aussiedlerpapieren') + ' lässt sich die Herkunft meist eingrenzen.');
+    } else if (k.jahre) s.push('Nachname und Geburtsjahre der Großeltern reichen oft, um die Familie in den Akten zu finden.');
+    else s.push('Auch ohne Unterlagen ist die Spur selten verloren. Akten der Sondersiedlung und der Arbeitsarmee nennen meist den Geburtsort.');
+    if (f.konf === 'menn') s.push('Für mennonitische Familien ist die Quellenlage besonders gut.');
+    else if (f.land === 'kz' || f.land === 'ru') s.push('In Kasachstan und Sibirien lebten deutsche Familien aus zwei Gründen: als Siedler seit etwa 1900 oder durch die Deportation von 1941.');
+    else if (f.land === 'ma') s.push('Nach Mittelasien zogen viele deutsche Familien erst nach 1956, als die Sondersiedlung aufgehoben wurde.');
+    else if (f.land === 'ua') s.push('In der Ukraine lagen mehrere deutsche Siedlungsgebiete.');
+    else if (f.konf === 'ev' || f.konf === 'kath') s.push('Die Konfession grenzt die möglichen Orte ein, weil die meisten Kolonien nur eine Konfession hatten.');
+    var n = st.names.length;
+    if (n <= 1) s.push('Woher die Familie kam, ist die Frage, der ein Herkunftsbericht nachgeht.');
+    else if (n <= 4) s.push('Woher die einzelnen Linien kamen, ist die Frage, der eine Familiengeschichte nachgeht.');
+    return { c: 'good', h: h, p: s.join(' '), voll: true };
+  }
+
   function oneLine(x) {
     var n = '<b>' + esc(x.name) + '</b>: ';
     if (x.kind === 'bad') return n + 'so nicht zuzuordnen, bitte Schreibweise prüfen';
@@ -515,19 +560,39 @@
     return '<div class="ez">' + kopf(2) + '<div class="ez-body">' + befundHTML(a) +
       '<h2 class="ez-q" id="ez-q">Wo lebte die Familie vor 1941?</h2><div class="ez-opts" role="group" aria-labelledby="ez-q">' + opts + '</div></div></div>';
   }
+  function frageHTML() {
+    var f = st.fr, q = FRAGEN[f.i], n = 0, opts;
+    if (q.multi) {
+      opts = Object.keys(KNOW).map(function (k) {
+        if (st.know[k]) n++;
+        return '<button type="button" class="ez-opt" data-fr="' + k + '" aria-pressed="' + (st.know[k] ? 'true' : 'false') + '"><span class="ez-ot"><b>' + (KNOW_B[k] || KNOW[k]) + '</b>' + (KNOW_T[k] ? '<small>' + KNOW_T[k] + '</small>' : '') + '</span></button>';
+      }).join('');
+    } else {
+      opts = Object.keys(q.o).map(function (k) {
+        return '<button type="button" class="ez-opt" data-fr="' + k + '"' + (f[q.k] === k ? ' aria-current="true"' : '') + '><span class="ez-ot"><b>' + q.o[k][0] + '</b>' + (q.o[k][1] ? '<small>' + q.o[k][1] + '</small>' : '') + '</span></button>';
+      }).join('');
+    }
+    return '<div class="ez">' + kopf(2) + '<div class="ez-body"><p class="ez-fn">Frage ' + (f.i + 1) + ' von ' + FRAGEN.length + '</p>' +
+      '<h2 class="ez-q ez-name" id="ez-q" tabindex="-1">' + q.t + '</h2><p class="ez-help ez-qh">' + q.h + '</p>' +
+      '<div class="ez-opts' + (q.multi ? ' multi' : '') + '" role="group" aria-labelledby="ez-q">' + opts + '</div>' +
+      (q.multi ? '<div class="ez-bar"><button type="button" class="ez-btn" data-fr-weiter>' + (n ? 'Weiter' : 'Nichts davon, weiter') + '</button></div>' : '') +
+      '<p class="ez-foot ez-fnav"><button type="button" class="ez-link" data-fr-back>Zurück</button>' + (q.multi ? '' : '<button type="button" class="ez-link" data-fr-skip>Frage überspringen</button>') + '</p></div></div>';
+  }
   /* Leiser Nebenweg unter dem Formular: direkt bestellen oder gleich fragen */
   function altHTML(a) {
-    var W = st.want ? WANT[st.want] : null, t = [];
-    if (W && W.order && a.kind === 'de') t.push('<button type="button" class="ez-link" data-fz-order="' + st.want + '">' + W.n + ' für ' + W.price + ' direkt bestellen</button>');
+    /* Nach dem Fragenkatalog passt bei einem einzelnen deutschen Namen der Herkunftsbericht, auch wenn noch kein Wunsch gewählt ist */
+    var art = st.want || (einordnung(a) && st.names.length <= 1 ? 'hb' : ''), W = art ? WANT[art] : null, t = [];
+    if (W && W.order && a.kind === 'de') t.push('<button type="button" class="ez-link" data-fz-order="' + art + '">' + W.n + ' für ' + W.price + ' direkt bestellen</button>');
     if (TS_KEY) t.push('<a href="' + waLink(a, 'ich habe eine Frage zu meiner Familie') + '" target="_blank" rel="noopener">Lieber gleich per WhatsApp fragen</a>');
     return t.length ? '<p class="ez-foot">' + t.join('<br>') + '</p>' : '';
   }
   function mailHTML(a) {
-    var p = st.pdf, v = verdict(a), r = REG[st.reg], haupt;
+    var p = st.pdf, v = einordnung(a) || verdict(a), r = REG[st.reg], haupt;
     var deutsch = (a.all || [a]).some(function (x) { return !(x.russian || x.kind === 'ru'); });
     var karte = '<section class="ez-card" aria-label="Ihre Angaben"><dl class="ez-kv oben"><div><dt>Name</dt><dd>' + esc(st.name) + '</dd></div>' +
-      '<div><dt>Region</dt><dd>' + (st.reg === 'unklar' ? 'noch offen' : r.t) + '<button type="button" class="ez-link" data-ez-back>Ändern</button></dd></div></dl>' +
-      (v ? '<p class="ez-status">' + (v.c === 'good' ? HAKEN : '') + '<span><b>' + v.h + '.</b> ' + (v.c === 'good' ? v.p.split('. ')[0].replace(/\.?$/, '.') : v.p) + (TS_KEY ? '' : ' ' + r.src + ' <a href="' + r.u + '">' + r.l + '</a>') + '</span></p>' : '') + '</section>';
+      '<div><dt>Region</dt><dd>' + (st.reg === 'unklar' ? 'noch offen' : r.t) + '<button type="button" class="ez-link" data-ez-back>Ändern</button></dd></div>' +
+      (frAktiv() ? frAngaben().map(function (x) { return '<div' + (x[1].length > 30 ? ' class="lang"' : '') + '><dt>' + x[0] + '</dt><dd>' + esc(x[1]) + '</dd></div>'; }).join('') : '') + '</dl>' +
+      (v ? '<p class="ez-status">' + (v.c === 'good' ? HAKEN : '') + '<span><b>' + v.h + '.</b> ' + (v.voll ? v.p : (v.c === 'good' ? v.p.split('. ')[0].replace(/\.?$/, '.') : v.p) + (TS_KEY ? '' : ' ' + r.src + ' <a href="' + r.u + '">' + r.l + '</a>')) + '</span></p>' : '') + '</section>';
     if (!TS_KEY) {
       haupt = '<h2 class="ez-q">Ihre Ersteinschätzung per Nachricht</h2><div class="ez-card"><p class="ez-help first">Schicken Sie uns Ihre Angaben, Wolgawurzeln antwortet Ihnen persönlich.</p>' +
         '<a class="ez-btn" href="' + waLink(a, 'ich möchte eine Ersteinschätzung zu meinem Namen') + '" target="_blank" rel="noopener">Per WhatsApp anfragen</a>' +
@@ -589,7 +654,7 @@
   }
   function leeren() {
     out.innerHTML = '';
-    st = { name: '', names: [], reg: '', want: '', know: {}, pdf: {}, step: '' };
+    st = { name: '', names: [], reg: '', want: '', know: {}, pdf: {}, step: '', fr: null };
     ebene(false);
     if (goBtn) { try { goBtn.focus({ preventScroll: true }); } catch (e) {} }
     w.dispatchEvent(new Event('fz:change'));
@@ -598,11 +663,22 @@
     if (hist) { var n = hist; hist = 0; still = true; try { history.go(-n); } catch (e) { still = false; } }
     leeren();
   }
+  /* Ein Schritt zurück im Ablauf: Zusendung, davor die Fragen (nur bei unbekannter Region), davor die Region */
+  function zurueck() {
+    if (st.pdf.done) return false;
+    if (st.step === 'mail') { if (frAktiv()) { st.step = 'fragen'; st.fr.i = FRAGEN.length - 1; } else st.step = 'region'; return true; }
+    if (st.step === 'fragen') { if (st.fr.i > 0) st.fr.i--; else st.step = 'region'; return true; }
+    return false;
+  }
+  /* Jeder Schritt nach vorn bekommt einen Eintrag im Verlauf, damit die Zurück Taste genau einen Schritt zurückgeht */
+  function schritt() { if (hist) { try { history.pushState({ fz: hist + 1 }, ''); hist++; } catch (e) {} } }
+  var ziel = '';
   w.addEventListener('popstate', function () {
     if (still) { still = false; return; }
     if (!hist) return;
+    if (ziel) { hist = 1; st.step = ziel; ziel = ''; render(); oben(); return; }
     hist--;
-    if (hist === 1 && st.step === 'mail' && !st.pdf.done) { st.step = 'region'; render(); oben(); return; }
+    if (hist >= 1 && zurueck()) { render(); oben(); return; }
     if (hist) { var n = hist; hist = 0; still = true; try { history.go(-n); } catch (e) { still = false; } }
     hist = 0; leeren();
   });
@@ -611,7 +687,7 @@
 
   function render() {
     var a = analyseAll();
-    out.innerHTML = a.kind === 'bad' ? badHTML(a) : st.pdf.done ? fertigHTML(a) : (st.reg && st.step === 'mail') ? mailHTML(a) : regionHTML(a);
+    out.innerHTML = a.kind === 'bad' ? badHTML(a) : st.pdf.done ? fertigHTML(a) : (st.reg && st.step === 'mail') ? mailHTML(a) : (frAktiv() && st.step === 'fragen') ? frageHTML() : regionHTML(a);
     ebene(true);
     w.dispatchEvent(new Event('fz:change'));
   }
@@ -622,7 +698,7 @@
     e.preventDefault();
     var v = (inp.value || '').replace(/\s+/g, ' ').trim();
     if (v.length < 2) { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); inp.focus(); return; }
-    st.names = splitNames(v); st.name = st.names.join(', '); st.want = st.names.length > 4 ? 'ez' : st.names.length > 1 ? 'fg' : ''; st.know = {}; st.pdf = {}; st.step = 'region';
+    st.names = splitNames(v); st.name = st.names.join(', '); st.want = st.names.length > 4 ? 'ez' : st.names.length > 1 ? 'fg' : ''; st.know = {}; st.pdf = {}; st.fr = null; st.step = 'region';
     npLog('pruefung');
     inp.blur();
     var done = false, go = function () { if (!done) { done = true; render(); oben(); } };
@@ -635,14 +711,37 @@
     if (e.target.closest('.ez-x, [data-ez-close]')) { schliessen(); return; }
     var b = e.target.closest('[data-reg]');
     if (b) {
-      st.reg = b.getAttribute('data-reg'); st.step = 'mail'; npLog('region');
-      if (hist === 1) { try { history.pushState({ fz: 2 }, ''); hist = 2; } catch (er) {} }
-      render(); oben('fz-pm'); return;
+      st.reg = b.getAttribute('data-reg'); npLog('region');
+      if (st.reg === 'unklar') { st.step = 'fragen'; st.fr = st.fr || { i: 0, land: '', konf: '', fertig: false }; st.fr.i = 0; }
+      else st.step = 'mail';
+      schritt(); render(); oben(st.step === 'mail' ? 'fz-pm' : ''); return;
     }
     if (e.target.closest('[data-ez-back]')) {
-      if (hist === 2) history.back();
+      if (hist > 1) { ziel = 'region'; try { history.go(1 - hist); } catch (er) { ziel = ''; st.step = 'region'; render(); oben(); } }
       else { st.step = 'region'; render(); oben(); }
       return;
+    }
+    if (st.step === 'fragen' && frAktiv()) {
+      var q = FRAGEN[st.fr.i], fo = e.target.closest('[data-fr]'), weiter = false;
+      if (fo && q.multi) {
+        var kk = fo.getAttribute('data-fr'), wb = out.querySelector('[data-fr-weiter]');
+        st.know[kk] = !st.know[kk]; fo.setAttribute('aria-pressed', st.know[kk] ? 'true' : 'false');
+        if (wb) wb.textContent = knownList().length ? 'Weiter' : 'Nichts davon, weiter';
+        return;
+      }
+      if (fo) { st.fr[q.k] = fo.getAttribute('data-fr'); weiter = true; }
+      else if (e.target.closest('[data-fr-skip]')) { st.fr[q.k] = ''; weiter = true; }
+      else if (e.target.closest('[data-fr-weiter]')) weiter = true;
+      else if (e.target.closest('[data-fr-back]')) {
+        if (hist > 1) history.back();
+        else { zurueck(); render(); oben(); }
+        return;
+      }
+      if (weiter) {
+        if (st.fr.i < FRAGEN.length - 1) st.fr.i++;
+        else { st.fr.fertig = true; st.step = 'mail'; if (TS_KEY) npLog('fragen'); }
+        schritt(); render(); oben(st.step === 'mail' ? 'fz-pm' : ''); return;
+      }
     }
     var ob = e.target.closest('[data-fz-order]');
     if (ob) {
