@@ -1839,6 +1839,15 @@ display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;overflow-y
 @keyframes ez-schreiben{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
 @keyframes ez-tinte{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){.ez-blatt .ez-schrift,.ez-neben{animation:none}}
+/* Hinweis: Urkunden für das Aufnahmeverfahren. Ruhig, aber sichtbar, mit der Grenze der Leistung im selben Kasten. */
+.av{margin-top:36px;padding:22px 24px 20px;background:#fff;box-shadow:inset 0 0 0 1px var(--line-2),inset 4px 0 0 var(--navy)}
+.av h3{margin:0 0 8px;font:600 22px/1.25 var(--serif);color:var(--navy)}
+.av p{margin:0;max-width:62em;font:400 17px/1.55 var(--sans);color:var(--ink-2)}
+.av .av-grenze{margin-top:8px;font-size:15.5px;color:var(--ink-3)}
+.av .av-akt{display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px;margin-top:16px}
+.av .av-mehr{display:inline-flex;align-items:center;min-height:44px;color:var(--navy);font:600 16px/1.3 var(--sans);text-underline-offset:3px}
+@media (max-width:880px){.av{margin-top:26px;padding:18px 18px 16px 20px}.av h3{font-size:20px}}
+html.m2 .faq.alle .faq-alle{display:none}
 .ez-fn{margin:10px 2px 0;font:600 14.5px/1.3 var(--sans);color:var(--i2)}
 .ez-fn+.ez-q{margin-top:6px;margin-bottom:8px}
 .ez-qh{margin:0 2px 16px}
