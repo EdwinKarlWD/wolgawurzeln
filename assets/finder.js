@@ -583,7 +583,7 @@
     if (a.russian || (a.kind === 'unklar' && !a.cyr)) { /* keine Umschrift anzeigen */ }
     else if (a.cyr) z.push(['Deutsche Schreibweise', 'wahrscheinlich ' + a.forms.map(esc).join(', ')]);
     else z.push(['In russischen Akten', '<span lang="ru">' + a.forms.map(esc).join(', ') + '</span>']);
-    if (a.pleve) z.push(['Ansiedlungslisten 1764 bis 1767', a.plz ? haushalte(a.plz) + ' <span class="ez-zus">' + (a.plt === 10 ? 'einer der zehn häufigsten Namen' : a.plt === 50 ? 'einer der 50 häufigsten Namen' : 'mit diesem Namen') + '</span>' : IN_LISTEN]);
+    if (a.pleve) z.push(['Ansiedlungslisten 1764 bis 1767', a.plz ? haushalte(a.plz) + ' <span class="ez-zus">' + (a.plt === 10 ? 'einer der zehn häufigsten' : a.plt === 50 ? 'einer der 50 häufigsten' : 'mit diesem Namen') + '</span>' : IN_LISTEN]);
     if (a.menno) z.push(['Hinweis', 'unter Russlandmennoniten verbreitet']);
     if (!a.pleve) a.colonies.slice(0, 1).forEach(function (c) { z.push(['Gut zu wissen', 'Es gab eine Wolgakolonie dieses Namens: <a href="wissen/' + c[2] + '.html">' + esc(c[0]) + '</a>, gegründet ' + esc(c[4]) + '. Ob Ihre Familie von dort stammt, sagt der Name allein noch nicht.']); });
     if (a.kind === 'unklar') z.push(['Namensform', 'Keine typisch deutsche Form. Häufig liegt die deutsche Linie bei Mutter oder Großmutter.']);
@@ -591,7 +591,7 @@
     return z;
   }
   function kvHTML(z) {
-    return '<dl class="ez-kv">' + z.map(function (x) { return '<div' + (x[1].replace(/<[^>]+>/g, '').length > 34 ? ' class="lang"' : '') + '><dt>' + x[0] + '</dt><dd>' + x[1] + '</dd></div>'; }).join('') + '</dl>';
+    return '<dl class="ez-kv">' + z.map(function (x) { return '<div' + (x[1].replace(/<span class="ez-zus">.*?<\/span>/, '').replace(/<[^>]+>/g, '').length > 34 ? ' class="lang"' : '') + '><dt>' + x[0] + '</dt><dd>' + x[1] + '</dd></div>'; }).join('') + '</dl>';
   }
   /* Kopf: Marke und Schließen, darunter die Schrittleiste. n = aktueller Schritt (2, 3), 4 = alles erledigt, 0 = ohne Leiste */
   function kopf(n) {
