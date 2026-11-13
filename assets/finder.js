@@ -508,7 +508,8 @@
     var plz = plZahl(isC ? res.forms.slice(0, 2) : [name]), pl = plz > 0;
     if (pl && res.kind === 'unklar') res.kind = 'de';
     res.pleve = pl && res.kind === 'de';
-    res.plz = res.pleve ? plz : 0;
+    /* Liegt im Browser noch eine ältere pleve.js ohne Zahlen, steht dort nur „verzeichnet“ statt einer falschen 1 */
+    res.plz = res.pleve && typeof w.WW_PLH === 'string' ? plz : 0;
     res.plt = res.plz ? plTop(res.plz) : 0;
     return res;
   }
@@ -776,6 +777,17 @@
     loadNM().then(go);
     setTimeout(go, 2500);
   });
+  /* Wurde das Feld abgeschickt, bevor dieses Skript geladen war, steht der Name in der Adresse (?n=Weber). Dann geht es hier weiter.
+     Derselbe Weg dient als Verweis von außen, der die Ersteinschätzung gleich mit einem Namen öffnet. */
+  try {
+    var un = new URLSearchParams(location.search), n0 = (un.get('n') || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+    if (n0) {
+      un.delete('n'); var rest = un.toString();
+      history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+      inp.value = n0;
+      if (form.requestSubmit) form.requestSubmit(); else form.dispatchEvent(new Event('submit', { cancelable: true }));
+    }
+  } catch (e) {}
   out.addEventListener('click', function (e) {
     var lk = e.target.closest('a[href^="https://wa.me"], a[href^="mailto:"]');
     if (lk) npLog(/^mailto/.test(lk.getAttribute('href')) ? 'mail' : 'whatsapp');
