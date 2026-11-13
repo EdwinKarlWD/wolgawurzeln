@@ -1366,6 +1366,7 @@ button.pk-gift:hover{background:rgba(158,42,43,.09);border-color:rgba(158,42,43,
 .fz-row .btn{flex:none;height:52px;padding:0 24px;border-radius:12px;font-size:17px}
 .fz-note{margin-top:8px;font-size:12.5px;line-height:1.4;color:rgba(246,242,235,.75);text-align:center}
 .fz.has-res .fz-note{display:none}
+.fz-note a{color:inherit;text-decoration:underline;text-underline-offset:2px}
 .fz-out:empty{display:none}
 .fz-res{margin-top:12px;max-height:min(44vh,430px);overflow:auto;padding:14px 16px 12px;border-radius:14px;background:var(--card);color:var(--ink);text-align:left;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .fz-h{font:600 18px/1.3 var(--serif);color:var(--ink)}
