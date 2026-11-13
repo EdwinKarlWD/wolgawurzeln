@@ -257,11 +257,12 @@
       else if (st.fr.land && st.fr.land !== 'sonst') t.push(['Ausreise aus', LAND[st.fr.land][0], deutLand()]);
       if (st.fr.konf && st.fr.konf !== 'unklar') t.push(['Konfession der Vorfahren', KONF[st.fr.konf][0].toLowerCase(), deutKonf()]);
     }
+    if (st.know.ort && st.ort) t.push(['Herkunftsort', st.ort, '']);
     if (k.length) t.push(['Bekannt oder vorhanden', k.map(function (x) { return KNOW[x]; }).join(', '), frAktiv() ? deutKnow() : '']);
     return t;
   }
 
-  var st = { name: '', names: [], reg: '', want: '', know: {}, pdf: {}, step: '', fr: null };
+  var st = { name: '', names: [], reg: '', want: '', know: {}, pdf: {}, step: '', fr: null, ort: '' };
   /* Mehrere Nachnamen: einzeln einordnen. Vornamen, Vatersnamen und Namenszusätze fallen weg. */
   var FIRST = {}; ('anna maria marie olga irina natalia natalja natalie elena helena jelena tatjana tatiana svetlana swetlana ludmila ljudmila galina valentina lidia lydia nina ekaterina katharina katharine katarina katja lena emma amalia elisabeth elizabeth margarete margaretha frieda erna lilli lilia larissa alla wera vera sofia sophie julia oksana inna tamara raisa rosa luise louise alexandra '
     + 'alexander andreas andrej andrei viktor victor wladimir vladimir sergej sergei sergey nikolai nikolaj peter pjotr johann johannes heinrich jakob jacob david eduard waldemar woldemar alexej aleksej juri jurij michael michail dmitri dmitrij igor oleg artur arthur edwin paul georg friedrich konrad conrad eugen jewgeni evgeni ivan iwan iwanowitsch robert rudolf otto emil wilhelm karl carl franz walter valeri valerij anatoli gennadi leonid boris pavel pawel stepan konstantin roman denis maxim maksim ilja ilya anton '
@@ -402,6 +403,12 @@
       return NM;
     });
     return nmP;
+  }
+  var ortP = null;
+  function ortFeld() {
+    var f = d.getElementById('ez-ort'); if (!f) return;
+    if (!ortP) ortP = w.WW_ORTE ? Promise.resolve(true) : loadJS('assets/orte.js');
+    ortP.then(function () { var g = d.getElementById('ez-ort'); if (g && w.WW_ORTE) w.WW_ORTE.an(g); });
   }
   /* Ansiedlungslisten 1764 bis 1767 (assets/pleve.js): ob ein Name verzeichnet ist und mit wie vielen Haushalten.
      Zahl der Kolonien, Konfessionen und Schreibweisen stehen erst im PDF, Kolonienamen nirgends.
@@ -646,6 +653,8 @@
     return '<div class="ez">' + kopf(2) + '<div class="ez-body"><p class="ez-fn">Frage ' + (f.i + 1) + ' von ' + FRAGEN.length + '</p>' +
       '<h2 class="ez-q ez-name" id="ez-q" tabindex="-1">' + q.t + '</h2><p class="ez-help ez-qh">' + q.h + '</p>' +
       '<div class="ez-opts' + (q.multi ? ' multi' : '') + '" role="group" aria-labelledby="ez-q">' + opts + '</div>' +
+      (q.multi ? '<div class="ez-ort"' + (st.know.ort ? '' : ' hidden') + '><label class="ez-lab" for="ez-ort">Wie heißt der Ort? <small>freiwillig</small></label>' +
+        '<div><input id="ez-ort" type="text" maxlength="80" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="done" placeholder="zum Beispiel Norka oder Мариенталь" value="' + esc(st.ort) + '"></div></div>' : '') +
       (q.multi ? '<div class="ez-bar"><button type="button" class="ez-btn" data-fr-weiter>' + (n ? 'Weiter' : 'Nichts davon, weiter') + '</button></div>' : '') +
       '<p class="ez-foot ez-fnav"><button type="button" class="ez-link" data-fr-back>Zurück</button>' + (q.multi ? '' : '<button type="button" class="ez-link" data-fr-skip>Frage überspringen</button>') + '</p></div></div>';
   }
@@ -761,6 +770,7 @@
     if (a.kind !== 'bad') familieAus(a);
     out.innerHTML = a.kind === 'bad' ? badHTML(a) : st.pdf.done ? fertigHTML(a) : (st.reg && st.step === 'mail') ? mailHTML(a) : (frAktiv() && st.step === 'fragen') ? frageHTML() : regionHTML(a);
     ebene(true);
+    if (st.know.ort) ortFeld();
     w.dispatchEvent(new Event('fz:change'));
   }
 
@@ -770,7 +780,7 @@
     e.preventDefault();
     var v = (inp.value || '').replace(/\s+/g, ' ').trim();
     if (v.length < 2) { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); inp.focus(); return; }
-    st.names = splitNames(v); st.name = st.names.join(', '); st.want = st.names.length > 4 ? 'ez' : st.names.length > 1 ? 'fg' : ''; st.know = {}; st.pdf = {}; st.fr = null; st.step = 'region';
+    st.names = splitNames(v); st.name = st.names.join(', '); st.want = st.names.length > 4 ? 'ez' : st.names.length > 1 ? 'fg' : ''; st.know = {}; st.ort = ''; st.pdf = {}; st.fr = null; st.step = 'region';
     npLog('pruefung');
     inp.blur();
     var done = false, go = function () { if (!done) { done = true; render(); oben(); } };
@@ -792,6 +802,7 @@
     var lk = e.target.closest('a[href^="https://wa.me"], a[href^="mailto:"]');
     if (lk) npLog(/^mailto/.test(lk.getAttribute('href')) ? 'mail' : 'whatsapp');
     if (e.target.closest('.ez-x, [data-ez-close]')) { schliessen(); return; }
+    var oi = e.target.closest('.ort-info a'); if (oi) { oi.target = '_blank'; oi.rel = 'noopener'; return; }
     var b = e.target.closest('[data-reg]');
     if (b) {
       st.reg = b.getAttribute('data-reg'); npLog('region');
@@ -808,6 +819,10 @@
       if (fo && q.multi) {
         var kk = fo.getAttribute('data-fr'), wb = out.querySelector('[data-fr-weiter]');
         st.know[kk] = !st.know[kk]; fo.setAttribute('aria-pressed', st.know[kk] ? 'true' : 'false');
+        if (kk === 'ort') {
+          var ob = out.querySelector('.ez-ort');
+          if (ob) { ob.hidden = !st.know.ort; if (st.know.ort) { ortFeld(); try { ob.scrollIntoView({ block: 'nearest' }); } catch (er) {} } }
+        }
         if (wb) wb.textContent = knownList().length ? 'Weiter' : 'Nichts davon, weiter';
         return;
       }
@@ -839,6 +854,7 @@
     if (e.target.closest('.fz-again')) { schliessen(); inp.value = ''; inp.focus(); return; }
   });
   out.addEventListener('toggle', function (e) { if (e.target.classList && e.target.classList.contains('ez-more')) st.pdf.more = e.target.open; }, true);
+  out.addEventListener('input', function (e) { if (e.target && e.target.id === 'ez-ort') st.ort = e.target.value.replace(/\s+/g, ' ').trim().slice(0, 80); });
   out.addEventListener('submit', function (e) {
     var f = e.target.closest('.fz-pdf-f');
     if (!f) return;
