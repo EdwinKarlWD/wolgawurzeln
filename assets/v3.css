@@ -1824,6 +1824,21 @@ display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;overflow-y
 .ort-info{margin:8px 0 0;font:400 15.5px/1.5 var(--sans);color:var(--ink-2)}
 .ort-info b{color:var(--navy)}
 .ort-info a{color:var(--navy);font-weight:600;text-underline-offset:3px}
+/* Listenblatt: Der geprüfte Name erscheint wie von Hand in eine Liste geschrieben. Eine Zeichnung, kein Abbild einer Urkunde. */
+.ez-blatt{position:relative;margin:0 0 12px;padding:10px 16px 0 28px;background-color:#FAF4E6;background-image:repeating-linear-gradient(to bottom,transparent 0 47px,rgba(122,98,62,.3) 47px 48px);background-position:0 34px;box-shadow:inset 0 0 0 1px rgba(122,98,62,.32)}
+.ez-blatt::before{content:"";position:absolute;left:17px;top:0;bottom:0;width:1px;background:rgba(142,42,43,.5)}
+.ez-blatt-k{margin:0;min-height:24px;font:600 14px/24px var(--sans);color:#6A5836}
+.ez-blatt .ez-schrift{display:block;flex:none;margin:0;padding:0 2px;font:italic 500 37px/48px var(--serif);color:#16264A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:ez-schreiben 1.25s cubic-bezier(.33,.1,.3,1) .2s both}
+.ez-blatt .ez-schrift.lang{font-size:27px}
+.ez-neben{display:flex;align-items:baseline;gap:12px;margin:0;min-height:48px;padding:0 2px;line-height:48px;animation:ez-tinte .5s ease 1.25s both}
+.ez-neben span{flex:none;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:italic 400 23px/48px var(--serif);color:#2C3B5E}
+.ez-neben small{min-width:0;font:400 14px/1.3 var(--sans);color:#6A5836}
+.ez-rh2{align-items:flex-start;margin-bottom:2px}
+.ez-rh2 .ez-fund{flex:1;min-width:0;margin:0;padding-top:1px;font:500 16.5px/1.45 var(--sans);color:var(--i2)}
+.ez-rh2 .ez-check{margin-top:1px}
+@keyframes ez-schreiben{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes ez-tinte{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.ez-blatt .ez-schrift,.ez-neben{animation:none}}
 .ez-fn{margin:10px 2px 0;font:600 14.5px/1.3 var(--sans);color:var(--i2)}
 .ez-fn+.ez-q{margin-top:6px;margin-bottom:8px}
 .ez-qh{margin:0 2px 16px}
