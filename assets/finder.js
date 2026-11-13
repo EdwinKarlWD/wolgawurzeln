@@ -1,5 +1,5 @@
 /* Wolgawurzeln: kostenlose Ersteinschätzung auf der Titelseite (Nachname, Region, PDF per Mail).
-   Ablauf in Ansichten: Region (mit erstem Befund), bei unbekannter Region drei kurze Fragen, Zusendung, fertig.
+   Ablauf in Ansichten: Region (mit erstem Befund), drei kurze Fragen zur Familie, Zusendung, fertig.
    Am Handy als ganzer Bildschirm über der Seite.
    Der erste Befund läuft im Browser. Gesendet wird nur die anonyme Statistik (npLog, keine IP, keine Cookies)
    und, wenn jemand die Erste Einschätzung als PDF anfordert, die Anfrage mit Mailadresse an den Worker.
@@ -196,10 +196,10 @@
   };
   var KNOW = { jahre: 'Geburtsjahre der Großeltern', ort: 'Geburtsort oder Dorf', doku: 'Urkunden oder Aussiedlerpapiere', fotos: 'Alte Fotos oder Briefe' };
 
-  /* Fragenkatalog nach „Weiß ich nicht“: drei kurze Fragen, jede lässt sich überspringen.
-     Das Ergebnis nennt bewusst kein Siedlungsgebiet und keine Kolonie, das ist der Herkunftsbericht. Es sagt nur, ob und womit
-     sich die Herkunft klären lässt. Die Antworten gehen mit der Anfrage an Wolgawurzeln. */
-  var LAND = { kz: ['Kasachstan', ''], ru: ['Russland', 'zum Beispiel Sibirien, Altai oder Ural'], ma: ['Mittelasien', 'Kirgisistan, Usbekistan, Tadschikistan'], ua: ['Ukraine', ''], sonst: ['Anderes Land', 'oder nicht bekannt'] };
+  /* Fragenkatalog nach der Wahl der Region: drei kurze Fragen, jede lässt sich überspringen.
+     Das Ergebnis nennt bewusst keine Kolonie und bei unbekannter Region kein Siedlungsgebiet, das ist der Herkunftsbericht.
+     Es sagt nur, ob und womit sich die Herkunft klären lässt. Die Antworten gehen mit der Anfrage an Wolgawurzeln. */
+  var LAND = { kz: ['Kasachstan', ''], ru: ['Russland', 'zum Beispiel Sibirien, Altai oder Ural'], ma: ['Mittelasien', 'Kirgisistan, Usbekistan, Tadschikistan'], ua: ['Ukraine', ''], de: ['Schon seit dem Krieg in Deutschland', 'Umsiedlung oder Flucht bis etwa 1950'], sonst: ['Anderes Land', 'oder nicht bekannt'] };
   var KONF = { ev: ['Evangelisch', 'lutherisch oder reformiert'], kath: ['Katholisch', ''], menn: ['Mennonitisch', ''], unklar: ['Weiß ich nicht', ''] };
   var KNOW_B = { ort: 'Ein Geburtsort oder Dorfname' };
   var KNOW_T = { jahre: '', ort: 'auch ungefähr oder nur vom Erzählen', doku: 'Geburtsurkunde, Registrierschein, Arbeitsbuch', fotos: '' };
@@ -208,12 +208,13 @@
     { k: 'know', t: 'Was ist in der Familie bekannt oder vorhanden?', h: 'Mehrere Antworten sind möglich.', multi: true },
     { k: 'konf', t: 'Welcher Konfession gehörten die Vorfahren an?', h: 'Die meisten Kolonien hatten nur eine Konfession. Das grenzt die Suche ein.', o: KONF }
   ];
-  function frAktiv() { return st.reg === 'unklar' && !!st.fr; }
+  function frAktiv() { return !!st.reg && !!st.fr; }
   /* Antworten als kurze Zeilen: für die Karte, die Anfrage und den Bestelldialog */
   function frAngaben() {
     var t = [], k = knownList();
     if (frAktiv()) {
-      if (st.fr.land && st.fr.land !== 'sonst') t.push(['Ausreise aus', LAND[st.fr.land][0]]);
+      if (st.fr.land === 'de') t.push(['In Deutschland', 'seit dem Krieg oder kurz danach']);
+      else if (st.fr.land && st.fr.land !== 'sonst') t.push(['Ausreise aus', LAND[st.fr.land][0]]);
       if (st.fr.konf && st.fr.konf !== 'unklar') t.push(['Konfession der Vorfahren', KONF[st.fr.konf][0].toLowerCase()]);
     }
     if (k.length) t.push(['Bekannt oder vorhanden', k.map(function (x) { return KNOW[x]; }).join(', ')]);
@@ -465,20 +466,23 @@
     return null;
   }
 
-  /* Einordnung nach dem Fragenkatalog. Vorsichtig formuliert und ohne Gebiet oder Kolonie: Sie sagt, womit sich die Herkunft
-     klären lässt, nicht woher die Familie kam. */
+  /* Einordnung nach dem Fragenkatalog. Vorsichtig formuliert und ohne Kolonie, bei unbekannter Region auch ohne Gebiet:
+     Sie sagt, womit sich die Herkunft klären lässt, nicht woher die Familie kam. */
   function einordnung(a) {
     if (!frAktiv() || !st.fr.fertig || a.kind !== 'de' || a.russian) return null;
-    var k = st.know, f = st.fr, s = [], h = 'Das lässt sich klären';
+    var k = st.know, f = st.fr, s = [], offen = st.reg === 'unklar', h = offen ? 'Das lässt sich klären' : 'Gute Voraussetzungen';
+    if (!offen) s.push('Für diese Region sind die wichtigen Quellen erhalten.');
     if (k.ort || k.doku) {
-      h = 'Ein guter Ausgangspunkt';
+      if (offen) h = 'Ein guter Ausgangspunkt';
       s.push((k.ort && k.doku ? 'Mit einem Ortsnamen und den Unterlagen der Familie' : k.ort ? 'Mit einem Ortsnamen' : 'Mit Urkunden oder Aussiedlerpapieren') + ' lässt sich die Herkunft meist eingrenzen.');
     } else if (k.jahre) s.push('Nachname und Geburtsjahre der Großeltern reichen oft, um die Familie in den Akten zu finden.');
-    else s.push('Auch ohne Unterlagen ist die Spur selten verloren. Akten der Sondersiedlung und der Arbeitsarmee nennen meist den Geburtsort.');
+    else s.push('Auch ohne Unterlagen ist die Spur selten verloren.' + (offen ? ' Akten der Sondersiedlung und der Arbeitsarmee nennen meist den Geburtsort.' : ''));
     if (f.konf === 'menn') s.push('Für mennonitische Familien ist die Quellenlage besonders gut.');
-    else if (f.land === 'kz' || f.land === 'ru') s.push('In Kasachstan und Sibirien lebten deutsche Familien aus zwei Gründen: als Siedler seit etwa 1900 oder durch die Deportation von 1941.');
-    else if (f.land === 'ma') s.push('Nach Mittelasien zogen viele deutsche Familien erst nach 1956, als die Sondersiedlung aufgehoben wurde.');
-    else if (f.land === 'ua') s.push('In der Ukraine lagen mehrere deutsche Siedlungsgebiete.');
+    else if (f.land === 'de') s.push('Für Familien, die im Krieg nach Deutschland kamen, liegen oft Einbürgerungsakten im Bundesarchiv.');
+    else if (!offen && (f.konf === 'ev' || f.konf === 'kath')) s.push('Region und Konfession zusammen grenzen die möglichen Kolonien weiter ein.');
+    else if (offen && (f.land === 'kz' || f.land === 'ru')) s.push('In Kasachstan und Sibirien lebten deutsche Familien aus zwei Gründen: als Siedler seit etwa 1900 oder durch die Deportation von 1941.');
+    else if (offen && f.land === 'ma') s.push('Nach Mittelasien zogen viele deutsche Familien erst nach 1956, als die Sondersiedlung aufgehoben wurde.');
+    else if (offen && f.land === 'ua') s.push('In der Ukraine lagen mehrere deutsche Siedlungsgebiete.');
     else if (f.konf === 'ev' || f.konf === 'kath') s.push('Die Konfession grenzt die möglichen Orte ein, weil die meisten Kolonien nur eine Konfession hatten.');
     var n = st.names.length;
     if (n <= 1) s.push('Woher die Familie kam, ist die Frage, der ein Herkunftsbericht nachgeht.');
@@ -663,7 +667,7 @@
     if (hist) { var n = hist; hist = 0; still = true; try { history.go(-n); } catch (e) { still = false; } }
     leeren();
   }
-  /* Ein Schritt zurück im Ablauf: Zusendung, davor die Fragen (nur bei unbekannter Region), davor die Region */
+  /* Ein Schritt zurück im Ablauf: Zusendung, davor die Fragen, davor die Region */
   function zurueck() {
     if (st.pdf.done) return false;
     if (st.step === 'mail') { if (frAktiv()) { st.step = 'fragen'; st.fr.i = FRAGEN.length - 1; } else st.step = 'region'; return true; }
@@ -712,9 +716,8 @@
     var b = e.target.closest('[data-reg]');
     if (b) {
       st.reg = b.getAttribute('data-reg'); npLog('region');
-      if (st.reg === 'unklar') { st.step = 'fragen'; st.fr = st.fr || { i: 0, land: '', konf: '', fertig: false }; st.fr.i = 0; }
-      else st.step = 'mail';
-      schritt(); render(); oben(st.step === 'mail' ? 'fz-pm' : ''); return;
+      st.step = 'fragen'; st.fr = st.fr || { i: 0, land: '', konf: '', fertig: false }; st.fr.i = 0;
+      schritt(); render(); oben(); return;
     }
     if (e.target.closest('[data-ez-back]')) {
       if (hist > 1) { ziel = 'region'; try { history.go(1 - hist); } catch (er) { ziel = ''; st.step = 'region'; render(); oben(); } }
