@@ -952,6 +952,9 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
   function el(tag, cls, text) { var e = d.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
   function bauen() {
     gebaut = true;
+    /* Wischreihe ohne Verweise: mit der Tastatur erreichbar machen, sonst lässt sie sich ohne Finger nicht verschieben */
+    var tr = d.querySelector('ul.trust');
+    if (tr && !tr.querySelector('a, button')) { tr.setAttribute('tabindex', '0'); tr.setAttribute('aria-label', 'Vertrauenspunkte, seitlich verschiebbar'); }
     /* Häufige Fragen: alle zu, sechs sichtbar, der Rest auf Knopfdruck */
     var faq = d.querySelector('.faq-sec .faq');
     if (faq) {
