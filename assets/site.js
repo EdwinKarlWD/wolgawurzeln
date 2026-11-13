@@ -286,3 +286,26 @@
   var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { rootMargin: '0px 0px -8% 0px' });
   els.forEach(function (el, i) { el.classList.add('rv'); el.style.transitionDelay = ((i % 4) * 70) + 'ms'; io.observe(el); });
 })();
+
+/* Karte der Kolonien: Die Punkte sind am Handy nur etwa fünf Pixel groß. Unter die Punkte kommt je eine unsichtbare Tippfläche
+   von 24 Pixeln. Sie liegen unter allen sichtbaren Punkten, ein Tipp genau auf einen Punkt trifft also immer den richtigen Ort. */
+(function () {
+  if (!window.matchMedia || !window.matchMedia('(hover: none), (pointer: coarse), (max-width: 880px)').matches) return;
+  var NS = 'http://www.w3.org/2000/svg';
+  Array.prototype.forEach.call(document.querySelectorAll('svg.col-map'), function (svg) {
+    var links = svg.querySelectorAll('a[href]');
+    if (!links.length || svg.querySelector('.cm-hits')) return;
+    var m = svg.getScreenCTM && svg.getScreenCTM(), scale = m && m.a ? Math.abs(m.a) : 0;
+    if (!scale) return;
+    var r = Math.max(3, 12 / scale), g = document.createElementNS(NS, 'g');
+    g.setAttribute('class', 'cm-hits'); g.setAttribute('aria-hidden', 'true');
+    Array.prototype.forEach.call(links, function (a) {
+      var c = a.querySelector('circle'); if (!c) return;
+      var h = document.createElementNS(NS, 'a'), k = document.createElementNS(NS, 'circle');
+      h.setAttribute('href', a.getAttribute('href')); h.setAttribute('tabindex', '-1');
+      k.setAttribute('cx', c.getAttribute('cx')); k.setAttribute('cy', c.getAttribute('cy')); k.setAttribute('r', r.toFixed(1));
+      h.appendChild(k); g.appendChild(h);
+    });
+    links[0].parentNode.insertBefore(g, links[0]);
+  });
+})();

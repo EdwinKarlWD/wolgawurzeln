@@ -1840,6 +1840,18 @@ display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;overflow-y
 .av .av-nach h4{margin:2px 0 6px;font:700 18px/1.3 var(--sans);letter-spacing:0;text-transform:none;color:var(--navy)}
 .av .av-grenze{grid-column:1/-1;margin-top:18px;padding-top:12px;box-shadow:inset 0 1px 0 var(--line-2);font-size:15.5px;color:var(--ink-3)}
 @media (max-width:880px){.av{display:block;margin-top:26px;padding:18px 18px 14px 20px}.av h3{font-size:20px}.av .av-nach{margin-top:14px;padding:14px 0 0;box-shadow:inset 0 1px 0 var(--line-2)}.av .av-grenze{margin-top:14px}}
+/* Tippflächen am Handy auf den Unterseiten: Brotkrumen, Inhaltsverzeichnis und „Alle Kolonien“ mindestens 44 Pixel hoch.
+   Bei den Brotkrumen wächst nur die Fläche, die Zeile bleibt so hoch wie vorher. */
+@media (max-width:880px){
+.crumbs a{padding:13px 3px;margin:-13px -3px}
+.toc a{padding-top:12px;padding-bottom:12px}
+.cp-all{display:inline-flex;align-items:center;min-height:44px}
+a.tl,button.tl{padding-top:8px;padding-bottom:8px}
+.fees .act button{min-height:44px;padding:0 4px;margin:0 -4px}
+.tl-en::after{content:"";position:absolute;inset:-13px -8px}
+}
+/* Karte der Kolonien: unsichtbare Tippflächen unter den Punkten (setzt assets/site.js bei Fingerbedienung) */
+.col-map .cm-hits circle{fill:transparent;stroke:none;cursor:pointer}
 html.m2 .faq.alle .faq-alle{display:none}
 .ez-fn{margin:10px 2px 0;font:600 14.5px/1.3 var(--sans);color:var(--i2)}
 .ez-fn+.ez-q{margin-top:6px;margin-bottom:8px}
