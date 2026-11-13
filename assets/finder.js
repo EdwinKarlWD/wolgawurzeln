@@ -521,8 +521,12 @@
     var k = st.know, f = st.fr, s = [], offen = st.reg === 'unklar', stark = k.ort || k.doku, etwas = stark || k.jahre || k.fotos || (f.land && f.land !== 'sonst') || (f.konf && f.konf !== 'unklar');
     var h = offen ? (stark ? 'Ein guter Ausgangspunkt' : 'Das lässt sich klären') : (stark ? 'Sehr gute Voraussetzungen' : 'Gute Voraussetzungen');
     if (!etwas) s.push('Auch ohne weitere Angaben ist die Spur selten verloren.');
-    var n = st.names.length;
-    if (n <= 1) s.push('Woher die Familie kam, ist die Frage, der ein Herkunftsbericht nachgeht.');
+    /* Bei Herkunft von der Wolga führt die Zahl aus den Ansiedlungslisten zum Herkunftsbericht. Die Kolonie selbst steht nie hier.
+       Bei anderer oder offener Region sagt die Zahl nichts über die Familie, dort bleibt der allgemeine Satz. */
+    var n = st.names.length, lz = st.reg === 'wolga' && a.pleve && a.plz ? a.plz : 0;
+    if (n <= 1 && lz === 1) s.push('In den Ansiedlungslisten steht der Name genau einmal. In welcher Kolonie, zeigt ein Herkunftsbericht.');
+    else if (n <= 1 && lz > 1) s.push('In den Ansiedlungslisten stehen ' + lz + ' Haushalte mit diesem Namen. In welchen Kolonien, zeigt ein Herkunftsbericht.');
+    else if (n <= 1) s.push('Woher die Familie kam, ist die Frage, der ein Herkunftsbericht nachgeht.');
     else if (n <= 4) s.push('Woher die einzelnen Linien kamen, ist die Frage, der eine Familiengeschichte nachgeht.');
     return { c: 'good', h: h, p: s.join(' '), voll: true };
   }
