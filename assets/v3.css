@@ -1852,6 +1852,8 @@ display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;overflow-y
 .ruhig .intro-labels .il:nth-child(even){display:none}
 .ruhig .intro-labels .il{filter:opacity(.75)}
 
+/* Verweis in der Liste einer Paketkarte: wie der übrige Text, nur unterstrichen */
+.pk-list li a{color:inherit;text-decoration:underline;text-underline-offset:3px}
 /* Tippflächen am Handy auf den Unterseiten: Brotkrumen, Inhaltsverzeichnis und „Alle Kolonien“ mindestens 44 Pixel hoch.
    Bei den Brotkrumen wächst nur die Fläche, die Zeile bleibt so hoch wie vorher. */
 @media (max-width:880px){
