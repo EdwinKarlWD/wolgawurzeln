@@ -419,6 +419,14 @@
     return 0;
   }
   function inPleve(forms) { return plZahl(forms) > 0; }
+  /* Häufige Namen: 10, wenn höchstens zehn Namen so viele Haushalte haben, 50 entsprechend, sonst 0. Gleichstände zählen mit, damit die Aussage stimmt. */
+  var PLS = null;
+  function plTop(n) {
+    if (!PL || n < 2) return 0;
+    if (!PLS) { PLS = []; for (var k in PL) if (PL[k] > 1) PLS.push(PL[k]); PLS.sort(function (a, b) { return b - a; }); }
+    var c = 0; while (c < PLS.length && PLS[c] >= n) c++;
+    return c <= 10 ? 10 : c <= 50 ? 50 : 0;
+  }
   var CTX = '^abcdefghijklmnopqrstuvwxyz', NXT = 'abcdefghijklmnopqrstuvwxyz$';
   var BLOCK = {}; ('test tester testname hallo hello name nachname familienname vorname nein keine keiner egal blabla bla pizza banane auto tisch mustermann musterfrau muster beispiel abc abcd xyz xxx lol asdf qwertz qwerty niemand unbekannt weissnicht ahnung').split(' ').forEach(function (x) { BLOCK[x] = 1; });
   var FREMD = {}; ('smith johnson williams jones davis wilson taylor anderson jackson white harris thompson robinson walker young allen wright scott green baker adams nelson hill campbell mitchell roberts carter phillips evans turner parker collins edwards stewart morris murphy cook rogers morgan cooper garcia martinez rodriguez lopez gonzalez hernandez perez sanchez ramirez rossi russo ferrari esposito bianchi romano ricci marino yilmaz kaya demir sahin celik yildiz yildirim ozturk aydin ozdemir arslan dogan kilic nguyen tran pham mohammed muhammad mohamed mohammad ahmed ahmad ali hassan hussein husein ibrahim mahmoud abdullah khalil khan singh kumar patel wang zhang liu chen yang huang').split(' ').forEach(function (x) { FREMD[x] = 1; });
@@ -501,6 +509,7 @@
     if (pl && res.kind === 'unklar') res.kind = 'de';
     res.pleve = pl && res.kind === 'de';
     res.plz = res.pleve ? plz : 0;
+    res.plt = res.plz ? plTop(res.plz) : 0;
     return res;
   }
 
@@ -574,7 +583,7 @@
     if (a.russian || (a.kind === 'unklar' && !a.cyr)) { /* keine Umschrift anzeigen */ }
     else if (a.cyr) z.push(['Deutsche Schreibweise', 'wahrscheinlich ' + a.forms.map(esc).join(', ')]);
     else z.push(['In russischen Akten', '<span lang="ru">' + a.forms.map(esc).join(', ') + '</span>']);
-    if (a.pleve) z.push(['Ansiedlungslisten 1764 bis 1767', a.plz ? haushalte(a.plz) + '<span class="ez-zus">mit diesem Namen</span>' : IN_LISTEN]);
+    if (a.pleve) z.push(['Ansiedlungslisten 1764 bis 1767', a.plz ? haushalte(a.plz) + ' <span class="ez-zus">' + (a.plt === 10 ? 'einer der zehn häufigsten Namen' : a.plt === 50 ? 'einer der 50 häufigsten Namen' : 'mit diesem Namen') + '</span>' : IN_LISTEN]);
     if (a.menno) z.push(['Hinweis', 'unter Russlandmennoniten verbreitet']);
     if (!a.pleve) a.colonies.slice(0, 1).forEach(function (c) { z.push(['Gut zu wissen', 'Es gab eine Wolgakolonie dieses Namens: <a href="wissen/' + c[2] + '.html">' + esc(c[0]) + '</a>, gegründet ' + esc(c[4]) + '. Ob Ihre Familie von dort stammt, sagt der Name allein noch nicht.']); });
     if (a.kind === 'unklar') z.push(['Namensform', 'Keine typisch deutsche Form. Häufig liegt die deutsche Linie bei Mutter oder Großmutter.']);
