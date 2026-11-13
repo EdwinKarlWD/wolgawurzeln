@@ -395,13 +395,17 @@
     nmP = Promise.all([loadJS('assets/namen.js'), loadJS('assets/pleve.js')]).then(function () {
       NM = w.WW_NM || null;
       if (NM) { NM.k = {}; NM.known.split(' ').forEach(function (x) { NM.k[x] = 1; }); }
-      if (w.WW_PL) { PL = {}; w.WW_PL.split(' ').forEach(function (x) { PL[x] = 1; }); }
+      if (w.WW_PL) {
+        PL = {}; w.WW_PL.split(' ').forEach(function (x) { PL[x] = 1; });
+        (w.WW_PLH || '').split(' ').forEach(function (x) { var m = /^([a-z]+)(\d+)$/.exec(x); if (m && PL[m[1]]) PL[m[1]] = +m[2]; });
+      }
       return NM;
     });
     return nmP;
   }
-  /* Ansiedlungslisten 1764 bis 1767 (assets/pleve.js): hier nur, ob ein Name verzeichnet ist.
-     Zahlen, Konfessionen und Schreibweisen stehen erst im PDF. Gleiche Normalisierung wie im Worker (pruefung_basis.js). */
+  /* Ansiedlungslisten 1764 bis 1767 (assets/pleve.js): ob ein Name verzeichnet ist und mit wie vielen Haushalten.
+     Zahl der Kolonien, Konfessionen und Schreibweisen stehen erst im PDF, Kolonienamen nirgends.
+     Gleiche Normalisierung und gleiche Reihenfolge wie im Worker (pruefung_basis.js, pruefung.js), damit Seite und PDF dieselbe Zahl nennen. */
   var PL = null;
   function variante(x) {
     var v = String(x || '').toLowerCase().replace(/ß/g, 'ss').replace(/ae|ä/g, 'e').replace(/oe|ö/g, 'e').replace(/ue|ü/g, 'i').replace(/[^a-z]/g, '');
@@ -409,9 +413,12 @@
       .replace(/([aeiou])h(?=[^aeiou]|$)/g, '$1').replace(/(sch|ch)/g, function (m) { return m.toUpperCase(); }).replace(/c(?=[aou]|$)/g, 'k').replace(/c/g, 'z').toLowerCase().replace(/(.)\1+/g, '$1').replace(/d$/, 't');
     return v;
   }
-  function inPleve(forms) {
-    return !!PL && forms.some(function (f) { var k = variante(f); return k.length > 1 && PL[k] === 1; });
+  function plZahl(forms) {
+    if (!PL) return 0;
+    for (var i = 0; i < forms.length; i++) { var k = variante(forms[i]); if (k.length > 1 && PL[k] > 0) return PL[k]; }
+    return 0;
   }
+  function inPleve(forms) { return plZahl(forms) > 0; }
   var CTX = '^abcdefghijklmnopqrstuvwxyz', NXT = 'abcdefghijklmnopqrstuvwxyz$';
   var BLOCK = {}; ('test tester testname hallo hello name nachname familienname vorname nein keine keiner egal blabla bla pizza banane auto tisch mustermann musterfrau muster beispiel abc abcd xyz xxx lol asdf qwertz qwerty niemand unbekannt weissnicht ahnung').split(' ').forEach(function (x) { BLOCK[x] = 1; });
   var FREMD = {}; ('smith johnson williams jones davis wilson taylor anderson jackson white harris thompson robinson walker young allen wright scott green baker adams nelson hill campbell mitchell roberts carter phillips evans turner parker collins edwards stewart morris murphy cook rogers morgan cooper garcia martinez rodriguez lopez gonzalez hernandez perez sanchez ramirez rossi russo ferrari esposito bianchi romano ricci marino yilmaz kaya demir sahin celik yildiz yildirim ozturk aydin ozdemir arslan dogan kilic nguyen tran pham mohammed muhammad mohamed mohammad ahmed ahmad ali hassan hussein husein ibrahim mahmoud abdullah khalil khan singh kumar patel wang zhang liu chen yang huang').split(' ').forEach(function (x) { FREMD[x] = 1; });
@@ -490,9 +497,10 @@
     else if (BLOCK[probe] || BLOCK[nnorm(name)] || (isC && rows4(main.toLowerCase(), KBC)) || heurBad(probe)) { res.kind = 'bad'; res.russian = false; }
     else if (res.russian) res.kind = 'ru';
     else res.kind = nameKind(isC ? (res.forms[0] || '') : main, name);
-    var pl = inPleve(isC ? res.forms.slice(0, 2) : [name]);
+    var plz = plZahl(isC ? res.forms.slice(0, 2) : [name]), pl = plz > 0;
     if (pl && res.kind === 'unklar') res.kind = 'de';
     res.pleve = pl && res.kind === 'de';
+    res.plz = res.pleve ? plz : 0;
     return res;
   }
 
@@ -545,6 +553,8 @@
   };
   var REG_T = { wolga: 'Bei Saratow und Samara', meer: 'Odessa, Bessarabien, Krim, Dnjepr', wolhynien: 'Nordwesten der heutigen Ukraine', kaukasus: 'Tiflis, Aserbaidschan, Nordkaukasus', unklar: 'Wir grenzen die Region mit Ihnen ein' };
   var IN_LISTEN = '<span class="ez-ja">verzeichnet</span>';
+  /* Zahl der Haushalte mit dem Namen in den Listen. Sagt nichts über die Kolonie und nichts über die eigene Familie. */
+  function haushalte(n) { return '<span class="ez-ja">' + (n === 1 ? '1 Haushalt' : n + ' Haushalte') + '</span>'; }
   /* Zeilen der Ergebniskarte: Bezeichnung und kurzer Wert. Zahlen stehen erst im PDF. */
   function zeilen(a) {
     var z = [];
@@ -552,7 +562,7 @@
       a.all.forEach(function (x) {
         var v = x.kind === 'bad' ? 'bitte Schreibweise prüfen' : (x.russian || x.kind === 'ru') ? 'russische oder ukrainische Namensform' : x.kind === 'unklar' ? 'keine typisch deutsche Namensform' :
           x.cyr ? 'wahrscheinlich ' + x.forms.map(esc).join(', ') : '<span lang="ru">' + x.forms.map(esc).join(', ') + '</span>';
-        z.push([esc(x.name), v + (x.pleve ? '<br>' + IN_LISTEN + ' in den Ansiedlungslisten' : '')]);
+        z.push([esc(x.name), v + (x.pleve ? '<br>' + (x.plz ? haushalte(x.plz) : IN_LISTEN) + ' in den Ansiedlungslisten' : '')]);
       });
       if (a.all.length > 4) z.push(['Hinweis', 'Die Ersteinschätzung umfasst die ersten vier Namen. Für mehr stellen wir eine individuelle Recherche zusammen.']);
       return z;
@@ -560,7 +570,7 @@
     if (a.russian || (a.kind === 'unklar' && !a.cyr)) { /* keine Umschrift anzeigen */ }
     else if (a.cyr) z.push(['Deutsche Schreibweise', 'wahrscheinlich ' + a.forms.map(esc).join(', ')]);
     else z.push(['In russischen Akten', '<span lang="ru">' + a.forms.map(esc).join(', ') + '</span>']);
-    if (a.pleve) z.push(['Ansiedlungslisten 1764 bis 1767', IN_LISTEN]);
+    if (a.pleve) z.push(['Ansiedlungslisten 1764 bis 1767', a.plz ? haushalte(a.plz) + '<span class="ez-zus">mit diesem Namen</span>' : IN_LISTEN]);
     if (a.menno) z.push(['Hinweis', 'unter Russlandmennoniten verbreitet']);
     if (!a.pleve) a.colonies.slice(0, 1).forEach(function (c) { z.push(['Gut zu wissen', 'Es gab eine Wolgakolonie dieses Namens: <a href="wissen/' + c[2] + '.html">' + esc(c[0]) + '</a>, gegründet ' + esc(c[4]) + '. Ob Ihre Familie von dort stammt, sagt der Name allein noch nicht.']); });
     if (a.kind === 'unklar') z.push(['Namensform', 'Keine typisch deutsche Form. Häufig liegt die deutsche Linie bei Mutter oder Großmutter.']);
@@ -586,7 +596,7 @@
     var treffer = (a.all || [a]).some(function (x) { return x.pleve; }), z = zeilen(a);
     return '<section class="ez-card" aria-label="Erster Befund"><div class="ez-rh">' + (a.kind === 'de' ? HAKEN : '') + '<h2 class="ez-name' + (st.name.length > 16 ? ' lang' : '') + '" tabindex="-1">' + esc(st.name) + '</h2>' +
       '<button type="button" class="ez-link fz-again">Ändern</button></div>' + kvHTML(z) +
-      (treffer ? '<p class="ez-hint">Zahlen, Konfession und Schreibweisen stehen in Ihrer Ersteinschätzung.</p>' : '') + '</section>';
+      (treffer ? '<p class="ez-hint">Die Zahl der Kolonien, die Konfession und die Schreibweisen stehen in Ihrer Ersteinschätzung.</p>' : '') + '</section>';
   }
   /* Die Seite spricht nach der Namensprüfung von der Familie: Überschriften mit data-fam bekommen den Namen (nur ein deutscher Name).
      Bleibt für den Besuch erhalten, bis ein anderer Name geprüft wird. */

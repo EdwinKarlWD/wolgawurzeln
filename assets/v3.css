@@ -1792,6 +1792,7 @@ display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;overflow-y
 .ez-kv dd.ez-deut,.ez-kv>div.lang dd.ez-deut{display:block;flex:1 0 100%;margin-top:3px;text-align:left;font:400 15px/1.45 var(--sans);color:var(--i2)}
 .ez-ja{display:inline-flex;align-items:center;gap:6px;color:var(--n);font-weight:700}
 .ez-ja::before{content:"";width:16px;height:16px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M4 10.5l4 4L16 6' fill='none' stroke='%230F2342' stroke-width='2.2' stroke-linecap='square'/%3E%3C/svg%3E") center/16px no-repeat}
+.ez-kv dd .ez-zus{font:400 15px/1.35 var(--sans);color:var(--i2)}
 .ez-hint{margin-top:11px;font:400 15px/1.45 var(--sans);color:var(--i2)}
 .ez-status{display:flex;align-items:flex-start;gap:11px;margin-top:13px;font:400 16px/1.5 var(--sans);color:var(--i)}
 .ez-status .ez-ok{margin-top:1px}
@@ -1825,14 +1826,16 @@ display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;overflow-y
 .ort-info b{color:var(--navy)}
 .ort-info a{color:var(--navy);font-weight:600;text-underline-offset:3px}
 /* Hinweis: Urkunden für das Aufnahmeverfahren. Ruhig, aber sichtbar, mit der Grenze der Leistung im selben Kasten. */
-.av{margin-top:36px;padding:22px 24px 20px;background:#fff;box-shadow:inset 0 0 0 1px var(--line-2),inset 4px 0 0 var(--navy)}
+.av{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:0 34px;margin-top:36px;padding:24px 26px 18px;background:#fff;box-shadow:inset 0 0 0 1px var(--line-2),inset 4px 0 0 var(--navy)}
 .av h3{margin:0 0 8px;font:600 22px/1.25 var(--serif);color:var(--navy)}
-.av p{margin:0;max-width:62em;font:400 17px/1.55 var(--sans);color:var(--ink-2)}
-.av .av-nach{margin-top:8px}
-.av .av-grenze{margin-top:8px;font-size:15.5px;color:var(--ink-3)}
-.av .av-akt{display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px;margin-top:16px}
+.av p{margin:0;font:400 17px/1.55 var(--sans);color:var(--ink-2)}
+.av .av-akt{display:flex;flex-wrap:wrap;align-items:center;gap:6px 22px;margin-top:14px}
 .av .av-mehr{display:inline-flex;align-items:center;min-height:44px;color:var(--navy);font:600 16px/1.3 var(--sans);text-underline-offset:3px}
-@media (max-width:880px){.av{margin-top:26px;padding:18px 18px 16px 20px}.av h3{font-size:20px}}
+/* Besonderheit für nach 1992 Geborene: eigener Block, durch eine Haarlinie abgesetzt, Frage in fetter Schrift */
+.av .av-nach{padding-left:34px;box-shadow:inset 1px 0 0 var(--line-2)}
+.av .av-nach h4{margin:2px 0 6px;font:700 18px/1.3 var(--sans);letter-spacing:0;text-transform:none;color:var(--navy)}
+.av .av-grenze{grid-column:1/-1;margin-top:18px;padding-top:12px;box-shadow:inset 0 1px 0 var(--line-2);font-size:15.5px;color:var(--ink-3)}
+@media (max-width:880px){.av{display:block;margin-top:26px;padding:18px 18px 14px 20px}.av h3{font-size:20px}.av .av-nach{margin-top:14px;padding:14px 0 0;box-shadow:inset 0 1px 0 var(--line-2)}.av .av-grenze{margin-top:14px}}
 html.m2 .faq.alle .faq-alle{display:none}
 .ez-fn{margin:10px 2px 0;font:600 14.5px/1.3 var(--sans);color:var(--i2)}
 .ez-fn+.ez-q{margin-top:6px;margin-bottom:8px}
