@@ -524,8 +524,16 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
       /* Sandufer */
       'float bank=smoothstep(vHW+0.32,vHW,at)*shore;land=mix(land,vec3(0.78,0.69,0.50)*(0.55+0.5*li),bank*0.7);' +
       /* Abendlicht (uEv): Farben zurückgenommen, besonnte Hänge warm, Schatten und Ebene kühl, dazu ein warmer Saum an den Hängen zur Sonne */
-      'float lumL=dot(land,vec3(0.30,0.59,0.11));vec3 landE=mix(vec3(lumL),land,0.55)*mix(vec3(0.36,0.45,0.68),vec3(1.12,0.86,0.60),smoothstep(0.10,0.62,lam));' +
-      'landE+=vec3(0.22,0.11,0.03)*lam*lam*lam*smoothstep(0.05,0.4,vP.y);land=mix(land,landE,uEv);' +
+      'float lumL=dot(land,vec3(0.30,0.59,0.11));' +
+      /* Felder rücken im Ton zusammen und unterscheiden sich nur noch in der Helligkeit, das Land wirkt bestellt, aber ruhig */
+      'vec3 landE=mix(vec3(lumL),land,0.40)*mix(vec3(0.36,0.45,0.68),vec3(1.10,0.82,0.62),smoothstep(0.10,0.62,lam));' +
+      /* weiche Flecken von Licht und Schatten über dem Land, in der Nähe eine feine Körnung wie Gras und Stoppeln */
+      'landE*=0.86+0.26*noise(p*0.07+vec2(4.0,13.0));landE*=1.0+(noise(p*9.0)-0.5)*0.16*(1.0-smoothstep(3.0,14.0,vD));' +
+      /* warmes Streiflicht nur an den Kanten und oberen Hängen zur Sonne */
+      'landE+=vec3(0.24,0.12,0.04)*lam*lam*lam*smoothstep(0.08,0.45,vP.y);' +
+      /* Dunst in der Niederung am Fluss: nimmt Einzelheiten weg und gibt Tiefe */
+      'float mist=(1.0-smoothstep(0.02,0.30,vP.y))*smoothstep(5.0,26.0,vD)*smoothstep(vHW+0.2,vHW+1.2,at)*(1.0-smoothstep(vHW+7.0,vHW+15.0,at))*(0.45+0.55*noise(p*0.16+vec2(uT*0.015,0.0)));' +
+      'landE=mix(landE,vec3(0.42,0.46,0.58),mist*0.42);land=mix(land,landE,uEv);' +
       /* Wasser: isotrope Wellen, leichte Strömungsstreifen, Himmelsspiegelung, Sonnenglanz */
       'vec2 wuv=vP.xz*1.6;float rip=noise(wuv*3.0+vec2(0.0,uT*0.45))+0.5*noise(wuv*7.0+vec2(uT*0.3,uT*0.8))+0.25*noise(wuv*15.0-vec2(uT*0.5,uT*0.3));' +
       'float cur=noise(vec2(vT*2.6,(vP.z+uT*0.9)*0.3));vec3 wn=normalize(vec3((rip-0.875)*0.34+(cur-0.5)*0.07,1.0,(noise(wuv*5.0+uT*0.4)-0.5)*0.3));' +
