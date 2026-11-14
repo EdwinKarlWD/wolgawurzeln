@@ -449,11 +449,15 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
   var reduce = w.matchMedia && w.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var mobile = w.matchMedia('(max-width: 880px)').matches;
   var hero = d.querySelector('.hero'), prog = 0, titleOn = 1, draw = null, find = sec.querySelector('.intro-find'), fzBox = d.getElementById('fz'), fzOp = 1;
+  var lockY = -1, lockP = 0;
   function sm(t) { t = t < 0 ? 0 : t > 1 ? 1 : t; return t * t * (3 - 2 * t); }
   function st(a, b, x) { return sm((x - a) / (b - a)); }
   function onScroll() {
     var r = sec.getBoundingClientRect(), total = sec.offsetHeight - stage.offsetHeight;
     prog = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0;
+    /* Solange im Namensfeld getippt wird, steht das Bild still. Das iPhone schiebt beim Öffnen der Tastatur die Seite hoch,
+       das darf nicht als Blättern gelten (sonst wird das Kästchen durchsichtig und die Karte erscheint). */
+    if (lockY >= 0) prog = lockP;
     titleOn = 1 - st(0.04, 0.34, prog);
     /* Namensprüfung: sichtbar halten, solange sie benutzt wird */
     var open = sec.classList.contains('fz-open'), busy = open || (fzBox && fzBox.contains(d.activeElement)), hold = 1 - st(0.3, 0.55, prog);
@@ -472,7 +476,19 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
   w.addEventListener('scroll', onScroll, { passive: true });
   if (fzBox) {
     w.addEventListener('fz:change', function () { sec.classList.toggle('fz-open', fzBox.classList.contains('has-res')); onScroll(); });
-    fzBox.addEventListener('focusin', onScroll); fzBox.addEventListener('focusout', function () { setTimeout(onScroll, 50); });
+    fzBox.addEventListener('focusin', function () {
+      if (lockY < 0) { onScroll(); lockP = prog; lockY = w.scrollY || w.pageYOffset || 0; sec.setAttribute('data-lock', String(lockY)); }
+      onScroll();
+    });
+    fzBox.addEventListener('focusout', function () {
+      setTimeout(function () {
+        if (fzBox.contains(d.activeElement)) return;
+        var y = lockY; lockY = -1; sec.removeAttribute('data-lock');
+        /* Hat die Tastatur die Seite verschoben, zurück an die Stelle vor dem Tippen */
+        if (y >= 0 && Math.abs((w.scrollY || w.pageYOffset || 0) - y) > 4) { try { w.scrollTo({ top: y, behavior: 'instant' }); } catch (e) { w.scrollTo(0, y); } }
+        onScroll();
+      }, 60);
+    });
   }
   var gl = null;
   try { gl = cv.getContext('webgl', { antialias: true, alpha: true, premultipliedAlpha: false }); } catch (e) { gl = null; }
@@ -912,7 +928,8 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
     raf = 0;
     if (!S) return;
     /* Bewegung endet bei 85 Prozent, danach nur noch Überblendung auf das echte Logo an derselben Stelle */
-    var p = Math.min(1, Math.max(0, (w.scrollY || 0) / M)), e = sm(p / 0.85), k = 1 - e;
+    var sy = sec.hasAttribute('data-lock') ? +sec.getAttribute('data-lock') : (w.scrollY || 0); /* beim Tippen eingefroren */
+    var p = Math.min(1, Math.max(0, sy / M)), e = sm(p / 0.85), k = 1 - e;
     /* Wappen: gerader Weg, kleiner werdend */
     var sc = 1 + (E.lw / S.lw - 1) * e, cw = S.lw * sc, ch = S.lh * sc;
     var lx = S.lx + (E.lx - S.lx) * e, ly = S.ly + (E.ly - S.ly) * e;

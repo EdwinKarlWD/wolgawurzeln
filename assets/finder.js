@@ -774,6 +774,8 @@
     w.dispatchEvent(new Event('fz:change'));
   }
 
+  /* für den Fehlermelder: Ersteinschätzung ist bereit, Sitzung ist bekannt */
+  w.WW_FZ = 1; w.WW_SID = SID;
   inp.addEventListener('focus', loadNM);
   inp.addEventListener('pointerdown', loadNM);
   form.addEventListener('submit', function (e) {
@@ -781,6 +783,7 @@
     var v = (inp.value || '').replace(/\s+/g, ' ').trim();
     if (v.length < 2) { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); inp.focus(); return; }
     st.names = splitNames(v); st.name = st.names.join(', '); st.want = st.names.length > 4 ? 'ez' : st.names.length > 1 ? 'fg' : ''; st.know = {}; st.ort = ''; st.pdf = {}; st.fr = null; st.step = 'region';
+    w.WW_FZ_SUB = Date.now();
     npLog('pruefung');
     inp.blur();
     var done = false, go = function () { if (!done) { done = true; render(); oben(); } };
