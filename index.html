@@ -27,7 +27,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
 <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"ProfessionalService","@id":"https://wolgawurzeln.de/#org","name":"Wolgawurzeln","url":"https://wolgawurzeln.de/","logo":"https://wolgawurzeln.de/logo-full.png","image":"https://wolgawurzeln.de/img/og-wolgawurzeln.jpg","email":"edwin@wolgawurzeln.de","telephone":"+491735412807","founder":{"@type":"Person","name":"Edwin Karl"},"availableLanguage":["de","ru","en"],"description":"Nachschlagewerk und Forschungsdienst zur russlanddeutschen Familiengeschichte."},{"@type":"WebSite","url":"https://wolgawurzeln.de/","name":"Wolgawurzeln","inLanguage":"de","publisher":{"@id":"https://wolgawurzeln.de/#org"}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"ProfessionalService","@id":"https://wolgawurzeln.de/#org","name":"Wolgawurzeln","url":"https://wolgawurzeln.de/","logo":"https://wolgawurzeln.de/logo-full.png","image":"https://wolgawurzeln.de/img/og-wolgawurzeln.jpg","email":"edwin@wolgawurzeln.de","founder":{"@type":"Person","name":"Edwin Karl"},"availableLanguage":["de","ru","en"],"description":"Nachschlagewerk und Forschungsdienst zur russlanddeutschen Familiengeschichte."},{"@type":"WebSite","url":"https://wolgawurzeln.de/","name":"Wolgawurzeln","inLanguage":"de","publisher":{"@id":"https://wolgawurzeln.de/#org"}}]}</script>
 <meta name="theme-color" content="#0F2342">
 <link rel="preload" href="fonts/alegreya-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/v3.css">
@@ -315,7 +315,6 @@
         <label>Nachname der Familie<input name="nachname" type="text" autocomplete="off" required></label>
         <label>Herkunftsort oder Region <small>falls bekannt</small><input name="ort" type="text" autocomplete="off"></label>
         <label class="full">Ihr Anliegen<textarea name="anliegen" rows="4" maxlength="2000"></textarea></label>
-        <label class="full">Telefon für Rückfragen <small>freiwillig</small><input name="tel" type="tel" autocomplete="tel" inputmode="tel"></label>
         <input class="fz-hp" type="text" name="firma" tabindex="-1" autocomplete="off" aria-hidden="true">
         <p class="req-err" role="alert" hidden></p>
         <button class="btn" type="submit">Anfrage senden</button>
@@ -371,7 +370,7 @@
       <label class="dlg-f" for="order-name"><span>Nachname der Familie</span><input id="order-name" type="text" autocomplete="family-name" autocapitalize="words" spellcheck="false" placeholder="zum Beispiel Schäfer oder Шефер"></label>
       <div class="dlg-2">
         <label class="dlg-f" for="order-email"><span>Ihre E-Mail</span><input id="order-email" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="name@beispiel.de"></label>
-        <label class="dlg-f" for="order-phone"><span>Telefon oder WhatsApp <small>freiwillig</small></span><input id="order-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="für kurze Rückfragen"></label>
+        <label class="dlg-f" for="order-phone"><span>WhatsApp <small>freiwillig</small></span><input id="order-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="Nummer für Rückfragen per Nachricht"></label>
       </div>
       <label class="dlg-f" for="order-know"><span>Was Sie schon wissen, falls vorhanden</span><textarea id="order-know" rows="2" placeholder="Dorf, Region, Vornamen, Jahreszahlen"></textarea></label>
     </div>
