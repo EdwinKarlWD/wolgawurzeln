@@ -2,7 +2,7 @@
    key = Site Key der unsichtbaren Prüfung gegen automatische Einsendungen. Nur hier eintragen, alle Seiten lesen ihn von hier. */
 (function (w, d) {
   'use strict';
-  var D = w.WW_DIENST = { api: 'https://wolgawurzeln-api.edwin3222.workers.dev', key: '' }, tsP;
+  var D = w.WW_DIENST = { api: 'https://wolgawurzeln-api.edwin3222.workers.dev', key: '0x4AAAAAAGA1QYvEjCTubaD6' }, tsP;
   // Der Dienst ist nutzbar, sobald der Site Key eingetragen ist (oder im Testbetrieb auf dem eigenen Rechner).
   D.an = function () { return !!D.key || /^http:\/\/(localhost|127\.0\.0\.1)[:\/]/.test(D.api); };
   function laden() {
