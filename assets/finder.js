@@ -545,6 +545,8 @@
     else if (n <= 1 && lz > 1) s.push('In den Ansiedlungslisten stehen ' + lz + ' Haushalte mit diesem Namen. In welchen Kolonien, zeigt ein Herkunftsbericht.');
     else if (n <= 1) s.push('Woher die Familie kam, ist die Frage, der ein Herkunftsbericht nachgeht.');
     else if (n <= 4) s.push('Woher die einzelnen Linien kamen, ist die Frage, der eine Familiengeschichte nachgeht.');
+    /* Wer Urkunden hat, kann auch nach einzelnen Vorfahren fragen */
+    if (n <= 1 && k.doku) s.push('Mit den Urkunden lassen sich auch einzelne Vorfahren mit Namen und Daten suchen, das leistet eine Einzelfallrecherche.');
     return { c: 'good', h: h, p: s.join(' '), voll: true };
   }
 
@@ -612,12 +614,30 @@
   }
   /* Schreibweise für die Anrede der Seite: Wer klein tippt, bekommt den Namen groß geschrieben */
   function gross(x) { x = String(x || ''); return x === x.toLowerCase() ? x.replace(/(^|[\s-])([a-zäöüа-яё])/g, function (m, v, c) { return v + c.toUpperCase(); }) : x; }
+  /* Weitere Linien: Kaum jemand tippt mehrere Namen ins Feld. Hier lassen sich die Nachnamen der Großeltern nachtragen,
+     dann geht die Ersteinschätzung auf alle Linien ein und nennt die Familiengeschichte statt des Herkunftsberichts. */
+  function mehrHTML(a) {
+    if (st.names.length >= 4 || a.kind !== 'de' || a.russian) return '';
+    return '<details class="ez-more ez-mehr"><summary><span>Weitere Nachnamen der Familie<small>freiwillig</small></span></summary>' +
+      '<p class="ez-help">' + (st.names.length > 1 ? '' : 'Die Großeltern trugen oft andere Nachnamen. ') + 'Bis zu vier Namen nimmt eine Familiengeschichte auf.</p>' +
+      '<label class="ez-lab" for="fz-mn">Nachnamen, mit Komma getrennt</label><div class="ez-mehr-r"><input id="fz-mn" type="text" maxlength="80" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="done" placeholder="zum Beispiel Becker, Ross">' +
+      '<button type="button" class="ez-btn line" data-mehr>Hinzufügen</button></div></details>';
+  }
+  function mehrDazu() {
+    var mi = out.querySelector('#fz-mn'), v = mi ? (mi.value || '').replace(/\s+/g, ' ').trim() : '';
+    var neu = v.length < 2 ? [] : splitNames(v).filter(function (n) { return !st.names.some(function (x) { return x.toLowerCase() === n.toLowerCase(); }); });
+    if (!neu.length) { if (mi) mi.focus(); return; }
+    st.names = st.names.concat(neu); st.name = st.names.join(', ');
+    if (!st.want || st.want === 'hb' || st.want === 'fg') st.want = st.names.length > 4 ? 'ez' : 'fg';
+    npLog('wunsch'); render();
+    var h = out.querySelector('.ez-card'); if (h) try { h.scrollIntoView({ block: 'start' }); } catch (e) {}
+  }
   /* Erster Befund: Name, Schreibweisen und der Vermerk aus den Ansiedlungslisten */
   function befundHTML(a) {
     var treffer = (a.all || [a]).some(function (x) { return x.pleve; }), z = zeilen(a);
     return '<section class="ez-card" aria-label="Erster Befund"><div class="ez-rh">' + (a.kind === 'de' ? HAKEN : '') + '<h2 class="ez-name' + (st.name.length > 16 ? ' lang' : '') + '" tabindex="-1">' + esc(st.name) + '</h2>' +
       '<button type="button" class="ez-link fz-again">Ändern</button></div>' + kvHTML(z) +
-      (treffer ? '<p class="ez-hint">Die Zahl der Kolonien, die Konfession und die Schreibweisen stehen in Ihrer Ersteinschätzung.</p>' : '') + '</section>';
+      (treffer ? '<p class="ez-hint">Die Zahl der Kolonien, die Konfession und die Schreibweisen stehen in Ihrer Ersteinschätzung.</p>' : '') + mehrHTML(a) + '</section>';
   }
   /* Die Seite spricht nach der Namensprüfung von der Familie: Überschriften mit data-fam bekommen den Namen (nur ein deutscher Name).
      Bleibt für den Besuch erhalten, bis ein anderer Name geprüft wird. */
@@ -672,7 +692,7 @@
     var karte = '<section class="ez-card" aria-label="Ihre Angaben"><dl class="ez-kv oben"><div><dt>Name</dt><dd>' + esc(st.name) + '</dd></div>' +
       '<div class="mit"><dt>Region</dt><dd>' + (st.reg === 'unklar' ? 'noch offen' : r.t) + '<button type="button" class="ez-link" data-ez-back>Ändern</button></dd><dd class="ez-deut">' + r.src + '</dd></div>' +
       (frAktiv() ? frAngaben().map(function (x) { return '<div class="' + (x[1].length > 30 ? 'lang' : 'mit') + '"><dt>' + x[0] + '</dt><dd>' + esc(x[1]) + '</dd>' + (x[2] ? '<dd class="ez-deut">' + x[2] + '</dd>' : '') + '</div>'; }).join('') : '') + '</dl>' +
-      (v ? '<p class="ez-status">' + (v.c === 'good' ? HAKEN : '') + '<span><b>' + v.h + '.</b> ' + (v.voll ? v.p : v.c === 'good' ? v.p.split('. ')[0].replace(/\.?$/, '.') : v.p) + '</span></p>' : '') + '</section>';
+      (v ? '<p class="ez-status">' + (v.c === 'good' ? HAKEN : '') + '<span><b>' + v.h + '.</b> ' + (v.voll ? v.p : v.c === 'good' ? v.p.split('. ')[0].replace(/\.?$/, '.') : v.p) + '</span></p>' : '') + mehrHTML(a) + '</section>';
     if (!TS_KEY) {
       haupt = '<h2 class="ez-q">Ihre Ersteinschätzung per Nachricht</h2><div class="ez-card"><p class="ez-help first">Schicken Sie uns Ihre Angaben, Wolgawurzeln antwortet Ihnen persönlich.</p>' +
         '<a class="ez-btn" href="' + waLink(a, 'ich möchte eine Ersteinschätzung zu meinem Namen') + '" target="_blank" rel="noopener">Per WhatsApp anfragen</a>' +
@@ -855,8 +875,14 @@
       return;
     }
     if (e.target.closest('.fz-again')) { schliessen(); inp.value = ''; inp.focus(); return; }
+    if (e.target.closest('[data-mehr]')) { mehrDazu(); return; }
   });
-  out.addEventListener('toggle', function (e) { if (e.target.classList && e.target.classList.contains('ez-more')) st.pdf.more = e.target.open; }, true);
+  out.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target && e.target.id === 'fz-mn') { e.preventDefault(); mehrDazu(); } });
+  out.addEventListener('toggle', function (e) {
+    var t = e.target; if (!t.classList || !t.classList.contains('ez-more')) return;
+    if (t.classList.contains('ez-mehr')) { if (t.open) { var mi = t.querySelector('#fz-mn'); if (mi) try { mi.focus({ preventScroll: true }); } catch (er) {} } return; }
+    st.pdf.more = t.open;
+  }, true);
   out.addEventListener('input', function (e) { if (e.target && e.target.id === 'ez-ort') st.ort = e.target.value.replace(/\s+/g, ' ').trim().slice(0, 80); });
   out.addEventListener('submit', function (e) {
     var f = e.target.closest('.fz-pdf-f');
