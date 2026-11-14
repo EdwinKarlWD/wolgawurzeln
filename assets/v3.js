@@ -449,7 +449,16 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
   var reduce = w.matchMedia && w.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var mobile = w.matchMedia('(max-width: 880px)').matches;
   var hero = d.querySelector('.hero'), prog = 0, titleOn = 1, draw = null, find = sec.querySelector('.intro-find'), fzBox = d.getElementById('fz'), fzOp = 1;
-  var lockY = -1, lockP = 0;
+  var lockY = -1, lockP = 0, lockT = 0, h0 = w.innerHeight, ty0 = null;
+  /* Tastatur offen: sichtbarer Bereich deutlich kleiner als die Fensterhöhe vor dem Tippen */
+  function kbOpen() { var vv = w.visualViewport, h = vv ? vv.height : w.innerHeight; return h < 0.8 * h0; }
+  /* Sperre lösen. restore: zurück an die Stelle vor dem Tippen (nur wenn die Tastatur die Seite verschoben hat) */
+  function unlock(restore) {
+    if (lockY < 0) return;
+    var y = lockY; lockY = -1; sec.removeAttribute('data-lock');
+    if (restore && Math.abs((w.scrollY || w.pageYOffset || 0) - y) > 4) { try { w.scrollTo({ top: y, behavior: 'instant' }); } catch (e) { w.scrollTo(0, y); } }
+    onScroll(); try { w.dispatchEvent(new Event('scroll')); } catch (e) {}
+  }
   function sm(t) { t = t < 0 ? 0 : t > 1 ? 1 : t; return t * t * (3 - 2 * t); }
   function st(a, b, x) { return sm((x - a) / (b - a)); }
   function onScroll() {
@@ -457,6 +466,8 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
     prog = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0;
     /* Solange im Namensfeld getippt wird, steht das Bild still. Das iPhone schiebt beim Öffnen der Tastatur die Seite hoch,
        das darf nicht als Blättern gelten (sonst wird das Kästchen durchsichtig und die Karte erscheint). */
+    /* Ohne offene Tastatur ist ein weiter Sprung echtes Blättern (Bildlaufleiste, Verweis, Tastatur am Android geschlossen): Sperre lösen */
+    if (lockY >= 0 && !kbOpen() && Date.now() - lockT > 900 && Math.abs((w.scrollY || w.pageYOffset || 0) - lockY) > 150) { lockY = -1; sec.removeAttribute('data-lock'); }
     if (lockY >= 0) prog = lockP;
     titleOn = 1 - st(0.04, 0.34, prog);
     /* Namensprüfung: sichtbar halten, solange sie benutzt wird */
@@ -477,18 +488,24 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
   if (fzBox) {
     w.addEventListener('fz:change', function () { sec.classList.toggle('fz-open', fzBox.classList.contains('has-res')); onScroll(); });
     fzBox.addEventListener('focusin', function () {
-      if (lockY < 0) { onScroll(); lockP = prog; lockY = w.scrollY || w.pageYOffset || 0; sec.setAttribute('data-lock', String(lockY)); }
+      if (lockY < 0) { onScroll(); lockP = prog; lockY = w.scrollY || w.pageYOffset || 0; lockT = Date.now(); sec.setAttribute('data-lock', String(lockY)); }
       onScroll();
     });
     fzBox.addEventListener('focusout', function () {
       setTimeout(function () {
         if (fzBox.contains(d.activeElement)) return;
-        var y = lockY; lockY = -1; sec.removeAttribute('data-lock');
         /* Hat die Tastatur die Seite verschoben, zurück an die Stelle vor dem Tippen */
-        if (y >= 0 && Math.abs((w.scrollY || w.pageYOffset || 0) - y) > 4) { try { w.scrollTo({ top: y, behavior: 'instant' }); } catch (e) { w.scrollTo(0, y); } }
-        onScroll();
+        unlock(true);
       }, 60);
     });
+    /* Wer selbst blättert, meint es so. Android schließt die Tastatur mit der Zurücktaste, ohne das Feld zu verlassen,
+       am Desktop bleibt der Fokus beim Mausrad im Feld. Dann gilt die Sperre nicht mehr, sonst bleibt das Wappen mitten auf der Seite stehen. */
+    d.addEventListener('touchstart', function (e) { ty0 = lockY >= 0 && e.touches && e.touches[0] ? e.touches[0].clientY : null; }, { passive: true, capture: true });
+    d.addEventListener('touchmove', function (e) { if (ty0 !== null && e.touches && e.touches[0] && Math.abs(e.touches[0].clientY - ty0) > 12 && !kbOpen()) { ty0 = null; unlock(false); } }, { passive: true, capture: true });
+    w.addEventListener('wheel', function () { if (lockY >= 0 && !kbOpen()) unlock(false); }, { passive: true });
+    /* Tipp auf einen Verweis oder Knopf außerhalb des Kästchens: dorthin, nicht zurückspringen */
+    d.addEventListener('pointerdown', function (e) { var t = e.target; if (lockY >= 0 && t && t.closest && !fzBox.contains(t) && t.closest('a[href],button,select,textarea,input,label,summary,[role="button"]')) unlock(false); }, true);
+    w.addEventListener('resize', function () { if (lockY < 0 && !fzBox.contains(d.activeElement)) h0 = w.innerHeight; }, { passive: true });
   }
   var gl = null;
   try { gl = cv.getContext('webgl', { antialias: true, alpha: true, premultipliedAlpha: false }); } catch (e) { gl = null; }
