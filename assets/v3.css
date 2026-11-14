@@ -836,7 +836,9 @@ body.menu-open{overflow:hidden}
 .ftr-base{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;margin-top:48px;padding-top:24px;border-top:1px solid var(--line-n);font-size:14px}
 .ftr-legal{display:flex;flex-wrap:wrap;gap:8px 18px}
 .ftr-comp{display:flex;flex-wrap:wrap;align-items:center;gap:16px}
-.ftr-comp .seal img{width:auto;height:60px;padding:4px;border-radius:6px;background:#fff}
+.ftr-comp .seal{display:inline-block;line-height:0}
+.ftr-comp .seal img{width:auto;height:60px;padding:4px;border-radius:0;background:#fff}
+.ftr-comp .seal:focus-visible{outline:2px solid #E3CF9A;outline-offset:3px}
 
 /* Dialoge */
 .dlg{width:100%;max-width:min(560px,calc(100vw - 24px));padding:0;border:0;border-radius:20px;background:#fff;color:var(--ink);box-shadow:0 40px 80px -30px rgba(10,24,49,.6)}
