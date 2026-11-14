@@ -1321,11 +1321,11 @@ h1,h2,h3{font-family:var(--serif);font-weight:700;letter-spacing:-.012em}
 .intro-sub{margin-top:12px;font-size:clamp(17px,1.55vw,21px)}
 @media (max-width:880px){.intro-copy{top:14%}.intro-logo{width:70px}.intro-title{margin-top:12px;font-size:13.5px}.intro-sub{font-size:16.5px}}
 /* Fotobuch als Geschenk */
-.pk-gift{display:flex;gap:11px;align-items:center;width:100%;margin:16px 0 0;padding:10px 13px;border:1px dashed rgba(158,42,43,.45);border-radius:12px;background:rgba(158,42,43,.045);color:var(--ink-2);font:400 14.5px/1.35 var(--sans);text-align:left;cursor:pointer;transition:background .25s,border-color .25s}
+.pk-gift{display:flex;gap:11px;align-items:center;width:100%;margin:16px 0 0;padding:10px 13px;border:1px solid rgba(15,35,66,.16);border-left:3px solid var(--seal);border-radius:0;background:rgba(15,35,66,.035);color:var(--ink-2);font:400 14.5px/1.35 var(--sans);text-align:left;cursor:pointer;transition:background .25s,border-color .25s}
 .pk-gift svg{flex:none;width:24px;height:24px;color:var(--seal)}
 .pk-gift span{display:flex;flex-direction:column;gap:1px}
-.pk-gift b{font-weight:700;color:var(--seal-2)}
-button.pk-gift:hover{background:rgba(158,42,43,.09);border-color:rgba(158,42,43,.7)}
+.pk-gift b{font-weight:700;color:var(--navy)}
+button.pk-gift:hover{background:rgba(15,35,66,.07);border-color:rgba(15,35,66,.32);border-left-color:var(--seal)}
 .pk-gift-row{width:auto;margin:22px 0 8px;cursor:default}
 .pk-gift-row span{display:block}
 .pk-gift-row a{color:var(--seal-2);font-weight:600}
@@ -2051,3 +2051,19 @@ html.m2 #anfrage.an-auf #reqform{margin-top:14px}
 .at-intro .hdr,.at-intro .hdr.solid{background:transparent;box-shadow:none}
 .band{background:linear-gradient(180deg,#081631 0,var(--navy) 420px)}
 .band.ph::before{background:linear-gradient(180deg,rgba(8,22,49,.55) 0,rgba(8,22,49,0) 380px),linear-gradient(90deg,var(--navy) 18%,rgba(15,35,66,.55) 100%)}
+/* ===== Lesbare Kartenbeschriftung (15.11.2026) =====
+   Startseite: kleine Karte neben den Zahlen, nur die drei großen Städte, dafür lesbar.
+   Kolonieseiten: Beschriftung größer, Nachbarorte nur in der Liste darunter (auf der Karte liefen sie ineinander),
+   am Handy auf der Karte nur Saratow, Samara und die Kolonie selbst. */
+.hero .hero-map .m-city:not(.m-big),.hero .hero-map .m-side{display:none}
+.hero .hero-map .m-big{font-size:20px}
+@media (max-width:600px){.hero .hero-map .m-big{font-size:32px}.hero .hero-map .m-river{display:none}}
+.col-map.zoom .cm-nb{display:none}
+.col-map.zoom text{font-size:6.2px}
+.col-map.zoom .m-big{font-size:7.2px}
+.col-map.zoom .cm-lbl{font-size:9.5px}
+@media (max-width:600px){
+.col-map.zoom text{font-size:8.6px}
+.col-map.zoom .m-big{font-size:9.6px}
+.col-map.zoom .cm-lbl{font-size:11px}
+.col-map.zoom .m-city:not(.m-big){display:none}}
