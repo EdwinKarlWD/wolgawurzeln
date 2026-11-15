@@ -311,3 +311,14 @@
     links[0].parentNode.insertBefore(g, links[0]);
   });
 })();
+
+/* Vorbelegung des Anfrageformulars aus der Adresse, z. B. kontakt.html?anliegen=Transkription#anfrage (15.11.2026) */
+(function () {
+  try {
+    var f = document.getElementById('reqform'); if (!f) return;
+    var a = new URLSearchParams(location.search).get('anliegen'); if (!a) return;
+    var t = f.elements['anliegen'], u = new URLSearchParams(location.search).get('nachname'), n = f.elements['nachname'];
+    if (t && !t.value.trim()) { a = a.replace(/[<>]/g, '').slice(0, 1500); t.value = /\n/.test(a) ? a : a + ': '; }
+    if (u && n && !n.value.trim()) n.value = u.replace(/[<>]/g, '').slice(0, 80);
+  } catch (e) {}
+})();
