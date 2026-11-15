@@ -51,12 +51,13 @@
   /* Auftrag: Angaben, vorzeitiger Beginn, dann Bezahlseite */
   var od = document.getElementById('order');
   if (od && od.showModal) {
+    var T = window.WW_T || function (s) { return s; }, SPR = window.WW_SPRACHE || 'de';
     var P = {
-      hb: { key: 'hb', art: 'den', name: 'Herkunftsbericht', price: '49 €', time: 'Lieferung als PDF in 3 bis 5 Tagen.', code: 'HB49', url: 'https://buy.stripe.com/8x214gd8G68o6MddiQ6Vq02', bookPrice: '78 €', bookUrl: 'https://buy.stripe.com/dRmaEQ5GebsIfiJceM6Vq04' },
-      fg: { key: 'fg', art: 'die', name: 'Familiengeschichte', price: '89 €', time: 'Lieferung als PDF in 5 bis 8 Tagen.', code: 'FG89', url: 'https://buy.stripe.com/8x2aEQ9WueEUgmN92A6Vq03', bookPrice: '118 €', bookUrl: 'https://buy.stripe.com/28EeV63y668oc6x1A86Vq05' }
+      hb: { key: 'hb', art: 'den', name: T('Herkunftsbericht'), price: T('49 €'), time: T('Lieferung als PDF in 3 bis 5 Tagen.'), code: 'HB49', url: 'https://buy.stripe.com/8x214gd8G68o6MddiQ6Vq02', bookPrice: T('78 €'), bookUrl: 'https://buy.stripe.com/dRmaEQ5GebsIfiJceM6Vq04' },
+      fg: { key: 'fg', art: 'die', name: T('Familiengeschichte'), price: T('89 €'), time: T('Lieferung als PDF in 5 bis 8 Tagen.'), code: 'FG89', url: 'https://buy.stripe.com/8x2aEQ9WueEUgmN92A6Vq03', bookPrice: T('118 €'), bookUrl: 'https://buy.stripe.com/28EeV63y668oc6x1A86Vq05' }
     };
     var q = function (s) { return od.querySelector(s); };
-    var cur = null, ono = '', lastPre = '', w = q('#chk-waiver'), bk = q('#chk-book'), pay = q('#order-pay'), wa = q('#order-wa'), ml = q('#order-mail'), nm = q('#order-name'), em = q('#order-email'), ph = q('#order-phone'), kn = q('#order-know'), hint = q('#order-hint'), oform = q('#order-form'), done = q('#order-done');
+    var cur = null, ono = '', lastPre = '', w = q('#chk-waiver'), bk = q('#chk-book'), pay = q('#order-pay'), wa = q('#order-wa'), ml = q('#order-mail'), nm = q('#order-name'), em = q('#order-email'), ph = q('#order-phone'), kn = q('#order-know'), lg = q('#order-lang'), hint = q('#order-hint'), oform = q('#order-form'), done = q('#order-done');
     var val = function (x) { return x ? x.value.trim() : ''; };
     var withBook = function () { return !!(bk && bk.checked && cur && cur.bookUrl); };
     var sname = function () { return val(nm).replace(/\s+/g, ' '); };
@@ -80,43 +81,46 @@
       for (var i = 0; i < 4; i++) r += A.charAt((x ? x[i] : Math.floor(Math.random() * 256)) % A.length);
       return 'WW-' + String(d.getFullYear()).slice(2) + p(d.getMonth() + 1) + p(d.getDate()) + '-' + r;
     }
-    var WAIVE = 'Ich verlange ausdrücklich, dass mit der Erstellung schon vor Ablauf der Widerrufsfrist begonnen wird. Mir ist bekannt, dass mein Widerrufsrecht mit Beginn der Ausführung erlischt.';
-    function ref() { return [ono, cur.code, sref(sname()), 'verzicht-ja', 'fotobuch-' + (bk && bk.checked ? 'ja' : 'nein')].join('_').slice(0, 200); }
+    var WAIVE = T('Ich verlange ausdrücklich, dass mit der Erstellung schon vor Ablauf der Widerrufsfrist begonnen wird. Mir ist bekannt, dass mein Widerrufsrecht mit Beginn der Ausführung erlischt.');
+    /* Sprache des Berichts: Vorgabe ist die Sprache der Seite */
+    var BSPR = { de: 'Deutsch', ru: 'Russisch', en: 'Englisch' };
+    var bericht = function () { return lg && BSPR[lg.value] ? lg.value : 'de'; };
+    function ref() { return [ono, cur.code, sref(sname()), 'verzicht-ja', 'fotobuch-' + (bk && bk.checked ? 'ja' : 'nein'), 'bericht-' + bericht()].join('_').slice(0, 200); }
     function msg() {
-      var L = ['Bestellnummer: ' + ono, 'Nachname der Familie: ' + sname(), 'E-Mail: ' + val(em)];
-      if (val(ph)) L.push('Telefon: ' + val(ph));
-      if (val(kn)) L.push('Das weiß ich schon: ' + val(kn));
-      return 'Guten Tag, ich möchte ' + cur.art + ' ' + cur.name + ' (' + cur.price + ') bestellen und per Überweisung oder PayPal bezahlen.' +
-        (bk && bk.checked ? ' Zusätzlich hätte ich gern das gedruckte Fotobuch (29 €).' : '') + '\n\n' + L.join('\n') + '\n\n' + WAIVE;
+      var L = [T('Bestellnummer: ') + ono, T('Nachname der Familie: ') + sname(), T('E-Mail: ') + val(em), T('Sprache des Berichts: ') + T(BSPR[bericht()])];
+      if (val(ph)) L.push(T('Telefon: ') + val(ph));
+      if (val(kn)) L.push(T('Das weiß ich schon: ') + val(kn));
+      return T('Guten Tag, ich möchte {art} {name} ({preis}) bestellen und per Überweisung oder PayPal bezahlen.').replace('{art}', cur.art).replace('{name}', cur.name).replace('{preis}', cur.price) +
+        (bk && bk.checked ? T(' Zusätzlich hätte ich gern das gedruckte Fotobuch (29 €).') : '') + '\n\n' + L.join('\n') + '\n\n' + WAIVE;
     }
     function setA(a, ok, href) { if (!a) return; a.setAttribute('aria-disabled', ok ? 'false' : 'true'); if (ok) a.setAttribute('href', href); else a.removeAttribute('href'); }
     function missing() { return !sname() ? 'name' : !mailOk() ? 'email' : !w.checked ? 'waiver' : ''; }
     var HINT = {
-      name: 'Bitte oben den Nachnamen der Familie eintragen, dann wird der Bestellknopf frei.',
-      email: 'Bitte Ihre E-Mail eintragen, damit wir uns bei Ihnen melden können. Dann wird der Bestellknopf frei.',
-      waiver: 'Bitte den Bearbeitungsbeginn bestätigen (Kästchen oben), dann wird der Bestellknopf frei.'
+      name: T('Bitte oben den Nachnamen der Familie eintragen, dann wird der Bestellknopf frei.'),
+      email: T('Bitte Ihre E-Mail eintragen, damit wir uns bei Ihnen melden können. Dann wird der Bestellknopf frei.'),
+      waiver: T('Bitte den Bearbeitungsbeginn bestätigen (Kästchen oben), dann wird der Bestellknopf frei.')
     };
     function upd() {
       var m = cur ? missing() : 'name';
-      var tt = q('#order-title'); if (tt && cur) tt.textContent = 'Auftrag: ' + cur.name + (withBook() ? ' mit Fotobuch, ' + cur.bookPrice : ', ' + cur.price);
+      var tt = q('#order-title'); if (tt && cur) tt.textContent = T('Auftrag: ') + cur.name + (withBook() ? T(' mit Fotobuch, ') + cur.bookPrice : ', ' + cur.price);
       if (hint) { hint.classList.toggle('off', !m); hint.textContent = m ? HINT[m] : ''; }
       if (m) { setA(pay, false); setA(wa, false); setA(ml, false); return; }
-      setA(pay, true, (withBook() ? cur.bookUrl : cur.url) + '?locale=de&client_reference_id=' + encodeURIComponent(ref()) + (val(em) ? '&prefilled_email=' + encodeURIComponent(val(em)) : ''));
+      setA(pay, true, (withBook() ? cur.bookUrl : cur.url) + '?locale=' + SPR + '&client_reference_id=' + encodeURIComponent(ref()) + (val(em) ? '&prefilled_email=' + encodeURIComponent(val(em)) : ''));
       setA(wa, true, 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg()));
-      setA(ml, true, 'mailto:edwin@wolgawurzeln.de?subject=' + encodeURIComponent('Bestellung ' + ono + ': ' + cur.name) + '&body=' + encodeURIComponent(msg()));
+      setA(ml, true, 'mailto:edwin@wolgawurzeln.de?subject=' + encodeURIComponent(T('Bestellung ') + ono + ': ' + cur.name) + '&body=' + encodeURIComponent(msg()));
     }
     function flag(el) { var f = el && el.closest('.dlg-f'); if (!f) return; el.focus(); f.classList.add('miss'); setTimeout(function () { f.classList.remove('miss'); }, 1400); }
     /* Bestellung zusätzlich an den eigenen Dienst melden: Mail an Wolgawurzeln, Eingangsbestätigung an den Kunden, Vorgang im Kundenbereich. */
     function send(weg) {
       var D = window.WW_DIENST; if (!D || !D.an() || !window.fetch) return;
-      var daten = { nr: ono, paket: cur.key, name: sname(), email: val(em), tel: val(ph), wissen: val(kn), fotobuch: !!(bk && bk.checked), weg: weg, ref: ref() };
+      var daten = { nr: ono, paket: cur.key, name: sname(), email: val(em), tel: val(ph), wissen: (bericht() !== 'de' ? 'Bericht auf ' + BSPR[bericht()] + '. ' : '') + val(kn), sprache: SPR, bericht: bericht(), fotobuch: !!(bk && bk.checked), weg: weg, ref: ref() };
       D.token().then(function (ts) { daten.ts = ts; return D.ruf('/auftrag', { body: daten }); }).catch(function () {});
     }
     function remember() { try { localStorage.setItem('ww_order', JSON.stringify({ no: ono, p: cur.key, book: !!(bk && bk.checked), t: Date.now() })); } catch (e) {} }
     var DONE = {
-      pay: ['Die gesicherte Bezahlseite ist in einem neuen Fenster geöffnet. Nach der Zahlung sehen Sie unsere Bestätigungsseite.', 'Bezahlseite erneut öffnen'],
-      wa: ['WhatsApp ist mit Ihrer Bestellung geöffnet. Bitte senden Sie die Nachricht dort ab, Sie erhalten dann die Zahlungsdaten.', 'WhatsApp erneut öffnen'],
-      mail: ['Ihr Mailprogramm ist mit Ihrer Bestellung geöffnet. Bitte senden Sie die Mail ab, Sie erhalten dann die Zahlungsdaten.', 'Mail erneut öffnen']
+      pay: [T('Die gesicherte Bezahlseite ist in einem neuen Fenster geöffnet. Nach der Zahlung sehen Sie unsere Bestätigungsseite.'), T('Bezahlseite erneut öffnen')],
+      wa: [T('WhatsApp ist mit Ihrer Bestellung geöffnet. Bitte senden Sie die Nachricht dort ab, Sie erhalten dann die Zahlungsdaten.'), T('WhatsApp erneut öffnen')],
+      mail: [T('Ihr Mailprogramm ist mit Ihrer Bestellung geöffnet. Bitte senden Sie die Mail ab, Sie erhalten dann die Zahlungsdaten.'), T('Mail erneut öffnen')]
     };
     function showDone(kind, a) {
       if (!done || !oform) { od.close(); return; }
@@ -131,7 +135,7 @@
       b.addEventListener('click', function (e) {
         e.preventDefault(); cur = P[b.getAttribute('data-order')]; if (!cur) return;
         ono = newNo();
-        q('#order-title').textContent = 'Auftrag: ' + cur.name + ', ' + cur.price;
+        q('#order-title').textContent = T('Auftrag: ') + cur.name + ', ' + cur.price;
         q('#order-time').textContent = cur.time;
         w.checked = false; if (bk) bk.checked = b.hasAttribute('data-book');
         var fz = window.__fz && window.__fz.st ? window.__fz.st().name : '';
@@ -142,7 +146,7 @@
         if (nm && !sname()) setTimeout(function () { nm.focus(); }, 60);
       });
     });
-    [w, bk].forEach(function (x) { if (x) x.addEventListener('change', upd); });
+    [w, bk, lg].forEach(function (x) { if (x) x.addEventListener('change', upd); });
     /* Persönlicher Bestelllink aus der Ersten Einschätzung: ?bestellen=hb&b=<Schlüssel> öffnet den Auftrag mit Name, Mail und Vorgang */
     (function () {
       var u; try { u = new URLSearchParams(location.search); } catch (e) { return; }
@@ -290,7 +294,7 @@
   var dots = [].slice.call(d.querySelectorAll('.pk-dots i'));
   var mq = w.matchMedia('(max-width: 880px)');
   var bar = d.getElementById('pkbar'), sec = d.getElementById('pakete'), req = d.getElementById('anfrage');
-  var cur = 'fg', touched = false, dismissed = false, past = false, nearEnd = false;
+  var akt = d.querySelector('.pk.is-active'), cur = (akt && akt.getAttribute('data-pk')) || 'fg', touched = false, dismissed = false, past = false, nearEnd = false;
   var card = function (id) { return d.getElementById('pk-' + id); };
 
   function updBar() {
@@ -396,16 +400,17 @@
   var d = document, w = window;
   var reduce = w.matchMedia && w.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!('IntersectionObserver' in w)) return;
+  var ZAHL = { en: 'en-US', ru: 'ru-RU' }[window.WW_SPRACHE] || 'de-DE';
   function count(el, delay) {
     var t = +el.getAttribute('data-count');
-    if (reduce) { el.textContent = t.toLocaleString('de-DE'); return; }
+    if (reduce) { el.textContent = t.toLocaleString(ZAHL); return; }
     setTimeout(function () {
       var s = performance.now(), dur = t > 100000 ? 2200 : 1500;
       (function f(n) {
         var p = Math.min(1, (n - s) / dur), e = 1 - Math.pow(1 - p, 3);
         var r = el.getBoundingClientRect();
         if (r.bottom < 0 || r.top > w.innerHeight) p = 1; /* aus dem Bild gescrollt: Endwert sofort */
-        el.textContent = Math.round(t * (p >= 1 ? 1 : e)).toLocaleString('de-DE');
+        el.textContent = Math.round(t * (p >= 1 ? 1 : e)).toLocaleString(ZAHL);
         if (p < 1) requestAnimationFrame(f);
       })(s);
     }, delay);
@@ -1009,20 +1014,20 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
   'use strict';
   var d = document, w = window, root = d.documentElement, track = d.getElementById('pk-track');
   if (!track || !w.matchMedia) return;
-  var mq = w.matchMedia('(max-width: 880px)'), gebaut = false;
+  var mq = w.matchMedia('(max-width: 880px)'), gebaut = false, TT = w.WW_T || function (s) { return s; };
   function el(tag, cls, text) { var e = d.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
   function bauen() {
     gebaut = true;
     /* Wischreihe ohne Verweise: mit der Tastatur erreichbar machen, sonst lässt sie sich ohne Finger nicht verschieben */
     var tr = d.querySelector('ul.trust');
-    if (tr && !tr.querySelector('a, button')) { tr.setAttribute('tabindex', '0'); tr.setAttribute('aria-label', 'Vertrauenspunkte, seitlich verschiebbar'); }
+    if (tr && !tr.querySelector('a, button')) { tr.setAttribute('tabindex', '0'); tr.setAttribute('aria-label', TT('Vertrauenspunkte, seitlich verschiebbar')); }
     /* Häufige Fragen: alle zu, sechs sichtbar, der Rest auf Knopfdruck */
     var faq = d.querySelector('.faq-sec .faq');
     if (faq) {
       var ds = faq.querySelectorAll('details');
       [].forEach.call(ds, function (x, i) { x.removeAttribute('open'); if (i >= 6) x.classList.add('faq-mehr'); });
       if (ds.length > 6) {
-        var fb = el('button', 'btn ghost faq-alle', 'Alle ' + ds.length + ' Fragen anzeigen'); fb.type = 'button';
+        var fb = el('button', 'btn ghost faq-alle', TT('Alle {n} Fragen anzeigen').replace('{n}', ds.length)); fb.type = 'button';
         faq.appendChild(fb);
         fb.addEventListener('click', function () { faq.classList.add('alle'); fb.parentNode.removeChild(fb); var n = faq.querySelector('.faq-mehr summary'); if (n) n.focus(); });
       }
@@ -1030,12 +1035,12 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
     /* Anfrage: Das Namensfeld startet dieselbe Ersteinschätzung wie oben, das Formular klappt auf Wunsch auf */
     var an = d.getElementById('anfrage'), rf = d.getElementById('reqform'), fzf = d.querySelector('#fz form'), fzi = d.getElementById('fz-name');
     if (an && rf && fzf && fzi) {
-      var kurz = el('form', 'an-kurz'), lab = el('label', '', 'Nachname Ihrer Familie'), zeile = el('div'), inp = el('input'), go = el('button', 'btn', 'Starten');
+      var kurz = el('form', 'an-kurz'), lab = el('label', '', TT('Nachname Ihrer Familie')), zeile = el('div'), inp = el('input'), go = el('button', 'btn', TT('Starten'));
       kurz.setAttribute('novalidate', ''); lab.htmlFor = 'an-name';
-      inp.id = 'an-name'; inp.type = 'text'; inp.autocomplete = 'family-name'; inp.setAttribute('enterkeyhint', 'go'); inp.placeholder = 'Nachname';
+      inp.id = 'an-name'; inp.type = 'text'; inp.autocomplete = 'family-name'; inp.setAttribute('enterkeyhint', 'go'); inp.placeholder = TT('Nachname');
       go.type = 'submit'; zeile.appendChild(inp); zeile.appendChild(go);
-      kurz.appendChild(lab); kurz.appendChild(zeile); kurz.appendChild(el('p', '', 'Kostenlos und unverbindlich, gern auch auf Russisch.'));
-      var mehr = el('button', 'an-mehr', 'Lieber eine Nachricht schreiben'); mehr.type = 'button'; mehr.setAttribute('aria-expanded', 'false'); mehr.setAttribute('aria-controls', 'reqform');
+      kurz.appendChild(lab); kurz.appendChild(zeile); kurz.appendChild(el('p', '', TT('Kostenlos und unverbindlich, gern auch auf Russisch.')));
+      var mehr = el('button', 'an-mehr', TT('Lieber eine Nachricht schreiben')); mehr.type = 'button'; mehr.setAttribute('aria-expanded', 'false'); mehr.setAttribute('aria-controls', 'reqform');
       rf.parentNode.insertBefore(kurz, rf); rf.parentNode.insertBefore(mehr, rf);
       var auf = function (an_) { an.classList.toggle('an-auf', an_); mehr.setAttribute('aria-expanded', an_ ? 'true' : 'false'); };
       kurz.addEventListener('submit', function (e) {
