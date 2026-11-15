@@ -30,7 +30,7 @@
   function buch(v) {
     if ((v.art !== 'hb' && v.art !== 'fg') || v.buch || !v.dateien.some(function (f) { return f.art === 'bericht'; })) return '';
     var g = gefragt(v, 'buch');
-    return '<div class="k-buch"><p><b>Als gedrucktes Buch</b>Ihr Bericht als gedrucktes Fotobuch, zum Aufbewahren oder Verschenken. 29 €, Versand in Deutschland kostenlos.</p>' +
+    return '<div class="k-buch"><p><b>Als gedrucktes Buch</b>Ihr Bericht als gedrucktes Fotobuch, zum Aufbewahren oder Verschenken. 29 €, Versand in Deutschland kostenlos.</p><p class="de-druck">Gedruckt in Deutschland</p>' +
       (g ? '<p class="k-status">Angefragt am ' + B.datum(g.zeit) + '. Wir melden uns mit den Einzelheiten.</p>' : '<button class="k-btn line" type="button" data-frage="buch">Gedrucktes Buch anfragen</button>') + '</div>';
   }
 

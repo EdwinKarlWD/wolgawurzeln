@@ -2094,3 +2094,10 @@ html.m2 #anfrage.an-auf #reqform{margin-top:14px}
 @media (max-width:860px){.ask-box .channels{order:2}}
 .mnav a.mnav-cta{margin-top:26px;padding:15px 18px;border:0;background:#E3CF9A;color:var(--navy);text-align:center;font-size:18px;font-weight:650}
 .mnav a.mnav-cta:hover,.mnav a.mnav-cta:focus-visible{background:#F0E3BC}
+
+/* Gedruckt in Deutschland beim Fotobuch (16.11.2026) */
+.de-druck{display:flex;align-items:center;gap:8px;margin:10px 0 0;font-size:14.5px;line-height:1.3;font-weight:500;color:var(--ink-2,#44536B)}
+.de-druck::before{content:"";flex:none;width:18px;height:11px;background:linear-gradient(#000 0 33.34%,#DD0000 33.34% 66.67%,#FFCE00 66.67%);box-shadow:0 0 0 1px rgba(15,35,66,.15)}
+.check-book{flex-wrap:wrap}
+.check-book .de-druck{flex-basis:100%;margin:0;padding-left:34px}
+details .de-druck{margin-top:-4px}
