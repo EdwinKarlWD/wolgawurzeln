@@ -3,9 +3,10 @@
 (function (w, d) {
   'use strict';
   var D = w.WW_DIENST, rf = d.getElementById('reqform'), ordner = d.currentScript && d.currentScript.src ? d.currentScript.src.replace(/[^\/]+$/, '') : 'assets/'; if (!rf || !D) return;
+  var T = w.WW_T || function (s) { return s; }, SPR = w.WW_SPRACHE || 'de';
   /* Herkunftsort: Vorschläge aus den deutschen Siedlungsgebieten. Liste und Logik (assets/orte.js) laden erst beim ersten Antippen. */
   (function () {
-    var ort = rf.querySelector('input[name=ort]'), geholt = false; if (!ort) return;
+    var ort = rf.querySelector('input[name=ort]'), geholt = false; if (!ort || SPR !== 'de') return; /* Vorschläge gibt es bisher nur auf Deutsch */
     ort.addEventListener('focus', function () {
       if (geholt) return; geholt = true;
       var sk = d.createElement('script'); sk.src = ordner + 'orte.js'; sk.onload = function () { if (w.WW_ORTE) w.WW_ORTE.an(ort); }; d.head.appendChild(sk);
@@ -30,27 +31,27 @@
       var gut = n === 'email' ? /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v(n)) : v(n).length > 1;
       if (gut) el[n].removeAttribute('aria-invalid'); else { el[n].setAttribute('aria-invalid', 'true'); ok = false; }
     });
-    if (!ok) { zeig('Bitte füllen Sie Name, Mailadresse und Nachname der Familie aus.'); rf.querySelector('[aria-invalid="true"]').focus(); return; }
-    var text = 'Anfrage über wolgawurzeln.de\nName: ' + v('name') + '\nNachname der Familie: ' + v('nachname') + (v('ort') ? '\nHerkunftsort oder Region: ' + v('ort') : '') + (v('tel') ? '\nTelefon: ' + v('tel') : '') + (v('anliegen') ? '\nAnliegen: ' + v('anliegen') : '');
-    var perMail = 'mailto:edwin@wolgawurzeln.de?subject=' + encodeURIComponent('Anfrage: ' + v('nachname')) + '&body=' + encodeURIComponent(text);
-    var pech = 'Das Senden hat gerade nicht geklappt. Bitte versuchen Sie es noch einmal oder <a href="' + perMail + '">schreiben Sie uns per Mail</a>.';
+    if (!ok) { zeig(T('Bitte füllen Sie Name, Mailadresse und Nachname der Familie aus.')); rf.querySelector('[aria-invalid="true"]').focus(); return; }
+    var text = T('Anfrage über wolgawurzeln.de') + '\n' + T('Name: ') + v('name') + '\n' + T('Nachname der Familie: ') + v('nachname') + (v('ort') ? '\n' + T('Herkunftsort oder Region: ') + v('ort') : '') + (v('tel') ? '\n' + T('Telefon: ') + v('tel') : '') + (v('anliegen') ? '\n' + T('Anliegen: ') + v('anliegen') : '');
+    var perMail = 'mailto:edwin@wolgawurzeln.de?subject=' + encodeURIComponent(T('Anfrage: ') + v('nachname')) + '&body=' + encodeURIComponent(text);
+    var pech = T('Das Senden hat gerade nicht geklappt. Bitte versuchen Sie es noch einmal oder {a}schreiben Sie uns per Mail{/a}.').replace('{a}', '<a href="' + perMail + '">').replace('{/a}', '</a>');
     if (!D.an()) { w.location.href = perMail; return; }
     if (rf.getAttribute('data-busy')) return;
-    rf.setAttribute('data-busy', '1'); btn.disabled = true; btn.textContent = 'Wird gesendet';
-    var ende = function () { rf.removeAttribute('data-busy'); btn.disabled = false; btn.textContent = 'Anfrage senden'; };
+    rf.setAttribute('data-busy', '1'); btn.disabled = true; btn.textContent = T('Wird gesendet');
+    var ende = function () { rf.removeAttribute('data-busy'); btn.disabled = false; btn.textContent = T('Anfrage senden'); };
     D.token().then(function (tok) {
-      return D.ruf('/anfrage', { body: { name: v('name'), email: v('email'), nachname: v('nachname'), ort: v('ort'), tel: v('tel'), anliegen: v('anliegen'), hp: v('firma'), quelle: quelle(), page: w.location.pathname, ts: tok } });
+      return D.ruf('/anfrage', { body: { name: v('name'), email: v('email'), nachname: v('nachname'), ort: v('ort'), tel: v('tel'), anliegen: v('anliegen'), hp: v('firma'), sprache: SPR, quelle: quelle(), page: w.location.pathname, ts: tok } });
     }).then(function (x) {
       if (x.j && x.j.ok) {
         rf.outerHTML = '<div class="req-ok" role="status" tabindex="-1"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><rect width="20" height="20" fill="#0F2342"/><path d="M5 10.4l3.2 3.2L15 6.8" fill="none" stroke="#FFFDF9" stroke-width="2" stroke-linecap="square"/></svg>' +
-          '<h3>Ihre Anfrage ist eingegangen</h3><p>Vielen Dank, ' + esc(v('name')) + '. Wolgawurzeln meldet sich in der Regel innerhalb eines Tages persönlich bei Ihnen, per Mail an <b>' + esc(v('email')) + '</b>.</p>' +
-          (x.j.nr ? '<p class="req-nr">Ihr Vorgang: ' + esc(x.j.nr) + '</p>' : '') + '</div>';
+          '<h3>' + T('Ihre Anfrage ist eingegangen') + '</h3><p>' + T('Vielen Dank, {name}. Wolgawurzeln meldet sich in der Regel innerhalb eines Tages persönlich bei Ihnen, per Mail an {mail}.').replace('{name}', esc(v('name'))).replace('{mail}', '<b>' + esc(v('email')) + '</b>') + '</p>' +
+          (x.j.nr ? '<p class="req-nr">' + T('Ihr Vorgang: ') + esc(x.j.nr) + '</p>' : '') + '</div>';
         var okBox = d.querySelector('.req-ok'); if (okBox) { try { okBox.focus({ preventScroll: true }); } catch (er) {} }
         return;
       }
       ende();
       var g = x.j && x.j.grund;
-      zeig(g === 'mail' ? 'Bitte prüfen Sie die Mailadresse.' : g === 'limit' ? 'Heute sind von Ihnen schon mehrere Anfragen eingegangen. Wir melden uns.' : pech);
+      zeig(g === 'mail' ? T('Bitte prüfen Sie die Mailadresse.') : g === 'limit' ? T('Heute sind von Ihnen schon mehrere Anfragen eingegangen. Wir melden uns.') : pech);
     }, function () { ende(); zeig(pech); });
   });
 })(window, document);
