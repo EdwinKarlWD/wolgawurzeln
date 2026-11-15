@@ -2101,3 +2101,11 @@ html.m2 #anfrage.an-auf #reqform{margin-top:14px}
 .check-book{flex-wrap:wrap}
 .check-book .de-druck{flex-basis:100%;margin:0;padding-left:34px}
 details .de-druck{margin-top:-4px}
+/* Weihnachtshinweis und Titelbild im Bestellkästchen (16.11.2026) */
+.xmas{display:none}
+.xmas.an{display:block;margin:10px 0 0;padding:8px 12px;border-left:3px solid var(--gold,#9E2A2B);background:rgba(158,42,43,.06);font-size:14.5px;line-height:1.45;color:var(--ink,#1B2233)}
+.xmas.an b{font-weight:650;color:var(--gold,#9E2A2B)}
+.check-book .xmas.an{flex-basis:100%;margin:6px 0 0;padding:0 0 0 34px;border:0;background:none;font-size:14px}
+details .xmas.an{margin:8px 0 4px}
+.check-book img.bk-ico{width:30px;height:42px;object-fit:cover;box-shadow:0 0 0 1px rgba(15,35,66,.2)}
+@media (max-width:560px){.check-book img.bk-ico{width:26px;height:37px}}

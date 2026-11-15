@@ -18,6 +18,7 @@
   }
   var ART_DOK = { bericht: 'Bericht', rechnung: 'Rechnung', quelle: 'Fund aus der Recherche' };
   // Feste Nachrichten für die beiden Anfragen aus dem Kundenbereich. Kein Kauf, immer zuerst ein Angebot.
+  function bisAdvent() { var h = new Date(); return h.getFullYear() * 10000 + (h.getMonth() + 1) * 100 + h.getDate() <= 20261129; }
   var FRAGE = { schritt: 'Ich interessiere mich für den vorgeschlagenen nächsten Schritt und bitte um ein unverbindliches Angebot.', buch: 'Ich möchte meinen Bericht zusätzlich als gedrucktes Buch bestellen. Bitte senden Sie mir die Einzelheiten.' };
   function gefragt(v, art) { return v.nachrichten.filter(function (n) { return n.von === 'kunde' && n.text === FRAGE[art]; }).pop(); }
   function weiter(v) {
@@ -30,7 +31,7 @@
   function buch(v) {
     if ((v.art !== 'hb' && v.art !== 'fg') || v.buch || !v.dateien.some(function (f) { return f.art === 'bericht'; })) return '';
     var g = gefragt(v, 'buch');
-    return '<div class="k-buch"><p><b>Als gedrucktes Buch</b>Ihr Bericht als gedrucktes Fotobuch, zum Aufbewahren oder Verschenken. 29 €, Versand in Deutschland kostenlos.</p><p class="de-druck">Gedruckt in Deutschland</p>' +
+    return '<div class="k-buch"><p><b>Als gedrucktes Buch</b>Ihr Bericht als gedrucktes Fotobuch, zum Aufbewahren oder Verschenken. 29 €, Versand in Deutschland kostenlos.</p><p class="de-druck">Gedruckt in Deutschland</p>' + (bisAdvent() ? '<p class="xmas an"><b>Rechtzeitig zu Weihnachten.</b> Bei Bestellung bis zum 1.&nbsp;Advent (29.&nbsp;November) kommt das Fotobuch innerhalb Deutschlands vor Weihnachten an.</p>' : '') +
       (g ? '<p class="k-status">Angefragt am ' + B.datum(g.zeit) + '. Wir melden uns mit den Einzelheiten.</p>' : '<button class="k-btn line" type="button" data-frage="buch">Gedrucktes Buch anfragen</button>') + '</div>';
   }
 

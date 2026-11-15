@@ -1070,3 +1070,13 @@ window.VOLGA={"s0":60.0,"ds":0.5,"cx":[119.431,118.951,118.452,117.954,117.459,1
     if (u && n && !n.value.trim()) n.value = u.replace(/[<>]/g, '').slice(0, 80);
   } catch (e) {}
 })();
+
+/* Weihnachtshinweis beim Fotobuch: sichtbar bis einschließlich data-bis, danach von selbst weg (16.11.2026) */
+(function () {
+  try {
+    var h = new Date(), t = h.getFullYear() * 10000 + (h.getMonth() + 1) * 100 + h.getDate();
+    document.querySelectorAll('.xmas[data-bis]').forEach(function (e) {
+      if (t <= +e.getAttribute('data-bis').replace(/-/g, '')) e.classList.add('an');
+    });
+  } catch (e) {}
+})();

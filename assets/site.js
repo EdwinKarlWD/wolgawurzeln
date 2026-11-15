@@ -322,3 +322,13 @@
     if (u && n && !n.value.trim()) n.value = u.replace(/[<>]/g, '').slice(0, 80);
   } catch (e) {}
 })();
+
+/* Weihnachtshinweis beim Fotobuch: sichtbar bis einschließlich data-bis, danach von selbst weg (16.11.2026) */
+(function () {
+  try {
+    var h = new Date(), t = h.getFullYear() * 10000 + (h.getMonth() + 1) * 100 + h.getDate();
+    document.querySelectorAll('.xmas[data-bis]').forEach(function (e) {
+      if (t <= +e.getAttribute('data-bis').replace(/-/g, '')) e.classList.add('an');
+    });
+  } catch (e) {}
+})();
