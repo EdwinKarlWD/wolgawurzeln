@@ -113,7 +113,7 @@
     /* Bestellung zusätzlich an den eigenen Dienst melden: Mail an Wolgawurzeln, Eingangsbestätigung an den Kunden, Vorgang im Kundenbereich. */
     function send(weg) {
       var D = window.WW_DIENST; if (!D || !D.an() || !window.fetch) return;
-      var daten = { nr: ono, paket: cur.key, name: sname(), email: val(em), tel: val(ph), wissen: (bericht() !== 'de' ? 'Bericht auf ' + BSPR[bericht()] + '. ' : '') + val(kn), sprache: SPR, bericht: bericht(), fotobuch: !!(bk && bk.checked), weg: weg, ref: ref() };
+      var daten = { nr: ono, paket: cur.key, name: sname(), email: val(em), tel: val(ph), wissen: val(kn), sprache: SPR, bericht: bericht(), fotobuch: !!(bk && bk.checked), weg: weg, ref: ref() };
       D.token().then(function (ts) { daten.ts = ts; return D.ruf('/auftrag', { body: daten }); }).catch(function () {});
     }
     function remember() { try { localStorage.setItem('ww_order', JSON.stringify({ no: ono, p: cur.key, book: !!(bk && bk.checked), t: Date.now() })); } catch (e) {} }
