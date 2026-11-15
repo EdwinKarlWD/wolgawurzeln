@@ -190,9 +190,9 @@
   var WANT = {
     hb: { t: 'Aus welcher Kolonie stammt mein Name?', n: 'Herkunftsbericht', price: '49 €', d: 'Kolonie, Herkunft in Deutschland und der Weg der Familie bis heute, jede Angabe mit Quelle. Als PDF in 3 bis 5 Tagen.', order: true },
     fg: { t: 'Woher stammen alle Linien unserer Familie?', n: 'Familiengeschichte', price: '89 €', d: 'Recherche zu bis zu vier Nachnamen: Kolonie und Herkunft jeder Linie, mit Karte und Zeitleiste. Als PDF in 5 bis 8 Tagen.', order: true },
-    ez: { t: 'Wer genau waren meine Vorfahren?', n: 'Einzelfallrecherche', price: '149 € für 3 Stunden', d: 'Gezielte Suche nach Ihren Vorfahren mit Namen und Daten in Kirchenbüchern, Listen und Archivakten. Weitere Stunden nur nach Ihrer Freigabe. Vorab erhalten Sie ein Angebot.', order: false, cta: 'Anfrage per WhatsApp' },
-    ar: { t: 'Wie komme ich an Dokumente aus Russland?', n: 'Archivanfrage', price: 'Festpreis nach Sichtung', d: 'Für Kirchenbucheinträge und Akten, die nicht online liegen, über Kontaktpersonen vor Ort. Sie erhalten eine Kopie des Originals mit Fundstelle, den Festpreis erfahren Sie vorab. Bezahlt wird die Anfrage, nicht der Fund.', order: false, cta: 'Anfrage per WhatsApp' },
-    tr: { t: 'Was steht in einem alten Dokument?', n: 'Transkription', price: 'Preis nach Sichtung', d: 'Alte deutsche Schrift und russische Handschrift, übertragen und erklärt. Schicken Sie ein Foto des Dokuments, Sie erhalten vorab ein Angebot.', order: false, cta: 'Dokument per WhatsApp schicken' }
+    ez: { t: 'Wer genau waren meine Vorfahren?', n: 'Einzelfallrecherche', price: '149 € für 3 Stunden', d: 'Gezielte Suche nach Ihren Vorfahren mit Namen und Daten in Kirchenbüchern, Listen und Archivakten. Weitere Stunden nur nach Ihrer Freigabe. Vorab erhalten Sie ein Angebot.', order: false, cta: 'Anfrage stellen' },
+    ar: { t: 'Wie komme ich an Dokumente aus Russland?', n: 'Archivanfrage', price: 'Festpreis nach Sichtung', d: 'Für Kirchenbucheinträge und Akten, die nicht online liegen, über Kontaktpersonen vor Ort. Sie erhalten eine Kopie des Originals mit Fundstelle, den Festpreis erfahren Sie vorab. Bezahlt wird die Anfrage, nicht der Fund.', order: false, cta: 'Anfrage stellen' },
+    tr: { t: 'Was steht in einem alten Dokument?', n: 'Transkription', price: 'Preis nach Sichtung', d: 'Alte deutsche Schrift und russische Handschrift, übertragen und erklärt. Schicken Sie ein Foto des Dokuments, Sie erhalten vorab ein Angebot.', order: false, cta: 'Transkription anfragen' }
   };
   var KNOW = { jahre: 'Geburtsjahre der Großeltern', ort: 'Geburtsort oder Dorf', doku: 'Urkunden oder Aussiedlerpapiere', fotos: 'Alte Fotos oder Briefe' };
 
@@ -558,7 +558,11 @@
     if (x.cyr) return n + 'wahrscheinlich ' + x.forms.map(esc).join(', ');
     return n + 'in russischen Akten zum Beispiel als <span lang="ru">' + x.forms.map(esc).join(' oder ') + '</span>' + (x.menno ? ', verbreitet unter Russlandmennoniten' : '');
   }
-  function waLink(a, intro) { return 'https://wa.me/' + WA + '?text=' + encodeURIComponent(leadText(a, intro)); }
+  /* Seit 15.11.2026 kein WhatsApp mehr auf der Seite: Fragen gehen über das Anfrageformular der Kontaktseite. */
+  function waLink(a, anliegen) {
+    var text = leadText(a, anliegen).replace(/^Guten Tag, /, '');
+    return 'kontakt.html?nachname=' + encodeURIComponent(st.name || '') + '&anliegen=' + encodeURIComponent(text) + '#anfrage';
+  }
   function mailLink(a, intro, subj) { return 'mailto:edwin@wolgawurzeln.de?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(leadText(a, intro)); }
 
   /* ---------- Ansichten: ein Schritt pro Ansicht, aufgebaut wie die Abläufe großer Portale:
@@ -683,7 +687,7 @@
     /* Nach dem Fragenkatalog passt bei einem einzelnen deutschen Namen der Herkunftsbericht, auch wenn noch kein Wunsch gewählt ist */
     var art = st.want || (einordnung(a) && st.names.length <= 1 ? 'hb' : ''), W = art ? WANT[art] : null, t = [];
     if (W && W.order && a.kind === 'de') t.push('<button type="button" class="ez-link" data-fz-order="' + art + '">' + W.n + ' für ' + W.price + ' direkt bestellen</button>');
-    if (TS_KEY) t.push('<a href="' + waLink(a, 'ich habe eine Frage zu meiner Familie') + '" target="_blank" rel="noopener">Lieber gleich per WhatsApp fragen</a>');
+    if (TS_KEY) t.push('<a href="' + waLink(a, 'Frage zu meiner Familie') + '">Lieber erst eine Frage stellen</a>');
     return t.length ? '<p class="ez-foot">' + t.join('<br>') + '</p>' : '';
   }
   function mailHTML(a) {
@@ -695,7 +699,7 @@
       (v ? '<p class="ez-status">' + (v.c === 'good' ? HAKEN : '') + '<span><b>' + v.h + '.</b> ' + (v.voll ? v.p : v.c === 'good' ? v.p.split('. ')[0].replace(/\.?$/, '.') : v.p) + '</span></p>' : '') + mehrHTML(a) + '</section>';
     if (!TS_KEY) {
       haupt = '<h2 class="ez-q">Ihre Ersteinschätzung per Nachricht</h2><div class="ez-card"><p class="ez-help first">Schicken Sie uns Ihre Angaben, Wolgawurzeln antwortet Ihnen persönlich.</p>' +
-        '<a class="ez-btn" href="' + waLink(a, 'ich möchte eine Ersteinschätzung zu meinem Namen') + '" target="_blank" rel="noopener">Per WhatsApp anfragen</a>' +
+        '<a class="ez-btn" href="' + waLink(a, 'Ersteinschätzung zu meinem Namen') + '">Anfrage stellen</a>' +
         '<a class="ez-btn line" href="' + mailLink(a, 'ich möchte eine Ersteinschätzung zu meinem Namen', 'Ersteinschätzung: ' + st.name) + '">Per Mail anfragen</a></div>';
     } else {
       haupt = '<h2 class="ez-q">Wohin dürfen wir Ihre Ersteinschätzung senden?</h2>' +
@@ -721,13 +725,13 @@
       '<h3 class="ez-h3">So geht es weiter</h3><ol class="ez-next"><li>' + (ok ? 'Das PDF kommt in den nächsten Minuten per Mail. Schauen Sie sonst bitte im Spamordner nach.' : 'Das PDF kommt in Kürze per Mail.') + '</li>' +
       '<li>Wolgawurzeln meldet sich danach persönlich bei Ihnen.</li><li>Sie entscheiden in Ruhe, ob Sie eine Recherche möchten.</li></ol>' +
       '<div class="ez-bar"><button type="button" class="ez-btn" data-ez-close>Fertig</button></div>' +
-      '<p class="ez-foot"><button type="button" class="ez-link fz-again">Weiteren Namen eingeben</button><br><a href="' + waLink(a, 'ich habe eine Frage zu meiner Ersteinschätzung ' + (p.np || '')) + '" target="_blank" rel="noopener">Frage per WhatsApp stellen</a></p></div></div>';
+      '<p class="ez-foot"><button type="button" class="ez-link fz-again">Weiteren Namen eingeben</button><br><a href="' + waLink(a, 'Frage zur Ersteinschätzung ' + (p.np || '')) + '">Frage zur Ersteinschätzung stellen</a></p></div></div>';
   }
   function badHTML(a) {
     return '<div class="ez">' + kopf(0) + '<div class="ez-body"><section class="ez-card"><div class="ez-rh"><h2 class="ez-name' + (st.name.length > 16 ? ' lang' : '') + '" tabindex="-1">' + esc(st.name) + '</h2></div>' +
       '<p class="ez-status"><span><b>Diesen Namen können wir so nicht zuordnen.</b> Bitte prüfen Sie die Schreibweise. Geben Sie den Nachnamen so ein, wie er in Urkunden oder alten Pässen steht, gern auch auf Russisch.</span></p></section>' +
       '<div class="ez-bar"><button type="button" class="ez-btn fz-again">Anderen Namen eingeben</button></div>' +
-      '<p class="ez-foot"><a href="' + waLink(a, 'mein Name wurde bei der Ersteinschätzung nicht erkannt') + '" target="_blank" rel="noopener">Der Name stimmt so? Schreiben Sie uns</a></p></div></div>';
+      '<p class="ez-foot"><a href="' + waLink(a, 'Name bei der Ersteinschätzung nicht erkannt') + '">Der Name stimmt so? Schreiben Sie uns</a></p></div></div>';
   }
 
   /* Die Ersteinschätzung öffnet als eigene Ebene über der Seite: am Handy als ganzer Bildschirm, am Desktop als Fenster

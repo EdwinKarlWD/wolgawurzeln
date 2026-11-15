@@ -90,6 +90,7 @@
   function partner() {
     return '<section class="k-card"><h2>Ihr Ansprechpartner</h2><div class="k-pers"><span aria-hidden="true">EK</span><span><b>Edwin Karl</b><small>Ihr Ansprechpartner bei Wolgawurzeln</small></span></div>' +
       '<p class="k-fine">Antwort in der Regel innerhalb eines Werktags, auf Deutsch, Russisch oder Englisch.</p>' +
+      '<p class="k-fine">Direkt erreichbar per WhatsApp unter <a href="https://wa.me/491735412807" target="_blank" rel="noopener">+49 173 5412807</a> oder per Mail an <a href="mailto:edwin@wolgawurzeln.de">edwin@wolgawurzeln.de</a>.</p>' +
       '<button class="k-btn k-handy" type="button" data-tab="nachrichten" data-fokus="1">Nachricht schreiben</button></section>';
   }
   function zeigen() {
