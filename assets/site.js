@@ -57,7 +57,7 @@
       fg: { key: 'fg', art: 'die', name: 'Familiengeschichte', price: '89 €', time: 'Lieferung als PDF in 5 bis 8 Tagen.', code: 'FG89', url: 'https://buy.stripe.com/8x2aEQ9WueEUgmN92A6Vq03', bookPrice: '118 €', bookUrl: 'https://buy.stripe.com/28EeV63y668oc6x1A86Vq05' }
     };
     var q = function (s) { return od.querySelector(s); };
-    var cur = null, ono = '', lastPre = '', w = q('#chk-waiver'), bk = q('#chk-book'), pay = q('#order-pay'), wa = q('#order-wa'), ml = q('#order-mail'), nm = q('#order-name'), em = q('#order-email'), ph = q('#order-phone'), kn = q('#order-know'), hint = q('#order-hint'), oform = q('#order-form'), done = q('#order-done');
+    var cur = null, ono = '', lastPre = '', w = q('#chk-waiver'), bk = q('#chk-book'), pay = q('#order-pay'), wa = q('#order-wa'), ml = q('#order-mail'), nm = q('#order-name'), em = q('#order-email'), ph = q('#order-phone'), kn = q('#order-know'), lg = q('#order-lang'), hint = q('#order-hint'), oform = q('#order-form'), done = q('#order-done');
     var val = function (x) { return x ? x.value.trim() : ''; };
     var withBook = function () { return !!(bk && bk.checked && cur && cur.bookUrl); };
     var sname = function () { return val(nm).replace(/\s+/g, ' '); };
@@ -81,11 +81,13 @@
       for (var i = 0; i < 4; i++) r += A.charAt((x ? x[i] : Math.floor(Math.random() * 256)) % A.length);
       return 'WW-' + String(d.getFullYear()).slice(2) + p(d.getMonth() + 1) + p(d.getDate()) + '-' + r;
     }
+    var BSPR = { de: 'Deutsch', ru: 'Russisch', en: 'Englisch' }, bericht = function () { return lg && BSPR[lg.value] ? lg.value : 'de'; }; /* Sprache des Berichts */
     var WAIVE = 'Ich verlange ausdrücklich, dass mit der Erstellung schon vor Ablauf der Widerrufsfrist begonnen wird. Mir ist bekannt, dass mein Widerrufsrecht mit Beginn der Ausführung erlischt.';
-    function ref() { return [ono, cur.code, sref(sname()), 'verzicht-ja', 'fotobuch-' + (bk && bk.checked ? 'ja' : 'nein')].join('_').slice(0, 200); }
+    function ref() { return [ono, cur.code, sref(sname()), 'verzicht-ja', 'fotobuch-' + (bk && bk.checked ? 'ja' : 'nein'), 'bericht-' + bericht()].join('_').slice(0, 200); }
     function msg() {
       var L = ['Bestellnummer: ' + ono, 'Nachname der Familie: ' + sname(), 'E-Mail: ' + val(em)];
       if (val(ph)) L.push('Telefon: ' + val(ph));
+      L.push('Sprache des Berichts: ' + BSPR[bericht()]);
       if (val(kn)) L.push('Das weiß ich schon: ' + val(kn));
       return 'Guten Tag, ich möchte ' + cur.art + ' ' + cur.name + ' (' + cur.price + ') bestellen und per Überweisung oder PayPal bezahlen.' +
         (bk && bk.checked ? ' Zusätzlich hätte ich gern das gedruckte Fotobuch (29 €).' : '') + '\n\n' + L.join('\n') + '\n\n' + WAIVE;
@@ -157,7 +159,7 @@
         if (nm && !sname()) setTimeout(function () { nm.focus(); }, 60);
       });
     });
-    [w, bk].forEach(function (x) { if (x) x.addEventListener('change', upd); });
+    [w, bk, lg].forEach(function (x) { if (x) x.addEventListener('change', upd); });
     [nm, em, ph, kn].forEach(function (x) { if (x) x.addEventListener('input', upd); });
     [[pay, 'pay', 'Karte, Klarna oder andere Verfahren über Stripe (Zahlung gestartet)'], [wa, 'wa', 'Überweisung oder PayPal, Bestellung per WhatsApp'], [ml, 'mail', 'Überweisung oder PayPal, Bestellung per Mail']].forEach(function (x) {
       var a = x[0]; if (!a) return;
