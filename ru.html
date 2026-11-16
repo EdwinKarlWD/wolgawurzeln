@@ -310,7 +310,7 @@
       
 <details><summary>Ведётся ли поиск на месте в архивах?</summary><p>Да. То, что недоступно ни в интернете, ни по запросу, просматривается на месте в архивах и библиотеках.</p></details>
       <details><summary>Как оплатить?</summary><p>Банковским переводом, через PayPal или сразу онлайн картой. Для перевода и PayPal закажите в окне заказа по почте, и Вы получите реквизиты. Оплата картой проходит на защищённой платёжной странице. Счёт приходит вместе с отчётом.</p></details>
-      <details><summary>Можно ли получить отчёт в печатном виде?</summary><p>Да. Отчёт о происхождении и историю семьи можно дополнительно получить в виде печатной фотокниги за 29 €, доставка по Германии включена, за границу по запросу. Хороший подарок, по желанию с именем того, кому она предназначена. Фотокнигу можно заказать сразу или позже, когда Вы увидите отчёт в PDF.</p><p class="de-druck">Напечатано в Германии</p><p class="xmas" data-bis="2026-11-29"><b>К Рождеству.</b> При заказе до 29&nbsp;ноября фотокнига придёт по Германии до Рождества.</p></details>
+      <details><summary>Можно ли получить отчёт в печатном виде?</summary><p>Да. Отчёт о происхождении и историю семьи можно дополнительно получить в виде печатной фотокниги за 29 €, доставка по Германии бесплатно. Хороший подарок, по желанию с именем того, кому она предназначена. Фотокнигу можно заказать сразу или позже, когда Вы увидите отчёт в PDF.</p><p class="de-druck">Напечатано в Германии</p><p class="xmas" data-bis="2026-11-29"><b>К Рождеству.</b> При заказе до 29&nbsp;ноября фотокнига придёт по Германии до Рождества.</p></details>
     </div>
   </div>
 </section>
@@ -329,6 +329,7 @@
         <label>Фамилия семьи<input name="nachname" type="text" autocomplete="off" required></label>
         <label>Место происхождения или регион <small>если известно</small><input name="ort" type="text" autocomplete="off"></label>
         <label class="full">Ваш вопрос<textarea name="anliegen" rows="4" maxlength="2000"></textarea></label>
+        <label class="check full req-a9"><input type="checkbox" name="einwilligung" value="ja"><span>Я прямо даю согласие на обработку сведений о вероисповедании и происхождении моей семьи, в том числе о ныне живущих родственниках, для моего запроса и моего заказа. Я могу в любое время отозвать это согласие. <a href="datenschutz.html#recherche-konfession" target="_blank" rel="noopener">Подробнее (на немецком)</a></span></label>
         <input class="fz-hp" type="text" name="firma" tabindex="-1" autocomplete="off" aria-hidden="true">
         <p class="req-err" role="alert" hidden></p>
         <button class="btn" type="submit">Отправить запрос</button>
@@ -389,18 +390,24 @@
       <label class="dlg-f" for="order-lang"><span>Язык отчёта</span><select id="order-lang"><option value="de">Deutsch</option><option value="ru" selected>Русский</option><option value="en">English</option></select></label>
           <label class="dlg-f" for="order-know"><span>Что Вы уже знаете, если есть</span><textarea id="order-know" rows="2" placeholder="Деревня, регион, имена, годы"></textarea></label>
     </div>
+    <div class="bk-extra">
+      <p class="bk-k">Заказать дополнительно</p>
+      <label class="check check-book"><input type="checkbox" id="chk-book"><img class="bk-ico" src="img/fotobuch-titel.jpg" width="44" height="62" alt="" loading="lazy" decoding="async"><span class="bk-txt"><b>Печатная фотокнига, 29&nbsp;€</b><span class="bk-sub">Хороший подарок.</span><span class="de-druck">Напечатано в Германии</span><span class="xmas" data-bis="2026-11-29"><svg class="ic-xmas" viewBox="0 0 32 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M8 2.5 3.8 9H6.2L2.6 14.2H5L1.8 19.2H14.2L11 14.2H13.4L9.8 9H12.2Z" fill="currentColor" fill-opacity=".12"/><path d="M6.6 19.2V22H9.4V19.2"/><path d="M18 13.2H29V22H18Z" fill="currentColor" fill-opacity=".12"/><path d="M17 10.2H30V13.2H17Z"/><path d="M23.5 10.2V22"/><path d="M23.5 10.2C22 7.2 18.6 7 19.4 9 19.9 10.2 22 10.2 23.5 10.2ZM23.5 10.2C25 7.2 28.4 7 27.6 9 27.1 10.2 25 10.2 23.5 10.2Z"/></g></svg><span><b>К Рождеству.</b> При заказе до 29&nbsp;ноября фотокнига придёт по Германии до Рождества.</span></span></span><span class="bk-add" aria-hidden="true"><span class="bk-an">Добавить</span><span class="bk-ab">Добавлено</span></span></label>
+      <p class="bk-fine">Доставка только по Германии, бесплатно, как правило, через 10 рабочих дней после отчёта. Фотокнига изготавливается индивидуально, поэтому права на отказ нет. Оплата при заказе, адрес доставки спрашивается при оплате.</p>
+      <figure class="gw gw-row"><a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener"><img src="img/gewaehrleistung-de-300.jpg" width="150" height="212" alt="Информация о законной гарантии, открыть для увеличения" loading="lazy" decoding="async"></a><figcaption>Законная гарантия на печатную фотокнигу. <a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener">Увеличить</a></figcaption></figure>
+    </div>
     <p class="dlg-note">Вы заказываете услугу. Перед заказом подтвердите, пожалуйста, немедленное начало исследования.</p>
     <label class="check"><input type="checkbox" id="chk-waiver"><span>Я прямо требую, чтобы исследование началось до истечения срока на отказ от договора. Мне известно, что моё право на отказ прекращается, как только услуга оказана полностью, и что при отказе до этого момента я оплачиваю соразмерную часть уже выполненной работы.</span></label>
-    <label class="check check-book"><input type="checkbox" id="chk-book"><span class="bk-txt"><b>Дополнительно в виде печатной фотокниги, 29&nbsp;€.</b> Хороший подарок. Доставка по Германии включена, за границу по запросу. Оплачивается сразу, адрес доставки спрашивается при оплате.</span><img class="bk-ico" src="img/fotobuch-titel.jpg" width="30" height="42" alt="" loading="lazy" decoding="async"><span class="de-druck">Напечатано в Германии</span><span class="xmas" data-bis="2026-11-29"><b>К Рождеству.</b> При заказе до 29&nbsp;ноября фотокнига придёт по Германии до Рождества.</span></label>
-    <figure class="gw gw-row"><a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener"><img src="img/gewaehrleistung-de-300.jpg" width="150" height="212" alt="Информация о законной гарантии, открыть для увеличения" loading="lazy" decoding="async"></a><figcaption>Законная гарантия на печатную фотокнигу. <a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener">Увеличить</a></figcaption></figure>
+    <label class="check check-a9"><input type="checkbox" id="chk-a9"><span>Я прямо даю согласие на обработку сведений о вероисповедании и происхождении моей семьи, в том числе о ныне живущих родственниках, для моего запроса и моего заказа. Я могу в любое время отозвать это согласие. <a href="datenschutz.html#recherche-konfession" target="_blank" rel="noopener">Подробнее (на немецком)</a></span></label>
     <div class="dlg-paybar">
+      <p class="dlg-sum" id="order-sum" aria-live="polite"></p>
       <div class="dlg-pay">
         <a id="order-pay" class="btn btn-seal" role="button" aria-disabled="true" target="_blank" rel="noopener">Заказать с обязательством оплаты</a>
       </div>
       <p class="dlg-hint" id="order-hint" aria-live="polite">Пожалуйста, укажите фамилию выше, тогда кнопка заказа станет активной.</p>
     </div>
     <p class="dlg-alt">Оплата проходит на защищённой платёжной странице, картой, через Klarna и другими способами. Удобнее переводом или через PayPal? Тогда <a id="order-mail" role="button" aria-disabled="true">закажите без карты с обязательством оплаты</a>, и Вы получите реквизиты по электронной почте.</p>
-    <p class="dlg-foot">Действуют наши <a href="agb.html" target="_blank" rel="noopener">условия (AGB)</a>. Информация о <a href="widerruf.html" target="_blank" rel="noopener">праве на отказ</a> и о <a href="datenschutz.html" target="_blank" rel="noopener">защите данных</a>. Правовые тексты на немецком языке.</p>
+    <p class="dlg-foot">Действуют наши <a href="agb.html" target="_blank" rel="noopener">условия (AGB)</a>. Информация о <a href="widerruf.html" target="_blank" rel="noopener">праве на отказ</a> и о <a href="datenschutz.html" target="_blank" rel="noopener">защите данных</a>. Правовые тексты на немецком языке. На Ваш адрес электронной почты мы можем присылать информацию о наших похожих услугах. Вы можете в любое время возразить против этого.</p>
     </div>
     <div id="order-done" class="dlg-done" hidden>
       <p class="dlg-done-k">Номер Вашего заказа</p>

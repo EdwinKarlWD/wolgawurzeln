@@ -33,7 +33,7 @@
 <script src="assets/fehler.js"></script>
 <link rel="stylesheet" href="assets/v3.css">
 
-<style>.check-book,figure.gw,.de-druck,.xmas{display:none!important}html.m2 .an-kurz,html.m2 .an-mehr{display:none!important}html.m2 #anfrage #reqform{display:grid!important}html.m2 #anfrage .req-copy p+p{display:block}</style>
+<style>.bk-extra,.check-book,figure.gw,.de-druck,.xmas{display:none!important}html.m2 .an-kurz,html.m2 .an-mehr{display:none!important}html.m2 #anfrage #reqform{display:grid!important}html.m2 #anfrage .req-copy p+p{display:block}</style>
 </head>
 <body class="v3">
 <a class="skip" href="#main">Skip to content</a>
@@ -318,6 +318,7 @@
         <label>Family surname<input name="nachname" type="text" autocomplete="off" required></label>
         <label>Village or region <small>if known</small><input name="ort" type="text" autocomplete="off"></label>
         <label class="full">Your question<textarea name="anliegen" rows="4" maxlength="2000"></textarea></label>
+        <label class="check full req-a9"><input type="checkbox" name="einwilligung" value="ja"><span>I expressly consent to information on the religion and origin of my family, including living relatives, being processed for my request and my order. I can withdraw this consent at any time. <a href="datenschutz.html#recherche-konfession" target="_blank" rel="noopener">Details (in German)</a></span></label>
         <input class="fz-hp" type="text" name="firma" tabindex="-1" autocomplete="off" aria-hidden="true">
         <p class="req-err" role="alert" hidden></p>
         <button class="btn" type="submit">Send request</button>
@@ -378,18 +379,24 @@
       <label class="dlg-f" for="order-lang"><span>Report language</span><select id="order-lang"><option value="de">Deutsch</option><option value="ru">Русский</option><option value="en" selected>English</option></select></label>
           <label class="dlg-f" for="order-know"><span>What you already know, if anything</span><textarea id="order-know" rows="2" placeholder="Village, region, first names, years"></textarea></label>
     </div>
+    <div class="bk-extra">
+      <p class="bk-k">Add on</p>
+      <label class="check check-book"><input type="checkbox" id="chk-book"><img class="bk-ico" src="img/fotobuch-titel.jpg" width="44" height="62" alt="" loading="lazy" decoding="async"><span class="bk-txt"><b>Printed photo book, €29</b><span class="bk-sub">A good gift.</span><span class="de-druck">Printed in Germany</span><span class="xmas" data-bis="2026-11-29"><svg class="ic-xmas" viewBox="0 0 32 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M8 2.5 3.8 9H6.2L2.6 14.2H5L1.8 19.2H14.2L11 14.2H13.4L9.8 9H12.2Z" fill="currentColor" fill-opacity=".12"/><path d="M6.6 19.2V22H9.4V19.2"/><path d="M18 13.2H29V22H18Z" fill="currentColor" fill-opacity=".12"/><path d="M17 10.2H30V13.2H17Z"/><path d="M23.5 10.2V22"/><path d="M23.5 10.2C22 7.2 18.6 7 19.4 9 19.9 10.2 22 10.2 23.5 10.2ZM23.5 10.2C25 7.2 28.4 7 27.6 9 27.1 10.2 25 10.2 23.5 10.2Z"/></g></svg><span><b>In time for Christmas.</b> Order by 29&nbsp;November and the photo book arrives within Germany before Christmas.</span></span></span><span class="bk-add" aria-hidden="true"><span class="bk-an">Add</span><span class="bk-ab">Added</span></span></label>
+      <p class="bk-fine">Delivery within Germany only, no shipping costs, usually 10 working days after the report. Made individually, so there is no right of withdrawal. Paid with the order, the delivery address is asked for at checkout.</p>
+      <figure class="gw gw-row"><a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener"><img src="img/gewaehrleistung-de-300.jpg" width="150" height="212" alt="Note on the statutory warranty, open to enlarge" loading="lazy" decoding="async"></a><figcaption>Statutory warranty for the printed photo book. <a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener">Enlarge note</a></figcaption></figure>
+    </div>
     <p class="dlg-note">You are ordering a service. Before ordering, please confirm that research may start immediately.</p>
     <label class="check"><input type="checkbox" id="chk-waiver"><span>I expressly request that research begins before the withdrawal period ends. I know that my right of withdrawal expires once the service has been fully performed, and that if I withdraw before then I pay a proportionate amount for the work done up to that point.</span></label>
-    <label class="check check-book"><input type="checkbox" id="chk-book"><span class="bk-txt"><b>Also as a printed photo book, €29.</b> Shipping within Germany included, abroad on request. It is paid together with the report, and the delivery address is asked for at checkout.</span><img class="bk-ico" src="img/fotobuch-titel.jpg" width="30" height="42" alt="" loading="lazy" decoding="async"><span class="de-druck">Printed in Germany</span><span class="xmas" data-bis="2026-11-29"><b>In time for Christmas.</b> Order by 29&nbsp;November and the photo book arrives within Germany before Christmas.</span></label>
-    <figure class="gw gw-row"><a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener"><img src="img/gewaehrleistung-de-300.jpg" width="150" height="212" alt="Note on the statutory warranty, open to enlarge" loading="lazy" decoding="async"></a><figcaption>Statutory warranty for the printed photo book. <a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener">Enlarge note</a></figcaption></figure>
+    <label class="check check-a9"><input type="checkbox" id="chk-a9"><span>I expressly consent to information on the religion and origin of my family, including living relatives, being processed for my request and my order. I can withdraw this consent at any time. <a href="datenschutz.html#recherche-konfession" target="_blank" rel="noopener">Details (in German)</a></span></label>
     <div class="dlg-paybar">
+      <p class="dlg-sum" id="order-sum" aria-live="polite"></p>
       <div class="dlg-pay">
         <a id="order-pay" class="btn btn-seal" role="button" aria-disabled="true" target="_blank" rel="noopener">Order with obligation to pay</a>
       </div>
       <p class="dlg-hint" id="order-hint" aria-live="polite">Please enter the surname above, then the order button becomes active.</p>
     </div>
     <p class="dlg-alt">Payment is made on a secure payment page, by card and other methods. Prefer PayPal or a bank transfer? Then <a id="order-mail" role="button" aria-disabled="true">order without a card, with obligation to pay</a> and you receive the payment details by email.</p>
-    <p class="dlg-foot">Our <a href="agb.html" target="_blank" rel="noopener">terms</a> apply. Information on the <a href="widerruf.html" target="_blank" rel="noopener">right of withdrawal</a> and on <a href="datenschutz.html" target="_blank" rel="noopener">privacy</a>. The legal texts are in German.</p>
+    <p class="dlg-foot">Our <a href="agb.html" target="_blank" rel="noopener">terms</a> apply. Information on the <a href="widerruf.html" target="_blank" rel="noopener">right of withdrawal</a> and on <a href="datenschutz.html" target="_blank" rel="noopener">privacy</a>. The legal texts are in German. We may send information on similar services of our own to your email address. You can object to this at any time.</p>
     </div>
     <div id="order-done" class="dlg-done" hidden>
       <p class="dlg-done-k">Your order number</p>

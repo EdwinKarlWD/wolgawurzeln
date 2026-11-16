@@ -1699,6 +1699,44 @@ body.bf-fade .bf,body.bf-fade .hdr .brand{transition:opacity .4s var(--ease)}
 .dlg-paybar{position:sticky;bottom:0;z-index:2;margin:18px -28px 0;padding:12px 28px 14px;background:var(--card);box-shadow:0 -14px 18px -16px rgba(10,24,49,.4)}
 .dlg-paybar .dlg-pay{margin-top:0}
 .dlg-paybar .dlg-hint{margin-top:8px}
+/* Rechtstexte Teil 2: Zeile über dem Bestellknopf (§ 312j Abs. 2 BGB) und Einwilligung Konfession und Herkunft */
+.dlg-sum{margin:0 0 10px;font-size:14px;line-height:1.45;color:var(--ink-2)}
+.dlg-sum b{color:var(--ink);white-space:nowrap}
+.dlg-sum:empty{display:none}
+.check a{color:var(--navy);font-weight:600}
+.check-a9 a,.req-a9 a,.ez-a9 a{display:inline-block;padding:14px 0;margin:-14px 0}
+.ez-a9{margin:12px 2px 0;font-size:14.5px}
+.ez-a9 input[aria-invalid="true"]{outline:2px solid #A4493A;outline-offset:2px}
+/* Fotobuch als Extra über den Zustimmungen, nicht als weiteres Häkchen (16.11.2026) */
+#auftrag .bk-extra{margin:18px 0 6px}
+#auftrag .bk-k{margin:0 0 6px;font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+#auftrag .check-book{position:relative;display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:6px 14px;margin:0;padding:12px 14px;border:1px solid rgba(158,42,43,.28)!important;background:#FFF8F3!important;flex-wrap:nowrap}
+#auftrag .check-book input{position:absolute;inset:0;z-index:1;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+#auftrag .check-book:has(input:focus-visible){outline:2px solid var(--navy);outline-offset:2px}
+#auftrag .check-book:has(input:checked){border-color:var(--navy)!important}
+#auftrag .check-book img.bk-ico{grid-row:1/3;align-self:start;width:44px;height:62px;margin:0;transform:none;object-fit:cover;box-shadow:0 0 0 1px rgba(15,35,66,.2),0 4px 10px -4px rgba(15,35,66,.35)}
+#auftrag .check-book .bk-txt{display:block;min-width:0;font-size:15px;line-height:1.4}
+#auftrag .check-book .bk-txt>b{display:block;font-size:16px;color:var(--seal-2,#7E2122)}
+#auftrag .check-book .bk-sub{display:block;color:var(--ink-2)}
+#auftrag .check-book .de-druck{margin:6px 0 0;padding:0;font-size:13.5px}
+#auftrag .check-book .xmas.an{display:flex;align-items:flex-start;gap:8px;margin:8px 0 0;padding:0;border:0;background:none;font-size:13.5px;line-height:1.35;color:var(--seal-2,#7E2122)}
+#auftrag .check-book .xmas .ic-xmas{flex:none;width:30px;height:23px;margin-top:-2px}
+#auftrag .bk-add{grid-row:1/3;grid-column:3;display:flex;align-items:center;justify-content:center;min-width:118px;min-height:44px;padding:0 12px;border:1.5px solid var(--navy);background:#fff;color:var(--navy);font-size:14.5px;font-weight:700;white-space:nowrap}
+#auftrag .bk-add::before{content:"+";margin-right:6px;font-size:18px;line-height:1}
+#auftrag .bk-ab{display:none}
+#auftrag .check-book:has(input:checked) .bk-add{background:var(--navy);color:#fff}
+#auftrag .check-book:has(input:checked) .bk-add::before{content:"✓";font-size:15px}
+#auftrag .check-book:has(input:checked) .bk-an{display:none}
+#auftrag .check-book:has(input:checked) .bk-ab{display:inline}
+#auftrag .bk-fine{margin:6px 0 0;font-size:12.5px;line-height:1.45;color:var(--ink-3)}
+#auftrag .bk-extra .gw{margin:10px 0 0;gap:12px}
+#auftrag .bk-extra .gw img{width:64px;box-shadow:none}
+#auftrag .bk-extra .gw figcaption{font-size:12.5px}
+@media (max-width:560px){
+  #auftrag .check-book{grid-template-columns:44px 1fr}
+  #auftrag .check-book img.bk-ico{grid-row:1/2;align-self:start}
+  #auftrag .bk-add{grid-row:2;grid-column:1/-1;width:100%}
+}
 .dlg-done{padding-top:4px}
 .dlg-done-k{margin-top:16px;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
 .dlg-done-no{margin-top:4px;font-size:30px;font-weight:700;letter-spacing:.04em;color:var(--navy)}
