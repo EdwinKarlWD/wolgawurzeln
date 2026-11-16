@@ -2477,5 +2477,11 @@ details .xmas.an{margin:8px 0 4px}
   .leiter li{grid-template-columns:1fr}
   .leiter li>b{text-align:left;padding:0 0 4px 30px;font-size:18px;color:var(--seal-2,#7E2122);border-left:2px solid rgba(15,35,66,.2)}
   .leiter li>div::before{top:-17px}
+  /* Handy: Leiter etwas dichter, damit die Startseite im Rahmen bleibt (16.11.2026) */
+  .leiter li>div{padding-bottom:16px}
+  .leiter h3{font-size:19px}
+  .portal .leiter p{font-size:15.5px;line-height:1.45}
+  .portal .leiter-note{margin-top:14px;padding-top:12px;font-size:14.5px}
+  .portal .portal-links{margin-top:14px}
 }
 .portal-txt h2{margin-bottom:18px}
