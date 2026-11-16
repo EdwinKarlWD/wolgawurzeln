@@ -50,7 +50,22 @@
     'Starten': 'Начать',
     'Nachname': 'Фамилия',
     'Kostenlos und unverbindlich, gern auch auf Russisch.': 'Бесплатно и без обязательств.',
-    'Lieber eine Nachricht schreiben': 'Лучше написать сообщение'
+    'Lieber eine Nachricht schreiben': 'Лучше написать сообщение',
+    'Einzelfallrecherche': 'Индивидуальное исследование',
+    '149 €': '149 €',
+    'Drei Stunden Recherche einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.': 'Три часа исследования, включая отчёт, как правило, в течение 7–10 дней.',
+    'Sie bestellen eine Dienstleistung. Vor der Bestellung bestätigen Sie bitte den sofortigen Beginn der Recherche.': 'Вы заказываете услугу. Перед заказом подтвердите, пожалуйста, немедленное начало исследования.',
+    'Ich verlange ausdrücklich, dass die Recherche schon vor Ablauf der Widerrufsfrist beginnt. Mir ist bekannt, dass mein Widerrufsrecht erlischt, sobald die Leistung vollständig erbracht ist, und dass ich bei einem Widerruf davor die bis dahin erbrachte Leistung anteilig bezahle.': 'Я прямо требую, чтобы исследование началось до истечения срока на отказ от договора. Мне известно, что моё право на отказ прекращается, как только услуга оказана полностью, и что при отказе до этого момента я оплачиваю соразмерную часть уже выполненной работы.',
+    'Der Herkunftsbericht gilt für einen Nachnamen. Für mehrere Namen ist die Familiengeschichte gedacht, sie deckt bis zu vier Nachnamen ab und kostet 89 €.': 'Отчёт о происхождении рассчитан на одну фамилию. Для нескольких фамилий предназначена история семьи, она охватывает до четырёх фамилий и стоит 89 €.',
+    'Das sind mehr als vier Nachnamen. Die Familiengeschichte deckt bis zu vier ab. Für mehr Namen erhalten Sie ein eigenes Angebot.': 'Это больше четырёх фамилий. История семьи охватывает до четырёх. Для большего числа фамилий Вы получите отдельное предложение.',
+    'Zur Familiengeschichte wechseln': 'Перейти к истории семьи',
+    'Anfrage stellen': 'Отправить запрос',
+    'Recherche zu mehreren Nachnamen': 'Исследование по нескольким фамилиям',
+    'Ihre Bestellung ist eingegangen. Bankverbindung, Betrag und Verwendungszweck stehen in der Bestätigungsmail, die jetzt an Sie unterwegs ist.': 'Ваш заказ получен. Банковские реквизиты, сумма и назначение платежа указаны в письме с подтверждением, которое уже отправлено Вам.',
+    'Ihre Bestellung ist eingegangen. Die Zahlungsdaten erhalten Sie per Mail.': 'Ваш заказ получен. Реквизиты для оплаты Вы получите по электронной почте.',
+    'Zu diesem Angebot liegt bereits eine Bestellung vor. Falls die Zahlung noch offen ist, können Sie sie hier abschließen.': 'По этому предложению заказ уже оформлен. Если оплата ещё не прошла, её можно завершить здесь.',
+    'Bezahlseite öffnen': 'Открыть платёжную страницу',
+    'Diese Bestellung ist bereits eingegangen und bezahlt. Sie müssen nichts weiter tun.': 'Этот заказ уже получен и оплачен. Больше ничего делать не нужно.'
   };
   w.WW_TEXTE = X;
   w.WW_T = function (s) { return Object.prototype.hasOwnProperty.call(X, s) ? X[s] : s; };
