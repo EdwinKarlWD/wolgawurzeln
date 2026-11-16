@@ -1,4 +1,6 @@
 /* Wolgawurzeln · Interaktionen */
+/* Besuchszählung ohne Cookies (assets/zaehler.js) nachladen */
+(function (d) { try { var c = d.currentScript; if (!c || !/(^|\.)wolgawurzeln\.de$/.test(location.hostname)) return; var s = d.createElement('script'); s.src = c.src.replace(/[^\/]*$/, 'zaehler.js'); s.async = true; d.head.appendChild(s); } catch (e) {} })(document);
 (function () {
   'use strict';
   var WA = '491735412807';
