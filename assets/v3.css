@@ -1560,6 +1560,8 @@ body:has(#intro) .hdr .brand{opacity:0;animation:bfShow .3s 2.5s forwards}
 body.bf-on .hdr .brand{animation:none}
 body.bf-on .intro-logo,body.bf-on .intro-title{visibility:hidden}
 .bf{position:fixed;left:0;top:0;width:0;height:0;z-index:70;pointer-events:none}
+/* Das schwebende Logo liegt über dem Handymenü (z-index 70 gegen 59). Bei offenem Menü wird es ausgeblendet. */
+body.menu-open .bf{visibility:hidden}
 .bf-logo,.bf-title{position:fixed;left:0;top:0;transform-origin:0 0;will-change:transform}
 .bf-logo img{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 22px rgba(5,14,34,.65)) drop-shadow(0 1px 2px rgba(5,14,34,.6));animation:logoIn 1.6s .2s cubic-bezier(.2,.7,.2,1) both}
 .bf-title span{display:block;white-space:nowrap;font-family:"Cinzel",Georgia,serif;font-weight:600;line-height:1.2;text-transform:uppercase;color:#EDD070;animation:rise 1.2s .6s var(--ease) both}

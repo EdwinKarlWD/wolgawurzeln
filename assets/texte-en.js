@@ -51,7 +51,22 @@
     'Starten': 'Start',
     'Nachname': 'Surname',
     'Kostenlos und unverbindlich, gern auch auf Russisch.': 'Free and without obligation.',
-    'Lieber eine Nachricht schreiben': 'Write a message instead'
+    'Lieber eine Nachricht schreiben': 'Write a message instead',
+    'Einzelfallrecherche': 'Individual research',
+    '149 €': '€149',
+    'Drei Stunden Recherche einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.': 'Three hours of research including the report, usually within 7 to 10 days.',
+    'Sie bestellen eine Dienstleistung. Vor der Bestellung bestätigen Sie bitte den sofortigen Beginn der Recherche.': 'You are ordering a service. Before ordering, please confirm that research may start immediately.',
+    'Ich verlange ausdrücklich, dass die Recherche schon vor Ablauf der Widerrufsfrist beginnt. Mir ist bekannt, dass mein Widerrufsrecht erlischt, sobald die Leistung vollständig erbracht ist, und dass ich bei einem Widerruf davor die bis dahin erbrachte Leistung anteilig bezahle.': 'I expressly request that research begins before the withdrawal period ends. I know that my right of withdrawal expires once the service has been fully performed, and that if I withdraw before then I pay a proportionate amount for the work done up to that point.',
+    'Der Herkunftsbericht gilt für einen Nachnamen. Für mehrere Namen ist die Familiengeschichte gedacht, sie deckt bis zu vier Nachnamen ab und kostet 89 €.': 'The origin report covers one surname. For several names there is the family history, which covers up to four surnames and costs €89.',
+    'Das sind mehr als vier Nachnamen. Die Familiengeschichte deckt bis zu vier ab. Für mehr Namen erhalten Sie ein eigenes Angebot.': 'These are more than four surnames. The family history covers up to four. For more names you receive a separate offer.',
+    'Zur Familiengeschichte wechseln': 'Switch to the family history',
+    'Anfrage stellen': 'Send a request',
+    'Recherche zu mehreren Nachnamen': 'Research on several surnames',
+    'Ihre Bestellung ist eingegangen. Bankverbindung, Betrag und Verwendungszweck stehen in der Bestätigungsmail, die jetzt an Sie unterwegs ist.': 'Your order has arrived. Bank details, amount and payment reference are in the confirmation email that is now on its way to you.',
+    'Ihre Bestellung ist eingegangen. Die Zahlungsdaten erhalten Sie per Mail.': 'Your order has arrived. You receive the payment details by email.',
+    'Zu diesem Angebot liegt bereits eine Bestellung vor. Falls die Zahlung noch offen ist, können Sie sie hier abschließen.': 'There is already an order for this offer. If the payment is still open, you can complete it here.',
+    'Bezahlseite öffnen': 'Open payment page',
+    'Diese Bestellung ist bereits eingegangen und bezahlt. Sie müssen nichts weiter tun.': 'This order has already arrived and is paid. You do not need to do anything else.'
   };
   w.WW_TEXTE = X;
   w.WW_T = function (s) { return Object.prototype.hasOwnProperty.call(X, s) ? X[s] : s; };
