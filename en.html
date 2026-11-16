@@ -363,7 +363,7 @@
     </div>
   </div>
 </footer>
-<dialog class="dlg" id="order" aria-labelledby="order-title">
+<dialog class="dlg" id="auftrag" aria-labelledby="order-title">
   <div class="dlg-box">
     <button class="dlg-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <h2 id="order-title">Order</h2>
@@ -388,7 +388,7 @@
       </div>
       <p class="dlg-hint" id="order-hint" aria-live="polite">Please enter the surname above, then the order button becomes active.</p>
     </div>
-    <p class="dlg-alt">Payment is made on a secure payment page, by card and other methods. Prefer PayPal or a bank transfer? Then <a id="order-mail" aria-disabled="true">order by email</a> and you receive the payment details.</p>
+    <p class="dlg-alt">Payment is made on a secure payment page, by card and other methods. Prefer PayPal or a bank transfer? Then <a id="order-mail" role="button" aria-disabled="true">order without a card</a> and you receive the payment details by email.</p>
     <p class="dlg-foot">Our <a href="agb.html" target="_blank" rel="noopener">terms</a> apply. Information on the <a href="widerruf.html" target="_blank" rel="noopener">right of withdrawal</a> and on <a href="datenschutz.html" target="_blank" rel="noopener">privacy</a>. The legal texts are in German.</p>
     </div>
     <div id="order-done" class="dlg-done" hidden>
@@ -410,6 +410,7 @@
 <script src="assets/sprachseite.js" defer></script>
 <script src="assets/anfrage.js" defer></script>
 <script src="assets/v3.js" defer></script>
+<script src="assets/bestellen.js" defer></script>
 <script async src="https://connect.haendlerbund.de/widgets/revocation-button.js"></script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "158f10bc19c441b58a176d5623dc1919"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
