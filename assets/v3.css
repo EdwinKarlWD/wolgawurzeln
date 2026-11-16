@@ -2381,3 +2381,11 @@ details .xmas.an{margin:8px 0 4px}
   .ub-grund{grid-template-columns:1fr}
   .ub-zahlen dd{font-size:14.5px}
 }
+
+/* Pakete: Bestellknopf folgt der gewählten Karte, Fotobuch mit Weihnachtshinweis */
+.pk.is-active .pk-act .btn.ghost{background:var(--navy);color:#fff;box-shadow:none}
+.pk.is-active .pk-act .btn.ghost:hover{background:var(--navy-2,#1A3561)}
+.pk-gift .ic-baum{display:none}
+.pk-gift:has(.xmas.an) .ic-baum{display:block}
+.pk-gift:has(.xmas.an) .ic-gift{display:none}
+.pk-gift .xmas.an{display:block;margin:5px 0 0;padding:0;border:0;background:none;font-size:14px;line-height:1.4;font-weight:600;color:var(--seal-2,#7E2122)}
