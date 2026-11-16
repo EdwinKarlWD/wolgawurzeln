@@ -69,7 +69,7 @@
     'Herkunftsbericht für einen Nachnamen, als PDF in 3 bis 5 Tagen.': 'Отчёт о происхождении для одной фамилии, в формате PDF за 3–5 дней.',
     'Familiengeschichte für bis zu vier Nachnamen, als PDF in 5 bis 8 Tagen.': 'История семьи, до четырёх фамилий, в формате PDF за 5–8 дней.',
     'Einzelfallrecherche, drei Stunden einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.': 'Индивидуальное исследование, три часа, включая отчёт, как правило, в течение 7–10 дней.',
-    ' Dazu das gedruckte Fotobuch, Lieferung innerhalb Deutschlands.': ' Дополнительно печатная фотокнига, доставка по Германии.',
+    ' Dazu das gedruckte Fotobuch, Lieferung nur innerhalb Deutschlands, etwa 10 Werktage nach dem Bericht. Als Einzelanfertigung ohne Widerrufsrecht.': ' Дополнительно печатная фотокнига, доставка только по Германии, примерно через 10 рабочих дней после отчёта. Изготавливается индивидуально, права на отказ нет.',
     'Gesamtpreis ': 'Итоговая цена ',
     'Bitte die Einwilligung zu Konfession und Herkunft bestätigen (Kästchen oben), dann wird der Bestellknopf frei.': 'Пожалуйста, подтвердите согласие на обработку сведений о вероисповедании и происхождении (отметка выше), тогда кнопка заказа станет активной.',
     'Bitte bestätigen Sie die Einwilligung zu Konfession und Herkunft, dann können Sie die Anfrage senden.': 'Пожалуйста, подтвердите согласие на обработку сведений о вероисповедании и происхождении, тогда Вы сможете отправить запрос.'

@@ -70,7 +70,7 @@
     'Herkunftsbericht für einen Nachnamen, als PDF in 3 bis 5 Tagen.': 'Origin report for one surname, as a PDF in 3 to 5 days.',
     'Familiengeschichte für bis zu vier Nachnamen, als PDF in 5 bis 8 Tagen.': 'Family history for up to four surnames, as a PDF in 5 to 8 days.',
     'Einzelfallrecherche, drei Stunden einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.': 'Individual research, three hours including the report, usually within 7 to 10 days.',
-    ' Dazu das gedruckte Fotobuch, Lieferung innerhalb Deutschlands.': ' Plus the printed photo book, delivery within Germany.',
+    ' Dazu das gedruckte Fotobuch, Lieferung nur innerhalb Deutschlands, etwa 10 Werktage nach dem Bericht. Als Einzelanfertigung ohne Widerrufsrecht.': ' Plus the printed photo book, delivery within Germany only, about 10 working days after the report. Made individually, no right of withdrawal.',
     'Gesamtpreis ': 'Total price ',
     'Bitte die Einwilligung zu Konfession und Herkunft bestätigen (Kästchen oben), dann wird der Bestellknopf frei.': 'Please confirm your consent to the processing of information on religion and origin (box above), then the order button becomes active.',
     'Bitte bestätigen Sie die Einwilligung zu Konfession und Herkunft, dann können Sie die Anfrage senden.': 'Please confirm your consent to the processing of information on religion and origin, then you can send your request.'

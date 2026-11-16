@@ -102,7 +102,7 @@
     if (!cur) return;
     var m = missing();
     var tt = q('#order-title'); if (tt) tt.textContent = T('Auftrag: ') + cur.name + (withBook() ? T(' mit Fotobuch, ') + cur.bookPrice : ', ' + cur.price);
-    if (sum) { sum.textContent = cur.umfang + (withBook() ? T(' Dazu das gedruckte Fotobuch, Lieferung innerhalb Deutschlands.') : '') + ' ';
+    if (sum) { sum.textContent = cur.umfang + (withBook() ? T(' Dazu das gedruckte Fotobuch, Lieferung nur innerhalb Deutschlands, etwa 10 Werktage nach dem Bericht. Als Einzelanfertigung ohne Widerrufsrecht.') : '') + ' ';
       var gp = document.createElement('b'); gp.textContent = T('Gesamtpreis ') + (withBook() ? cur.bookPrice : cur.price) + '.'; sum.appendChild(gp); }
     setzeHinweis(m);
     if (m) { setA(pay, false); setA(ml, false); return; }
