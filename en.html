@@ -33,7 +33,7 @@
 <script src="assets/fehler.js"></script>
 <link rel="stylesheet" href="assets/v3.css">
 
-<style>.check-book,figure.gw,.de-druck,.xmas{display:none!important}html.m2 .an-kurz,html.m2 .an-mehr{display:none!important}html.m2 #anfrage #reqform{display:grid!important}html.m2 #anfrage .req-copy p+p{display:block}</style>
+<style>.bk-extra,.check-book,figure.gw,.de-druck,.xmas{display:none!important}html.m2 .an-kurz,html.m2 .an-mehr{display:none!important}html.m2 #anfrage #reqform{display:grid!important}html.m2 #anfrage .req-copy p+p{display:block}</style>
 </head>
 <body class="v3">
 <a class="skip" href="#main">Skip to content</a>
@@ -318,6 +318,7 @@
         <label>Family surname<input name="nachname" type="text" autocomplete="off" required></label>
         <label>Village or region <small>if known</small><input name="ort" type="text" autocomplete="off"></label>
         <label class="full">Your question<textarea name="anliegen" rows="4" maxlength="2000"></textarea></label>
+        <label class="check full req-a9"><input type="checkbox" name="einwilligung" value="ja"><span>I expressly consent to information on the religion and origin of my family, including living relatives, being processed for my request and my order. I can withdraw this consent at any time. <a href="datenschutz.html#recherche-konfession" target="_blank" rel="noopener">Details (in German)</a></span></label>
         <input class="fz-hp" type="text" name="firma" tabindex="-1" autocomplete="off" aria-hidden="true">
         <p class="req-err" role="alert" hidden></p>
         <button class="btn" type="submit">Send request</button>
@@ -368,28 +369,36 @@
     <button class="dlg-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <h2 id="order-title">Order</h2>
     <div id="order-form">
-    <p class="dlg-sub"><span id="order-time"></span> After your order Wolgawurzeln contacts you by email, usually within 24 hours, and goes through names and details with you before research begins.</p>
+    <ol class="dlg-steps"><li data-s="1" class="an">Your details</li><li data-s="2">Review and order</li></ol>
+    <div class="dlg-step" id="order-s1">
+    <p class="dlg-sub"><span id="order-time"></span> Before research starts, Wolgawurzeln goes through the names and details with you by email.</p>
     <div class="dlg-fields">
-      <label class="dlg-f" for="order-name"><span>Family surname</span><input id="order-name" type="text" autocomplete="family-name" autocapitalize="words" spellcheck="false" placeholder="for example Schaefer or Miller"></label>
-      <div class="dlg-2">
-        <label class="dlg-f" for="order-email"><span>Your email</span><input id="order-email" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="name@example.com"></label>
-        <label class="dlg-f" for="order-phone"><span>WhatsApp <small>optional</small></span><input id="order-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="Number for questions by message"></label>
-      </div>
+      <label class="dlg-f" for="order-name"><span>Family surname</span><input id="order-name" type="text" autocomplete="family-name" autocapitalize="words" spellcheck="false" enterkeyhint="next" placeholder="for example Schaefer or Miller"></label>
+      <label class="dlg-f" for="order-email"><span>Your email</span><input id="order-email" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" enterkeyhint="next" placeholder="name@example.com"></label>
       <label class="dlg-f" for="order-lang"><span>Report language</span><select id="order-lang"><option value="de">Deutsch</option><option value="ru">Русский</option><option value="en" selected>English</option></select></label>
-          <label class="dlg-f" for="order-know"><span>What you already know, if anything</span><textarea id="order-know" rows="2" placeholder="Village, region, first names, years"></textarea></label>
+      <details class="dlg-more"><summary><span>More details <small>optional</small></span></summary>
+        <label class="dlg-f" for="order-know"><span>What you already know, if anything</span><textarea id="order-know" rows="2" placeholder="Village, region, first names, years"></textarea></label>
+        <label class="dlg-f" for="order-phone"><span>WhatsApp <small>optional</small></span><input id="order-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="Number for questions by message"></label>
+      </details>
     </div>
-    <p class="dlg-note">You are ordering digital content. Before ordering, please confirm that work may start immediately.</p>
-    <label class="check"><input type="checkbox" id="chk-waiver"><span>I expressly request that work on the report begins before the withdrawal period ends. I know that my right of withdrawal expires once performance begins.</span></label>
-    <label class="check check-book"><input type="checkbox" id="chk-book"><span class="bk-txt"><b>Also as a printed photo book, €29.</b> Shipping within Germany included, abroad on request. It is paid together with the report, and the delivery address is asked for at checkout.</span><img class="bk-ico" src="img/fotobuch-titel.jpg" width="30" height="42" alt="" loading="lazy" decoding="async"><span class="de-druck">Printed in Germany</span><span class="xmas" data-bis="2026-11-29"><b>In time for Christmas.</b> Order by 29&nbsp;November and the photo book arrives within Germany before Christmas.</span></label>
+    <div class="bk-extra">
+      <label class="check check-book"><input type="checkbox" id="chk-book"><img class="bk-ico" src="img/fotobuch-titel.jpg" width="36" height="51" alt="" loading="lazy" decoding="async"><span class="bk-txt"><b>Printed photo book</b><span class="bk-sub">A good gift.</span></span><span class="bk-add" aria-hidden="true">29&nbsp;€</span><span class="bk-more"><span class="de-druck">Printed in Germany</span><span class="xmas" data-bis="2026-11-29"><svg class="ic-xmas" viewBox="0 0 32 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M8 2.5 3.8 9H6.2L2.6 14.2H5L1.8 19.2H14.2L11 14.2H13.4L9.8 9H12.2Z" fill="currentColor" fill-opacity=".12"/><path d="M6.6 19.2V22H9.4V19.2"/><path d="M18 13.2H29V22H18Z" fill="currentColor" fill-opacity=".12"/><path d="M17 10.2H30V13.2H17Z"/><path d="M23.5 10.2V22"/><path d="M23.5 10.2C22 7.2 18.6 7 19.4 9 19.9 10.2 22 10.2 23.5 10.2ZM23.5 10.2C25 7.2 28.4 7 27.6 9 27.1 10.2 25 10.2 23.5 10.2Z"/></g></svg><span>Order by the first Sunday of Advent, delivered in Germany before Christmas</span></span></span></label>
+    </div>
+    <div class="dlg-pay"><button type="button" id="order-next" class="btn btn-seal">Continue</button></div>
+    </div>
+    <div class="dlg-step" id="order-s2" tabindex="-1" hidden>
+    <p class="dlg-for"><span id="order-for"></span><button type="button" class="dlg-edit" id="order-back">Change</button></p>
+    <label class="check ck"><input type="checkbox" id="chk-waiver"><span class="ck-b"><b>Start right away</b><span class="ck-txt">I expressly request that research begins before the withdrawal period ends. I know that my right of withdrawal expires once the service has been fully performed.</span></span></label>
+    <label class="check ck check-a9"><input type="checkbox" id="chk-a9"><span class="ck-b"><b>Religion and origin</b><span class="ck-txt">I expressly consent to information on the religion and origin of my family, including living relatives, being processed for my request and my order. I can withdraw this consent at any time. <a href="datenschutz.html#recherche-konfession" target="_blank" rel="noopener">Details (in German)</a></span></span></label>
+    <div class="dlg-rec" id="order-rec" aria-live="polite"></div>
     <figure class="gw gw-row"><a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener"><img src="img/gewaehrleistung-de-300.jpg" width="150" height="212" alt="Note on the statutory warranty, open to enlarge" loading="lazy" decoding="async"></a><figcaption>Statutory warranty for the printed photo book. <a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener">Enlarge note</a></figcaption></figure>
-    <div class="dlg-paybar">
-      <div class="dlg-pay">
-        <a id="order-pay" class="btn btn-seal" role="button" aria-disabled="true" target="_blank" rel="noopener">Order and pay</a>
-      </div>
-      <p class="dlg-hint" id="order-hint" aria-live="polite">Please enter the surname above, then the order button becomes active.</p>
+    <div class="dlg-pay">
+      <a id="order-pay" class="btn btn-seal" role="button" aria-disabled="true" target="_blank" rel="noopener">Order with obligation to pay</a>
     </div>
-    <p class="dlg-alt">Payment is made on a secure payment page, by card and other methods. Prefer PayPal or a bank transfer? Then <a id="order-mail" role="button" aria-disabled="true">order without a card</a> and you receive the payment details by email.</p>
-    <p class="dlg-foot">Our <a href="agb.html" target="_blank" rel="noopener">terms</a> apply. Information on the <a href="widerruf.html" target="_blank" rel="noopener">right of withdrawal</a> and on <a href="datenschutz.html" target="_blank" rel="noopener">privacy</a>. The legal texts are in German.</p>
+    <p class="dlg-hint off" id="order-hint" aria-live="polite">Please enter the surname above, then the order button becomes active.</p>
+    <p class="dlg-alt">Payment is made on a secure payment page, by card and other methods. Prefer PayPal or a bank transfer? Then <a id="order-mail" role="button" aria-disabled="true">order without a card, with obligation to pay</a> and you receive the payment details by email.</p>
+    <p class="dlg-foot">Our <a href="agb.html" target="_blank" rel="noopener">terms</a> apply. Information on the <a href="widerruf.html" target="_blank" rel="noopener">right of withdrawal</a> and on <a href="datenschutz.html" target="_blank" rel="noopener">privacy</a>. The legal texts are in German. We may send information on similar services of our own to your email address. You can object to this at any time.</p>
+    </div>
     </div>
     <div id="order-done" class="dlg-done" hidden>
       <p class="dlg-done-k">Your order number</p>

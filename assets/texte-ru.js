@@ -55,7 +55,7 @@
     '149 €': '149 €',
     'Drei Stunden Recherche einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.': 'Три часа исследования, включая отчёт, как правило, в течение 7–10 дней.',
     'Sie bestellen eine Dienstleistung. Vor der Bestellung bestätigen Sie bitte den sofortigen Beginn der Recherche.': 'Вы заказываете услугу. Перед заказом подтвердите, пожалуйста, немедленное начало исследования.',
-    'Ich verlange ausdrücklich, dass die Recherche schon vor Ablauf der Widerrufsfrist beginnt. Mir ist bekannt, dass mein Widerrufsrecht erlischt, sobald die Leistung vollständig erbracht ist, und dass ich bei einem Widerruf davor die bis dahin erbrachte Leistung anteilig bezahle.': 'Я прямо требую, чтобы исследование началось до истечения срока на отказ от договора. Мне известно, что моё право на отказ прекращается, как только услуга оказана полностью, и что при отказе до этого момента я оплачиваю соразмерную часть уже выполненной работы.',
+    'Ich verlange ausdrücklich, dass die Recherche schon vor Ablauf der Widerrufsfrist beginnt. Mir ist bekannt, dass mein Widerrufsrecht erlischt, sobald die Leistung vollständig erbracht ist.': 'Я прямо требую, чтобы исследование началось до истечения срока на отказ от договора. Мне известно, что моё право на отказ прекращается, как только услуга оказана полностью.',
     'Der Herkunftsbericht gilt für einen Nachnamen. Für mehrere Namen ist die Familiengeschichte gedacht, sie deckt bis zu vier Nachnamen ab und kostet 89 €.': 'Отчёт о происхождении рассчитан на одну фамилию. Для нескольких фамилий предназначена история семьи, она охватывает до четырёх фамилий и стоит 89 €.',
     'Das sind mehr als vier Nachnamen. Die Familiengeschichte deckt bis zu vier ab. Für mehr Namen erhalten Sie ein eigenes Angebot.': 'Это больше четырёх фамилий. История семьи охватывает до четырёх. Для большего числа фамилий Вы получите отдельное предложение.',
     'Zur Familiengeschichte wechseln': 'Перейти к истории семьи',
@@ -65,7 +65,14 @@
     'Ihre Bestellung ist eingegangen. Die Zahlungsdaten erhalten Sie per Mail.': 'Ваш заказ получен. Реквизиты для оплаты Вы получите по электронной почте.',
     'Zu diesem Angebot liegt bereits eine Bestellung vor. Falls die Zahlung noch offen ist, können Sie sie hier abschließen.': 'По этому предложению заказ уже оформлен. Если оплата ещё не прошла, её можно завершить здесь.',
     'Bezahlseite öffnen': 'Открыть платёжную страницу',
-    'Diese Bestellung ist bereits eingegangen und bezahlt. Sie müssen nichts weiter tun.': 'Этот заказ уже получен и оплачен. Больше ничего делать не нужно.'
+    'Diese Bestellung ist bereits eingegangen und bezahlt. Sie müssen nichts weiter tun.': 'Этот заказ уже получен и оплачен. Больше ничего делать не нужно.',
+    'Herkunftsbericht für einen Nachnamen, als PDF in 3 bis 5 Tagen.': 'Отчёт о происхождении для одной фамилии, в формате PDF за 3–5 дней.',
+    'Familiengeschichte für bis zu vier Nachnamen, als PDF in 5 bis 8 Tagen.': 'История семьи, до четырёх фамилий, в формате PDF за 5–8 дней.',
+    'Einzelfallrecherche, drei Stunden einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.': 'Индивидуальное исследование, три часа, включая отчёт, как правило, в течение 7–10 дней.',
+    ' Dazu das gedruckte Fotobuch, Lieferung nur innerhalb Deutschlands, etwa 10 Werktage nach dem Bericht. Als Einzelanfertigung ohne Widerrufsrecht.': ' Дополнительно печатная фотокнига, доставка только по Германии, примерно через 10 рабочих дней после отчёта. Изготавливается индивидуально, права на отказ нет.',
+    'Gesamtpreis ': 'Итоговая цена ',
+    'Bitte die Einwilligung zu Konfession und Herkunft bestätigen (Kästchen oben), dann wird der Bestellknopf frei.': 'Пожалуйста, подтвердите согласие на обработку сведений о вероисповедании и происхождении (отметка выше), тогда кнопка заказа станет активной.',
+    'Bitte bestätigen Sie die Einwilligung zu Konfession und Herkunft, dann können Sie die Anfrage senden.': 'Пожалуйста, подтвердите согласие на обработку сведений о вероисповедании и происхождении, тогда Вы сможете отправить запрос.'
   };
   w.WW_TEXTE = X;
   w.WW_T = function (s) { return Object.prototype.hasOwnProperty.call(X, s) ? X[s] : s; };

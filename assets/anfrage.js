@@ -32,7 +32,10 @@
       if (gut) el[n].removeAttribute('aria-invalid'); else { el[n].setAttribute('aria-invalid', 'true'); ok = false; }
     });
     if (!ok) { zeig(T('Bitte füllen Sie Name, Mailadresse und Nachname der Familie aus.')); rf.querySelector('[aria-invalid="true"]').focus(); return; }
-    var text = T('Anfrage über wolgawurzeln.de') + '\n' + T('Name: ') + v('name') + '\n' + T('Nachname der Familie: ') + v('nachname') + (v('ort') ? '\n' + T('Herkunftsort oder Region: ') + v('ort') : '') + (v('tel') ? '\n' + T('Telefon: ') + v('tel') : '') + (v('anliegen') ? '\n' + T('Anliegen: ') + v('anliegen') : '');
+    var a9 = el['einwilligung'];
+    if (a9 && !a9.checked) { zeig(T('Bitte bestätigen Sie die Einwilligung zu Konfession und Herkunft, dann können Sie die Anfrage senden.')); a9.focus(); return; }
+    var a9txt = a9 ? a9.parentNode.querySelector('span').firstChild.textContent.trim() : '';
+    var text = T('Anfrage über wolgawurzeln.de') + '\n' + T('Name: ') + v('name') + '\n' + T('Nachname der Familie: ') + v('nachname') + (v('ort') ? '\n' + T('Herkunftsort oder Region: ') + v('ort') : '') + (v('tel') ? '\n' + T('Telefon: ') + v('tel') : '') + (v('anliegen') ? '\n' + T('Anliegen: ') + v('anliegen') : '') + (a9txt ? '\n\n' + a9txt : '');
     var perMail = 'mailto:edwin@wolgawurzeln.de?subject=' + encodeURIComponent(T('Anfrage: ') + v('nachname')) + '&body=' + encodeURIComponent(text);
     var pech = T('Das Senden hat gerade nicht geklappt. Bitte versuchen Sie es noch einmal oder {a}schreiben Sie uns per Mail{/a}.').replace('{a}', '<a href="' + perMail + '">').replace('{/a}', '</a>');
     if (!D.an()) { w.location.href = perMail; return; }
@@ -40,7 +43,7 @@
     rf.setAttribute('data-busy', '1'); btn.disabled = true; btn.textContent = T('Wird gesendet');
     var ende = function () { rf.removeAttribute('data-busy'); btn.disabled = false; btn.textContent = T('Anfrage senden'); };
     D.token().then(function (tok) {
-      return D.ruf('/anfrage', { body: { name: v('name'), email: v('email'), nachname: v('nachname'), ort: v('ort'), tel: v('tel'), anliegen: v('anliegen'), hp: v('firma'), sprache: SPR, quelle: quelle(), page: w.location.pathname, ts: tok } });
+      return D.ruf('/anfrage', { body: { name: v('name'), email: v('email'), nachname: v('nachname'), ort: v('ort'), tel: v('tel'), anliegen: v('anliegen'), hp: v('firma'), einwilligung: a9 && a9.checked ? 'konfession-herkunft' : '', sprache: SPR, quelle: quelle(), page: w.location.pathname, ts: tok } });
     }).then(function (x) {
       if (x.j && x.j.ok) {
         rf.outerHTML = '<div class="req-ok" role="status" tabindex="-1"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><rect width="20" height="20" fill="#0F2342"/><path d="M5 10.4l3.2 3.2L15 6.8" fill="none" stroke="#FFFDF9" stroke-width="2" stroke-linecap="square"/></svg>' +
