@@ -1,27 +1,31 @@
 /* Wolgawurzeln · Bestelldialog. Eine Fassung für alle Seiten mit dem Dialog #auftrag (Startseite, Leistungen, englische und russische Seite).
    Der Dialog hieß früher #order. Der neue Name sorgt dafür, dass ein noch zwischengespeichertes altes Skript ihn nicht mehr findet und nichts doppelt meldet.
    Jede Bestellung wird dem eigenen Dienst gemeldet (assets/dienst.js): Mail an Wolgawurzeln, Eingangsbestätigung an den Kunden, Vorgang im Kundenbereich.
-   Stand 16.11.2026: Einzelfallrecherche bestellbar, Grenze bei den Nachnamen, Überweisung ohne Mailprogramm. */
+   Stand 16.11.2026: Einzelfallrecherche bestellbar, Grenze bei den Nachnamen, Überweisung ohne Mailprogramm.
+   Zwei Schritte: 1 Ihre Angaben, 2 Prüfen und bestellen. Hinweise erscheinen erst, wenn jemand weiter will und etwas fehlt. */
 (function () {
   'use strict';
   var od = document.getElementById('auftrag');
   if (!od || !od.showModal) return;
   var T = window.WW_T || function (s) { return s; }, SPR = window.WW_SPRACHE || 'de';
   var P = {
-    hb: { key: 'hb', art: 'den', name: T('Herkunftsbericht'), price: T('49 €'), time: T('Lieferung als PDF in 3 bis 5 Tagen.'), code: 'HB49', max: 1, url: 'https://buy.stripe.com/8x214gd8G68o6MddiQ6Vq02', bookPrice: T('78 €'), bookUrl: 'https://buy.stripe.com/dRmaEQ5GebsIfiJceM6Vq04' },
-    fg: { key: 'fg', art: 'die', name: T('Familiengeschichte'), price: T('89 €'), time: T('Lieferung als PDF in 5 bis 8 Tagen.'), code: 'FG89', max: 4, url: 'https://buy.stripe.com/8x2aEQ9WueEUgmN92A6Vq03', bookPrice: T('118 €'), bookUrl: 'https://buy.stripe.com/28EeV63y668oc6x1A86Vq05' },
+    hb: { key: 'hb', art: 'den', name: T('Herkunftsbericht'), price: T('49 €'), time: T('Lieferung als PDF in 3 bis 5 Tagen.'), umfang: T('Herkunftsbericht für einen Nachnamen, als PDF in 3 bis 5 Tagen.'), code: 'HB49', max: 1, url: 'https://buy.stripe.com/8x214gd8G68o6MddiQ6Vq02', bookPrice: T('78 €'), bookUrl: 'https://buy.stripe.com/dRmaEQ5GebsIfiJceM6Vq04' },
+    fg: { key: 'fg', art: 'die', name: T('Familiengeschichte'), price: T('89 €'), time: T('Lieferung als PDF in 5 bis 8 Tagen.'), umfang: T('Familiengeschichte für bis zu vier Nachnamen, als PDF in 5 bis 8 Tagen.'), code: 'FG89', max: 4, url: 'https://buy.stripe.com/8x2aEQ9WueEUgmN92A6Vq03', bookPrice: T('118 €'), bookUrl: 'https://buy.stripe.com/28EeV63y668oc6x1A86Vq05' },
     /* Einzelfallrecherche: Dienstleistung nach Zeit, kein Fotobuch, keine Grenze bei den Namen */
-    ez: { key: 'ez', art: 'die', name: T('Einzelfallrecherche'), price: T('149 €'), time: T('Drei Stunden Recherche einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.'), code: 'EZ149', max: 0, dienst: true, url: 'https://buy.stripe.com/28EfZac4C40g5I9ceM6Vq08' }
+    ez: { key: 'ez', art: 'die', name: T('Einzelfallrecherche'), price: T('149 €'), time: T('Drei Stunden Recherche einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.'), umfang: T('Einzelfallrecherche, drei Stunden einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.'), code: 'EZ149', max: 0, dienst: true, url: 'https://buy.stripe.com/28EfZac4C40g5I9ceM6Vq08' }
   };
   var q = function (s) { return od.querySelector(s); };
-  var cur = null, ono = '', lastPre = '', w = q('#chk-waiver'), bk = q('#chk-book'), pay = q('#order-pay'), ml = q('#order-mail'), nm = q('#order-name'), em = q('#order-email'), ph = q('#order-phone'), kn = q('#order-know'), lg = q('#order-lang'), hint = q('#order-hint'), oform = q('#order-form'), done = q('#order-done');
+  var cur = null, ono = '', lastPre = '', w = q('#chk-waiver'), bk = q('#chk-book'), pay = q('#order-pay'), ml = q('#order-mail'), nm = q('#order-name'), em = q('#order-email'), ph = q('#order-phone'), kn = q('#order-know'), lg = q('#order-lang'), hint = q('#order-hint'), oform = q('#order-form'), done = q('#order-done'), a9 = q('#chk-a9'), rec = q('#order-rec'), forl = q('#order-for'), s1 = q('#order-s1'), s2 = q('#order-s2'), next = q('#order-next'), back = q('#order-back');
+  var stufe = 1, versucht = false;
   if (!w || !pay || !nm) return;
-  var note = q('.dlg-note'), wtxt = w.parentNode.querySelector('span'), bkbox = bk && bk.closest('.check'), gw = q('.gw-row');
+  var note = q('.dlg-note'), wtxt = w.parentNode.querySelector('.ck-txt') || w.parentNode.querySelector('span'), bkbox = bk && (bk.closest('.bk-extra') || bk.closest('.check')), gw = q('.gw-row');
   /* Hinweis und Zustimmung: für die Berichte stehen sie im Seitentext, für die Dienstleistung kommen sie von hier */
   var NOTE0 = note ? note.textContent : '', WAIVE0 = wtxt ? wtxt.textContent : '';
   var NOTE_EZ = T('Sie bestellen eine Dienstleistung. Vor der Bestellung bestätigen Sie bitte den sofortigen Beginn der Recherche.');
-  var WAIVE_EZ = T('Ich verlange ausdrücklich, dass die Recherche schon vor Ablauf der Widerrufsfrist beginnt. Mir ist bekannt, dass mein Widerrufsrecht erlischt, sobald die Leistung vollständig erbracht ist, und dass ich bei einem Widerruf davor die bis dahin erbrachte Leistung anteilig bezahle.');
+  var WAIVE_EZ = T('Ich verlange ausdrücklich, dass die Recherche schon vor Ablauf der Widerrufsfrist beginnt. Mir ist bekannt, dass mein Widerrufsrecht erlischt, sobald die Leistung vollständig erbracht ist.');
   var val = function (x) { return x ? x.value.trim() : ''; };
+  /* Einwilligung nach Art. 9 DSGVO, Text wie im Kästchen (ohne den Verweis) */
+  var A9TXT = a9 ? (a9.parentNode.querySelector('.ck-txt') || a9.parentNode.querySelector('span')).firstChild.textContent.trim() : '';
   var withBook = function () { return !!(bk && bk.checked && cur && cur.bookUrl); };
   var sname = function () { return val(nm).replace(/\s+/g, ' '); };
   /* Nachnamen zählen: getrennt durch Komma, Semikolon, Schrägstrich, Plus, Und Zeichen oder das Wort und */
@@ -57,28 +61,32 @@
     if (val(ph)) L.push(T('Telefon: ') + val(ph));
     if (val(kn)) L.push(T('Das weiß ich schon: ') + val(kn));
     return T('Guten Tag, ich möchte {art} {name} ({preis}) bestellen und per Überweisung oder PayPal bezahlen.').replace('{art}', cur.art).replace('{name}', cur.name).replace('{preis}', cur.price) +
-      (withBook() ? T(' Zusätzlich hätte ich gern das gedruckte Fotobuch (29 €).') : '') + '\n\n' + L.join('\n') + '\n\n' + waive();
+      (withBook() ? T(' Zusätzlich hätte ich gern das gedruckte Fotobuch (29 €).') : '') + '\n\n' + L.join('\n') + '\n\n' + waive() + (A9TXT ? '\n\n' + A9TXT : '');
   }
   function mailto() { return 'mailto:edwin@wolgawurzeln.de?subject=' + encodeURIComponent(T('Bestellung ') + ono + ': ' + cur.name) + '&body=' + encodeURIComponent(msg()); }
   function setA(a, ok, href) { if (!a) return; a.setAttribute('aria-disabled', ok ? 'false' : 'true'); if (ok && href) a.setAttribute('href', href); else a.removeAttribute('href'); }
-  function missing() {
+  /* Schritt 1: Name, Zahl der Namen, Mail */
+  function missing1() {
     if (!sname()) return 'name';
     var n = namen().length;
     if (cur.max && n > 4) return 'viele';
     if (cur.max === 1 && n > 1) return 'mehrere';
-    return !mailOk() ? 'email' : !w.checked ? 'waiver' : '';
+    return !mailOk() ? 'email' : '';
   }
+  /* alles zusammen: Schritt 1 und die beiden Zustimmungen */
+  function missing() { return missing1() || (!w.checked ? 'waiver' : a9 && !a9.checked ? 'art9' : ''); }
   var HINT = {
     name: T('Bitte oben den Nachnamen der Familie eintragen, dann wird der Bestellknopf frei.'),
     email: T('Bitte Ihre E-Mail eintragen, damit wir uns bei Ihnen melden können. Dann wird der Bestellknopf frei.'),
     waiver: T('Bitte den Bearbeitungsbeginn bestätigen (Kästchen oben), dann wird der Bestellknopf frei.'),
+    art9: T('Bitte die Einwilligung zu Konfession und Herkunft bestätigen (Kästchen oben), dann wird der Bestellknopf frei.'),
     mehrere: T('Der Herkunftsbericht gilt für einen Nachnamen. Für mehrere Namen ist die Familiengeschichte gedacht, sie deckt bis zu vier Nachnamen ab und kostet 89 €.'),
     viele: T('Das sind mehr als vier Nachnamen. Die Familiengeschichte deckt bis zu vier ab. Für mehr Namen erhalten Sie ein eigenes Angebot.')
   };
   var WEITER = { mehrere: T('Zur Familiengeschichte wechseln'), viele: T('Anfrage stellen') };
   function setzeHinweis(m) {
     if (!hint) return;
-    hint.classList.toggle('off', !m);
+    hint.classList.toggle('off', !m || !(versucht || WEITER[m]));
     hint.textContent = m ? HINT[m] : '';
     if (!WEITER[m]) return;
     var a = document.createElement('a');
@@ -95,11 +103,35 @@
     if (gw) gw.style.display = cur.bookUrl ? '' : 'none';
     if (bk && !cur.bookUrl) bk.checked = false;
   }
+  var BUCH = T(' Dazu das gedruckte Fotobuch, Lieferung nur innerhalb Deutschlands, etwa 10 Werktage nach dem Bericht. Als Einzelanfertigung ohne Widerrufsrecht.').trim();
+  function zeile(txt, preis, kl) {
+    var r = document.createElement('div'), a = document.createElement('span'), b = document.createElement('b');
+    r.className = 'rc-r' + (kl ? ' ' + kl : ''); a.textContent = txt; b.textContent = preis; r.appendChild(a); r.appendChild(b); return r;
+  }
+  /* Schritt wechseln: 1 Ihre Angaben, 2 Prüfen und bestellen */
+  function schritt(n, fokus) {
+    stufe = n; versucht = false;
+    if (s1) s1.hidden = n !== 1; if (s2) s2.hidden = n !== 2;
+    [].forEach.call(od.querySelectorAll('.dlg-steps li'), function (li) { var an = +li.getAttribute('data-s') === n; li.classList.toggle('an', an); if (an) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current'); });
+    var ziel = (n === 1 ? s1 : s2), pb = ziel && ziel.querySelector('.dlg-pay');
+    if (hint && pb) pb.parentNode.insertBefore(hint, pb.nextSibling);
+    upd(); od.scrollTop = 0;
+    if (fokus && n === 2 && s2) { try { s2.focus({ preventScroll: true }); } catch (e) {} }
+    if (fokus && n === 1 && nm) { try { nm.focus({ preventScroll: true }); } catch (e) {} }
+  }
   function upd() {
     if (!cur) return;
-    var m = missing();
+    var m = missing(), m1 = missing1();
     var tt = q('#order-title'); if (tt) tt.textContent = T('Auftrag: ') + cur.name + (withBook() ? T(' mit Fotobuch, ') + cur.bookPrice : ', ' + cur.price);
-    setzeHinweis(m);
+    if (rec) {
+      rec.textContent = '';
+      rec.appendChild(zeile(cur.umfang, cur.price));
+      if (withBook()) rec.appendChild(zeile(BUCH, T('29 €')));
+      rec.appendChild(zeile(T('Gesamtpreis ').trim(), withBook() ? cur.bookPrice : cur.price, 'rc-sum'));
+    }
+    if (forl) forl.textContent = [sname(), val(em), T(BSPR[bericht()])].filter(Boolean).join(' · ');
+    [w, a9].forEach(function (x) { var c = x && x.checked && x.closest('.check'); if (c) c.classList.remove('miss'); });
+    setzeHinweis(stufe === 1 ? m1 : m);
     if (m) { setA(pay, false); setA(ml, false); return; }
     setA(pay, true, (withBook() ? cur.bookUrl : cur.url) + '?locale=' + SPR + '&client_reference_id=' + encodeURIComponent(ref()) + (val(em) ? '&prefilled_email=' + encodeURIComponent(val(em)) : ''));
     setA(ml, true, mailto());
@@ -109,7 +141,7 @@
   function send(weg) {
     var D = window.WW_DIENST;
     if (!D || !D.an() || !window.fetch) return Promise.resolve({ st: 0, j: null });
-    var daten = { nr: ono, paket: cur.key, name: sname(), namen: namen().length, email: val(em), tel: val(ph), wissen: val(kn), sprache: SPR, bericht: bericht(), fotobuch: withBook(), weg: weg, ref: ref(), seite: location.pathname.slice(0, 60) };
+    var daten = { einwilligung: a9 && a9.checked ? 'konfession-herkunft' : '', nr: ono, paket: cur.key, name: sname(), namen: namen().length, email: val(em), tel: val(ph), wissen: val(kn), sprache: SPR, bericht: bericht(), fotobuch: withBook(), weg: weg, ref: ref(), seite: location.pathname.slice(0, 60) };
     return D.token().then(function (ts) { daten.ts = ts; return D.ruf('/auftrag', { body: daten }); }).catch(function () { return { st: 0, j: null }; });
   }
   function remember() { try { localStorage.setItem('ww_order', JSON.stringify({ no: ono, p: cur.key, book: withBook(), t: Date.now() })); } catch (e) {} }
@@ -139,12 +171,14 @@
     if (!P[key]) return false;
     setze(key);
     ono = newNo();
-    w.checked = false; if (bk) bk.checked = !!(b && b.hasAttribute('data-book') && cur.bookUrl);
+    stufe = 1; versucht = false;
+    [w, a9].forEach(function (x) { var c = x && x.closest('.check'); if (c) c.classList.remove('miss'); });
+    w.checked = false; if (a9) a9.checked = false; if (bk) bk.checked = !!(b && b.hasAttribute('data-book') && cur.bookUrl);
     var fz = window.__fz && window.__fz.st ? window.__fz.st().name : '';
     var pre = ((b && b.getAttribute('data-name')) || fz || (document.getElementById('fz-name') || {}).value || '').replace(/\s+/g, ' ').trim();
     if (pre && pre !== lastPre) { nm.value = pre; lastPre = pre; }
     if (oform) oform.hidden = false; if (done) done.hidden = true;
-    upd(); od.showModal(); od.scrollTop = 0;
+    schritt(1); od.showModal(); od.scrollTop = 0;
     if (!sname()) setTimeout(function () { nm.focus(); }, 60);
     return true;
   }
@@ -153,7 +187,7 @@
     if (!b || od.contains(b)) return;
     if (oeffne(b.getAttribute('data-order'), b)) e.preventDefault();
   });
-  [w, bk, lg].forEach(function (x) { if (x) x.addEventListener('change', upd); });
+  [w, a9, bk, lg].forEach(function (x) { if (x) x.addEventListener('change', upd); });
   [nm, em, ph, kn].forEach(function (x) { if (x) x.addEventListener('input', upd); });
   /* Wege aus dem Hinweis: zur Familiengeschichte wechseln oder mit vielen Namen ins Anfrageformular */
   if (hint) hint.addEventListener('click', function (e) {
@@ -169,9 +203,15 @@
     od.close();
     var ziel = document.getElementById('anfrage'); if (ziel) { ziel.classList.add('an-auf'); ziel.scrollIntoView(); }
   });
+  if (next) next.addEventListener('click', function () {
+    if (missing1()) { versucht = true; upd(); return fehlt(); }
+    schritt(2, true);
+  });
+  if (back) back.addEventListener('click', function () { schritt(1, true); });
+  [nm, em].forEach(function (x) { if (x) x.addEventListener('keydown', function (e) { if (e.key === 'Enter' && next) { e.preventDefault(); next.click(); } }); });
   /* Bezahlen auf der Bezahlseite: Der Link öffnet sich, die Bestellung wird nebenher gemeldet */
   pay.addEventListener('click', function (e) {
-    if (pay.getAttribute('aria-disabled') === 'true') { e.preventDefault(); return fehlt(); }
+    if (pay.getAttribute('aria-disabled') === 'true') { e.preventDefault(); versucht = true; upd(); return fehlt(); }
     upd(); send('pay'); remember();
     var href = pay.getAttribute('href');
     setTimeout(function () { showDone('pay', href); }, 250);
@@ -181,7 +221,7 @@
   var laeuft = false;
   if (ml) ml.addEventListener('click', function (e) {
     e.preventDefault();
-    if (ml.getAttribute('aria-disabled') === 'true') return fehlt();
+    if (ml.getAttribute('aria-disabled') === 'true') { versucht = true; upd(); return fehlt(); }
     if (laeuft) return;
     upd(); laeuft = true; ml.style.opacity = '.5';
     var href = mailto();
@@ -194,9 +234,11 @@
   });
   function fehlt() {
     var m = missing();
+    if (missing1() && stufe !== 1) { schritt(1); versucht = true; upd(); }
     if (m === 'name' || m === 'mehrere' || m === 'viele') return flag(nm);
     if (m === 'email') return flag(em);
-    w.focus(); var c = w.closest('.check'); if (c) { c.classList.add('nudge'); setTimeout(function () { c.classList.remove('nudge'); }, 900); }
+    var k = m === 'art9' && a9 ? a9 : w;
+    k.focus(); var c = k.closest('.check'); if (c) { c.classList.add('nudge', 'miss'); setTimeout(function () { c.classList.remove('nudge'); }, 900); }
   }
   /* Persönlicher Bestelllink aus Einschätzung oder Angebot: ?bestellen=hb|fg|ez&b=<Schlüssel> öffnet den Auftrag mit Name, Mail und Vorgang.
      Liegt zu diesem Vorgang schon eine Bestellung derselben Leistung vor, wird das gesagt, statt eine zweite anzulegen. */
@@ -215,7 +257,7 @@
       upd();
       if (dt.stand === 'bezahlt') return showDone('bezahlt');
       if (dt.stand === 'bestellt') return showDone('schon', cur.url + '?locale=' + SPR + '&client_reference_id=' + encodeURIComponent(ref()) + (val(em) ? '&prefilled_email=' + encodeURIComponent(val(em)) : ''));
-      setTimeout(function () { w.focus(); }, 80);
+      if (!missing1()) schritt(2, true);
     };
     if (!tk || !window.fetch) { start(null); return; }
     fetch((window.WW_DIENST ? window.WW_DIENST.api : 'https://wolgawurzeln-api.edwin3222.workers.dev') + '/bestellung?b=' + encodeURIComponent(tk) + '&p=' + pk)
