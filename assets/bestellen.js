@@ -22,7 +22,7 @@
   /* Hinweis und Zustimmung: für die Berichte stehen sie im Seitentext, für die Dienstleistung kommen sie von hier */
   var NOTE0 = note ? note.textContent : '', WAIVE0 = wtxt ? wtxt.textContent : '';
   var NOTE_EZ = T('Sie bestellen eine Dienstleistung. Vor der Bestellung bestätigen Sie bitte den sofortigen Beginn der Recherche.');
-  var WAIVE_EZ = T('Ich verlange ausdrücklich, dass die Recherche schon vor Ablauf der Widerrufsfrist beginnt. Mir ist bekannt, dass mein Widerrufsrecht erlischt, sobald die Leistung vollständig erbracht ist, und dass ich bei einem Widerruf davor die bis dahin erbrachte Leistung anteilig bezahle.');
+  var WAIVE_EZ = T('Ich verlange ausdrücklich, dass die Recherche schon vor Ablauf der Widerrufsfrist beginnt. Mir ist bekannt, dass mein Widerrufsrecht erlischt, sobald die Leistung vollständig erbracht ist.');
   var val = function (x) { return x ? x.value.trim() : ''; };
   /* Einwilligung nach Art. 9 DSGVO, Text wie im Kästchen (ohne den Verweis) */
   var A9TXT = a9 ? (a9.parentNode.querySelector('.ck-txt') || a9.parentNode.querySelector('span')).firstChild.textContent.trim() : '';
