@@ -1730,7 +1730,7 @@ body.bf-fade .bf,body.bf-fade .hdr .brand{transition:opacity .4s var(--ease)}
 #auftrag .check-book:has(input:checked) .bk-ab{display:inline}
 #auftrag .bk-fine{margin:6px 0 0;font-size:12.5px;line-height:1.45;color:var(--ink-3)}
 #auftrag .bk-extra .gw{margin:10px 0 0;gap:12px}
-#auftrag .bk-extra .gw img{width:64px;box-shadow:none}
+#auftrag .bk-extra .gw img{width:44px;box-shadow:none}
 #auftrag .bk-extra .gw figcaption{font-size:12.5px}
 @media (max-width:560px){
   #auftrag .check-book{grid-template-columns:44px 1fr}
