@@ -88,7 +88,7 @@
   try { p = new URLSearchParams(location.search).get('p'); } catch (e) {}
   try { o = JSON.parse(localStorage.getItem('ww_order') || 'null'); } catch (e) {}
   if (o && (!o.t || Date.now() - o.t > 2 * 864e5 || (p && o.p !== p))) o = null;
-  var T = { hb: 'Ihr Herkunftsbericht kommt in 3 bis 5 Tagen als PDF.', fg: 'Ihre Familiengeschichte kommt in 5 bis 8 Tagen als PDF.' };
+  var T = { hb: 'Ihr Herkunftsbericht kommt in 3 bis 5 Tagen als PDF.', fg: 'Ihre Familiengeschichte kommt in 5 bis 8 Tagen als PDF.', ez: 'Ihr Recherchebericht kommt in der Regel nach 7 bis 10 Tagen als PDF.' };
   var k = p || (o && o.p);
   if (T[k]) document.getElementById('dk-time').textContent = T[k];
   if (o && o.no) { var n = document.getElementById('dk-no'); n.querySelector('b').textContent = o.no; n.hidden = false; }
