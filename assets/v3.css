@@ -2117,9 +2117,9 @@ details .xmas.an{margin:8px 0 4px}
 
 /* Bildband oben */
 .ls-hero{position:relative;isolation:isolate;overflow:hidden;background:var(--ls-deep);color:#F6F2EB;padding:calc(var(--hdr) + clamp(36px,5vw,64px)) 0 clamp(48px,6vw,80px)}
-.ls-hero-bg{position:absolute;inset:0;z-index:-1}
-.ls-hero-bg img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) sepia(.35) contrast(1.1) brightness(.75);opacity:.42}
-.ls-hero::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(8,22,49,.97) 0%,rgba(8,22,49,.88) 45%,rgba(8,22,49,.55) 100%)}
+.ls-hero-bg{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.ls-hero-bg img{position:absolute;right:0;bottom:-11%;width:max(74%,760px);height:auto;opacity:.55;-webkit-mask-image:linear-gradient(90deg,transparent 36%,#000 64%);mask-image:linear-gradient(90deg,transparent 36%,#000 64%)}
+.ls-hero::before{content:"";position:absolute;inset:0;z-index:-2;background:radial-gradient(ellipse 58% 90% at 80% 46%,#14305C 0%,rgba(20,48,92,0) 72%)}
 .ls-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:rgba(227,207,154,.35)}
 .ls-hero-in{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.9fr);gap:clamp(28px,5vw,72px);align-items:center}
 .ls-hero h1{margin:14px 0 0;font:700 clamp(38px,5vw,64px)/1.04 var(--serif);letter-spacing:-.02em;color:#fff}
@@ -2282,3 +2282,10 @@ details .xmas.an{margin:8px 0 4px}
 .ls-three a{color:var(--ls-navy)}
 @media (max-width:600px){.ls-steps li:nth-child(3){padding-left:52px}}
 .ls-fig .cr{color:#655A4C}
+/* Illustrationen von edwinkarl.de (16.11.2026) */
+.ls-hero-in{position:relative}
+.ls-hero-cr{position:absolute;right:var(--gut,24px);bottom:calc(-1 * clamp(34px,4.6vw,62px));margin:0;font-size:12px;line-height:1.3;color:#A9BCD8}
+.ls-hero-cr a{color:inherit;text-decoration:underline;text-decoration-color:rgba(227,207,154,.45)}
+.ls-fig-illu img{filter:none;border:1px solid var(--ls-rule)}
+.ls-fig-sm{max-width:320px}
+@media (max-width:980px){.ls-hero-bg img{width:150%;right:-30%;bottom:-4%;opacity:.3;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 60%);mask-image:linear-gradient(180deg,transparent 0,#000 60%)}.ls-hero-cr{position:static;grid-column:1/-1;margin-top:-8px}}
