@@ -2389,3 +2389,29 @@ details .xmas.an{margin:8px 0 4px}
 .pk-gift:has(.xmas.an) .ic-baum{display:block}
 .pk-gift:has(.xmas.an) .ic-gift{display:none}
 .pk-gift .xmas.an{display:block;margin:5px 0 0;padding:0;border:0;background:none;font-size:14px;line-height:1.4;font-weight:600;color:var(--seal-2,#7E2122)}
+
+/* Startseite: Quellenleiter (von heute zurück) */
+.portal .portal-in{grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:28px clamp(36px,5vw,76px)}
+.portal-zeichnung{display:block;width:min(100%,330px);height:auto;margin:clamp(26px,3vw,40px) 0 0}
+.leiter-box{padding:clamp(20px,2.6vw,34px) clamp(18px,2.6vw,36px);background:#FBF8F2;border:1px solid var(--line-2);border-top:3px solid var(--navy)}
+.leiter{margin:0;padding:0;list-style:none}
+.leiter li{position:relative;display:grid;grid-template-columns:132px minmax(0,1fr);gap:0 30px;padding:0 0 22px}
+.leiter li:last-child{padding-bottom:0}
+.leiter li>b{font:700 21px/1.25 var(--serif);color:var(--navy);font-variant-numeric:lining-nums;text-align:right;padding-top:1px}
+.leiter li>div{position:relative;padding:0 0 22px 28px;border-left:2px solid rgba(15,35,66,.2)}
+.leiter li:last-child>div{padding-bottom:2px}
+.leiter li>div::before{content:"";position:absolute;left:-6px;top:8px;width:10px;height:10px;background:var(--seal)}
+.leiter li{padding-bottom:0}
+.leiter h3{margin:0 0 4px;font:600 21px/1.25 var(--serif);color:var(--navy);letter-spacing:-.005em}
+.portal .leiter p{margin:0;font-size:16.5px;line-height:1.5;color:var(--ink-2)}
+.portal .leiter-note{margin:20px 0 0;padding-top:16px;border-top:1px solid var(--line-2);font-size:15.5px;line-height:1.5;color:var(--ink-2)}
+@media (max-width:880px){
+  .portal .portal-in{grid-template-columns:1fr}
+  .portal-zeichnung{display:none}
+}
+@media (max-width:560px){
+  .leiter li{grid-template-columns:1fr}
+  .leiter li>b{text-align:left;padding:0 0 4px 30px;font-size:18px;color:var(--seal-2,#7E2122);border-left:2px solid rgba(15,35,66,.2)}
+  .leiter li>div::before{top:-17px}
+}
+.portal-txt h2{margin-bottom:18px}
