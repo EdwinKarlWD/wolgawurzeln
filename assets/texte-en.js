@@ -6,7 +6,7 @@
   var X = {
     'Herkunftsbericht': 'Origin report',
     'Familiengeschichte': 'Family history',
-    '49 €': '€49', '78 €': '€78', '89 €': '€89', '118 €': '€118',
+    '29 €': '€29', '49 €': '€49', '78 €': '€78', '89 €': '€89', '118 €': '€118',
     'Lieferung als PDF in 3 bis 5 Tagen.': 'Delivered as a PDF in 3 to 5 days.',
     'Lieferung als PDF in 5 bis 8 Tagen.': 'Delivered as a PDF in 5 to 8 days.',
     'Ich verlange ausdrücklich, dass mit der Erstellung schon vor Ablauf der Widerrufsfrist begonnen wird. Mir ist bekannt, dass mein Widerrufsrecht mit Beginn der Ausführung erlischt.': 'I expressly request that work on the report begins before the withdrawal period ends. I know that my right of withdrawal expires once performance begins.',

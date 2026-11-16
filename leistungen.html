@@ -349,33 +349,36 @@
     <button class="dlg-close" type="button" aria-label="Schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <h2 id="order-title">Auftrag</h2>
     <div id="order-form">
-    <p class="dlg-sub"><span id="order-time"></span> Nach der Bestellung meldet sich Wolgawurzeln per E-Mail bei Ihnen, meist innerhalb von 24 Stunden, und geht Namen und Angaben mit Ihnen durch, bevor die Recherche beginnt.</p>
+    <ol class="dlg-steps"><li data-s="1" class="an">Ihre Angaben</li><li data-s="2">Prüfen und bestellen</li></ol>
+    <div class="dlg-step" id="order-s1">
+    <p class="dlg-sub"><span id="order-time"></span> Vor Beginn geht Wolgawurzeln Namen und Angaben per E-Mail mit Ihnen durch.</p>
     <div class="dlg-fields">
-      <label class="dlg-f" for="order-name"><span>Nachname der Familie</span><input id="order-name" type="text" autocomplete="family-name" autocapitalize="words" spellcheck="false" placeholder="zum Beispiel Schäfer oder Шефер"></label>
-      <div class="dlg-2">
-        <label class="dlg-f" for="order-email"><span>Ihre E-Mail</span><input id="order-email" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="name@beispiel.de"></label>
-        <label class="dlg-f" for="order-phone"><span>WhatsApp <small>freiwillig</small></span><input id="order-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="Nummer für Rückfragen per Nachricht"></label>
-      </div>
+      <label class="dlg-f" for="order-name"><span>Nachname der Familie</span><input id="order-name" type="text" autocomplete="family-name" autocapitalize="words" spellcheck="false" enterkeyhint="next" placeholder="zum Beispiel Schäfer oder Шефер"></label>
+      <label class="dlg-f" for="order-email"><span>Ihre E-Mail</span><input id="order-email" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" enterkeyhint="next" placeholder="name@beispiel.de"></label>
       <label class="dlg-f" for="order-lang"><span>Sprache des Berichts</span><select id="order-lang"><option value="de" selected>Deutsch</option><option value="ru">Русский</option><option value="en">English</option></select></label>
-      <label class="dlg-f" for="order-know"><span>Was Sie schon wissen, falls vorhanden</span><textarea id="order-know" rows="2" placeholder="Dorf, Region, Vornamen, Jahreszahlen"></textarea></label>
+      <details class="dlg-more"><summary><span>Weitere Angaben <small>freiwillig</small></span></summary>
+        <label class="dlg-f" for="order-know"><span>Was Sie schon wissen, falls vorhanden</span><textarea id="order-know" rows="2" placeholder="Dorf, Region, Vornamen, Jahreszahlen"></textarea></label>
+        <label class="dlg-f" for="order-phone"><span>WhatsApp <small>freiwillig</small></span><input id="order-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="Nummer für Rückfragen per Nachricht"></label>
+      </details>
     </div>
     <div class="bk-extra">
-      <p class="bk-k">Dazu bestellen</p>
-      <label class="check check-book"><input type="checkbox" id="chk-book"><img class="bk-ico" src="img/fotobuch-titel.jpg" width="44" height="62" alt="" loading="lazy" decoding="async"><span class="bk-txt"><b>Gedrucktes Fotobuch, 29&nbsp;€</b><span class="bk-sub">Ideal als Geschenk.</span><span class="de-druck">Gedruckt und geliefert in Deutschland</span><span class="xmas" data-bis="2026-11-29"><svg class="ic-xmas" viewBox="0 0 32 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M8 2.5 3.8 9H6.2L2.6 14.2H5L1.8 19.2H14.2L11 14.2H13.4L9.8 9H12.2Z" fill="currentColor" fill-opacity=".12"/><path d="M6.6 19.2V22H9.4V19.2"/><path d="M18 13.2H29V22H18Z" fill="currentColor" fill-opacity=".12"/><path d="M17 10.2H30V13.2H17Z"/><path d="M23.5 10.2V22"/><path d="M23.5 10.2C22 7.2 18.6 7 19.4 9 19.9 10.2 22 10.2 23.5 10.2ZM23.5 10.2C25 7.2 28.4 7 27.6 9 27.1 10.2 25 10.2 23.5 10.2Z"/></g></svg><span><b>Rechtzeitig zu Weihnachten.</b> Bei Bestellung bis zum 1.&nbsp;Advent (29.&nbsp;November) kommt das Fotobuch innerhalb Deutschlands vor Weihnachten an.</span></span></span><span class="bk-add" aria-hidden="true"><span class="bk-an">Hinzufügen</span><span class="bk-ab">Hinzugefügt</span></span></label>
-      <figure class="gw gw-row"><a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener"><img src="img/gewaehrleistung-de-300.jpg" width="150" height="212" alt="Hinweis zur gesetzlichen Gewährleistung, zum Vergrößern öffnen" loading="lazy" decoding="async"></a><figcaption>Gesetzliche Gewährleistung für das gedruckte Fotobuch. <a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener">Hinweis vergrößern</a></figcaption></figure>
+      <label class="check check-book"><input type="checkbox" id="chk-book"><img class="bk-ico" src="img/fotobuch-titel.jpg" width="36" height="51" alt="" loading="lazy" decoding="async"><span class="bk-txt"><b>Gedrucktes Fotobuch</b><span class="bk-sub">Ideal als Geschenk.</span></span><span class="bk-add" aria-hidden="true">29&nbsp;€</span><span class="bk-more"><span class="de-druck">Gedruckt in Deutschland</span><span class="xmas" data-bis="2026-11-29"><svg class="ic-xmas" viewBox="0 0 32 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M8 2.5 3.8 9H6.2L2.6 14.2H5L1.8 19.2H14.2L11 14.2H13.4L9.8 9H12.2Z" fill="currentColor" fill-opacity=".12"/><path d="M6.6 19.2V22H9.4V19.2"/><path d="M18 13.2H29V22H18Z" fill="currentColor" fill-opacity=".12"/><path d="M17 10.2H30V13.2H17Z"/><path d="M23.5 10.2V22"/><path d="M23.5 10.2C22 7.2 18.6 7 19.4 9 19.9 10.2 22 10.2 23.5 10.2ZM23.5 10.2C25 7.2 28.4 7 27.6 9 27.1 10.2 25 10.2 23.5 10.2Z"/></g></svg><span>Bis zum 1.&nbsp;Advent bestellen, in Deutschland vor Weihnachten&nbsp;da</span></span></span></label>
     </div>
-    <p class="dlg-note">Sie bestellen eine Dienstleistung. Vor der Bestellung bestätigen Sie bitte den sofortigen Beginn der Recherche.</p>
-    <label class="check"><input type="checkbox" id="chk-waiver"><span>Ich verlange ausdrücklich, dass die Recherche schon vor Ablauf der Widerrufsfrist beginnt. Mir ist bekannt, dass mein Widerrufsrecht erlischt, sobald die Leistung vollständig erbracht ist, und dass ich bei einem Widerruf davor die bis dahin erbrachte Leistung anteilig bezahle.</span></label>
-    <label class="check check-a9"><input type="checkbox" id="chk-a9"><span>Ich willige ausdrücklich ein, dass Angaben zu Konfession und Herkunft meiner Familie, auch zu lebenden Angehörigen, für meine Anfrage und meinen Auftrag verarbeitet werden. Ich kann das jederzeit widerrufen. <a href="datenschutz.html#recherche-konfession" target="_blank" rel="noopener">Mehr dazu</a></span></label>
-    <div class="dlg-paybar">
-      <p class="dlg-sum" id="order-sum" aria-live="polite"></p>
-      <div class="dlg-pay">
-        <a id="order-pay" class="btn btn-seal" role="button" aria-disabled="true" target="_blank" rel="noopener">Zahlungspflichtig bestellen</a>
-      </div>
-      <p class="dlg-hint" id="order-hint" aria-live="polite">Bitte oben den Nachnamen eintragen, dann wird der Bestellknopf frei.</p>
+    <div class="dlg-pay"><button type="button" id="order-next" class="btn btn-seal">Weiter</button></div>
     </div>
+    <div class="dlg-step" id="order-s2" tabindex="-1" hidden>
+    <p class="dlg-for"><span id="order-for"></span><button type="button" class="dlg-edit" id="order-back">Ändern</button></p>
+    <label class="check ck"><input type="checkbox" id="chk-waiver"><span class="ck-b"><b>Sofort beginnen</b><span class="ck-txt">Ich verlange ausdrücklich, dass die Recherche schon vor Ablauf der Widerrufsfrist beginnt. Mir ist bekannt, dass mein Widerrufsrecht erlischt, sobald die Leistung vollständig erbracht ist, und dass ich bei einem Widerruf davor die bis dahin erbrachte Leistung anteilig bezahle.</span></span></label>
+    <label class="check ck check-a9"><input type="checkbox" id="chk-a9"><span class="ck-b"><b>Konfession und Herkunft</b><span class="ck-txt">Ich willige ausdrücklich ein, dass Angaben zu Konfession und Herkunft meiner Familie, auch zu lebenden Angehörigen, für meine Anfrage und meinen Auftrag verarbeitet werden. Ich kann das jederzeit widerrufen. <a href="datenschutz.html#recherche-konfession" target="_blank" rel="noopener">Mehr dazu</a></span></span></label>
+    <div class="dlg-rec" id="order-rec" aria-live="polite"></div>
+    <figure class="gw gw-row"><a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener"><img src="img/gewaehrleistung-de-300.jpg" width="150" height="212" alt="Hinweis zur gesetzlichen Gewährleistung, zum Vergrößern öffnen" loading="lazy" decoding="async"></a><figcaption>Gesetzliche Gewährleistung für das gedruckte Fotobuch. <a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener">Hinweis vergrößern</a></figcaption></figure>
+    <div class="dlg-pay">
+      <a id="order-pay" class="btn btn-seal" role="button" aria-disabled="true" target="_blank" rel="noopener">Zahlungspflichtig bestellen</a>
+    </div>
+    <p class="dlg-hint off" id="order-hint" aria-live="polite">Bitte oben den Nachnamen eintragen, dann wird der Bestellknopf frei.</p>
     <p class="dlg-alt">Bezahlt wird auf einer gesicherten Bezahlseite, mit Karte, Klarna und weiteren Verfahren. Lieber per Überweisung oder PayPal? Dann <a id="order-mail" role="button" aria-disabled="true">ohne Karte zahlungspflichtig bestellen</a>, die Zahlungsdaten erhalten Sie per Mail.</p>
     <p class="dlg-foot">Es gelten unsere <a href="agb.html" target="_blank" rel="noopener">AGB</a>. Hinweise zum <a href="widerruf.html" target="_blank" rel="noopener">Widerrufsrecht</a> und zum <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutz</a>. An Ihre Mailadresse dürfen wir Hinweise auf eigene ähnliche Leistungen schicken. Sie können dem jederzeit widersprechen.</p>
+    </div>
     </div>
     <div id="order-done" class="dlg-done" hidden>
       <p class="dlg-done-k">Ihre Bestellnummer</p>
