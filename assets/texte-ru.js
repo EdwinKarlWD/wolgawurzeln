@@ -65,7 +65,14 @@
     'Ihre Bestellung ist eingegangen. Die Zahlungsdaten erhalten Sie per Mail.': 'Ваш заказ получен. Реквизиты для оплаты Вы получите по электронной почте.',
     'Zu diesem Angebot liegt bereits eine Bestellung vor. Falls die Zahlung noch offen ist, können Sie sie hier abschließen.': 'По этому предложению заказ уже оформлен. Если оплата ещё не прошла, её можно завершить здесь.',
     'Bezahlseite öffnen': 'Открыть платёжную страницу',
-    'Diese Bestellung ist bereits eingegangen und bezahlt. Sie müssen nichts weiter tun.': 'Этот заказ уже получен и оплачен. Больше ничего делать не нужно.'
+    'Diese Bestellung ist bereits eingegangen und bezahlt. Sie müssen nichts weiter tun.': 'Этот заказ уже получен и оплачен. Больше ничего делать не нужно.',
+    'Herkunftsbericht für einen Nachnamen, als PDF in 3 bis 5 Tagen.': 'Отчёт о происхождении для одной фамилии, в формате PDF за 3–5 дней.',
+    'Familiengeschichte für bis zu vier Nachnamen, als PDF in 5 bis 8 Tagen.': 'История семьи, до четырёх фамилий, в формате PDF за 5–8 дней.',
+    'Einzelfallrecherche, drei Stunden einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.': 'Индивидуальное исследование, три часа, включая отчёт, как правило, в течение 7–10 дней.',
+    ' Dazu das gedruckte Fotobuch, Lieferung innerhalb Deutschlands.': ' Дополнительно печатная фотокнига, доставка по Германии.',
+    'Gesamtpreis ': 'Итоговая цена ',
+    'Bitte die Einwilligung zu Konfession und Herkunft bestätigen (Kästchen oben), dann wird der Bestellknopf frei.': 'Пожалуйста, подтвердите согласие на обработку сведений о вероисповедании и происхождении (отметка выше), тогда кнопка заказа станет активной.',
+    'Bitte bestätigen Sie die Einwilligung zu Konfession und Herkunft, dann können Sie die Anfrage senden.': 'Пожалуйста, подтвердите согласие на обработку сведений о вероисповедании и происхождении, тогда Вы сможете отправить запрос.'
   };
   w.WW_TEXTE = X;
   w.WW_T = function (s) { return Object.prototype.hasOwnProperty.call(X, s) ? X[s] : s; };

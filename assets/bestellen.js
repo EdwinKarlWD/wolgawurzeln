@@ -8,20 +8,22 @@
   if (!od || !od.showModal) return;
   var T = window.WW_T || function (s) { return s; }, SPR = window.WW_SPRACHE || 'de';
   var P = {
-    hb: { key: 'hb', art: 'den', name: T('Herkunftsbericht'), price: T('49 €'), time: T('Lieferung als PDF in 3 bis 5 Tagen.'), code: 'HB49', max: 1, url: 'https://buy.stripe.com/8x214gd8G68o6MddiQ6Vq02', bookPrice: T('78 €'), bookUrl: 'https://buy.stripe.com/dRmaEQ5GebsIfiJceM6Vq04' },
-    fg: { key: 'fg', art: 'die', name: T('Familiengeschichte'), price: T('89 €'), time: T('Lieferung als PDF in 5 bis 8 Tagen.'), code: 'FG89', max: 4, url: 'https://buy.stripe.com/8x2aEQ9WueEUgmN92A6Vq03', bookPrice: T('118 €'), bookUrl: 'https://buy.stripe.com/28EeV63y668oc6x1A86Vq05' },
+    hb: { key: 'hb', art: 'den', name: T('Herkunftsbericht'), price: T('49 €'), time: T('Lieferung als PDF in 3 bis 5 Tagen.'), umfang: T('Herkunftsbericht für einen Nachnamen, als PDF in 3 bis 5 Tagen.'), code: 'HB49', max: 1, url: 'https://buy.stripe.com/8x214gd8G68o6MddiQ6Vq02', bookPrice: T('78 €'), bookUrl: 'https://buy.stripe.com/dRmaEQ5GebsIfiJceM6Vq04' },
+    fg: { key: 'fg', art: 'die', name: T('Familiengeschichte'), price: T('89 €'), time: T('Lieferung als PDF in 5 bis 8 Tagen.'), umfang: T('Familiengeschichte für bis zu vier Nachnamen, als PDF in 5 bis 8 Tagen.'), code: 'FG89', max: 4, url: 'https://buy.stripe.com/8x2aEQ9WueEUgmN92A6Vq03', bookPrice: T('118 €'), bookUrl: 'https://buy.stripe.com/28EeV63y668oc6x1A86Vq05' },
     /* Einzelfallrecherche: Dienstleistung nach Zeit, kein Fotobuch, keine Grenze bei den Namen */
-    ez: { key: 'ez', art: 'die', name: T('Einzelfallrecherche'), price: T('149 €'), time: T('Drei Stunden Recherche einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.'), code: 'EZ149', max: 0, dienst: true, url: 'https://buy.stripe.com/28EfZac4C40g5I9ceM6Vq08' }
+    ez: { key: 'ez', art: 'die', name: T('Einzelfallrecherche'), price: T('149 €'), time: T('Drei Stunden Recherche einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.'), umfang: T('Einzelfallrecherche, drei Stunden einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.'), code: 'EZ149', max: 0, dienst: true, url: 'https://buy.stripe.com/28EfZac4C40g5I9ceM6Vq08' }
   };
   var q = function (s) { return od.querySelector(s); };
-  var cur = null, ono = '', lastPre = '', w = q('#chk-waiver'), bk = q('#chk-book'), pay = q('#order-pay'), ml = q('#order-mail'), nm = q('#order-name'), em = q('#order-email'), ph = q('#order-phone'), kn = q('#order-know'), lg = q('#order-lang'), hint = q('#order-hint'), oform = q('#order-form'), done = q('#order-done');
+  var cur = null, ono = '', lastPre = '', w = q('#chk-waiver'), bk = q('#chk-book'), pay = q('#order-pay'), ml = q('#order-mail'), nm = q('#order-name'), em = q('#order-email'), ph = q('#order-phone'), kn = q('#order-know'), lg = q('#order-lang'), hint = q('#order-hint'), oform = q('#order-form'), done = q('#order-done'), a9 = q('#chk-a9'), sum = q('#order-sum');
   if (!w || !pay || !nm) return;
-  var note = q('.dlg-note'), wtxt = w.parentNode.querySelector('span'), bkbox = bk && bk.closest('.check'), gw = q('.gw-row');
+  var note = q('.dlg-note'), wtxt = w.parentNode.querySelector('span'), bkbox = bk && (bk.closest('.bk-extra') || bk.closest('.check')), gw = q('.gw-row');
   /* Hinweis und Zustimmung: für die Berichte stehen sie im Seitentext, für die Dienstleistung kommen sie von hier */
   var NOTE0 = note ? note.textContent : '', WAIVE0 = wtxt ? wtxt.textContent : '';
   var NOTE_EZ = T('Sie bestellen eine Dienstleistung. Vor der Bestellung bestätigen Sie bitte den sofortigen Beginn der Recherche.');
   var WAIVE_EZ = T('Ich verlange ausdrücklich, dass die Recherche schon vor Ablauf der Widerrufsfrist beginnt. Mir ist bekannt, dass mein Widerrufsrecht erlischt, sobald die Leistung vollständig erbracht ist, und dass ich bei einem Widerruf davor die bis dahin erbrachte Leistung anteilig bezahle.');
   var val = function (x) { return x ? x.value.trim() : ''; };
+  /* Einwilligung nach Art. 9 DSGVO, Text wie im Kästchen (ohne den Verweis) */
+  var A9TXT = a9 ? a9.parentNode.querySelector('span').firstChild.textContent.trim() : '';
   var withBook = function () { return !!(bk && bk.checked && cur && cur.bookUrl); };
   var sname = function () { return val(nm).replace(/\s+/g, ' '); };
   /* Nachnamen zählen: getrennt durch Komma, Semikolon, Schrägstrich, Plus, Und Zeichen oder das Wort und */
@@ -57,7 +59,7 @@
     if (val(ph)) L.push(T('Telefon: ') + val(ph));
     if (val(kn)) L.push(T('Das weiß ich schon: ') + val(kn));
     return T('Guten Tag, ich möchte {art} {name} ({preis}) bestellen und per Überweisung oder PayPal bezahlen.').replace('{art}', cur.art).replace('{name}', cur.name).replace('{preis}', cur.price) +
-      (withBook() ? T(' Zusätzlich hätte ich gern das gedruckte Fotobuch (29 €).') : '') + '\n\n' + L.join('\n') + '\n\n' + waive();
+      (withBook() ? T(' Zusätzlich hätte ich gern das gedruckte Fotobuch (29 €).') : '') + '\n\n' + L.join('\n') + '\n\n' + waive() + (A9TXT ? '\n\n' + A9TXT : '');
   }
   function mailto() { return 'mailto:edwin@wolgawurzeln.de?subject=' + encodeURIComponent(T('Bestellung ') + ono + ': ' + cur.name) + '&body=' + encodeURIComponent(msg()); }
   function setA(a, ok, href) { if (!a) return; a.setAttribute('aria-disabled', ok ? 'false' : 'true'); if (ok && href) a.setAttribute('href', href); else a.removeAttribute('href'); }
@@ -66,12 +68,13 @@
     var n = namen().length;
     if (cur.max && n > 4) return 'viele';
     if (cur.max === 1 && n > 1) return 'mehrere';
-    return !mailOk() ? 'email' : !w.checked ? 'waiver' : '';
+    return !mailOk() ? 'email' : !w.checked ? 'waiver' : a9 && !a9.checked ? 'art9' : '';
   }
   var HINT = {
     name: T('Bitte oben den Nachnamen der Familie eintragen, dann wird der Bestellknopf frei.'),
     email: T('Bitte Ihre E-Mail eintragen, damit wir uns bei Ihnen melden können. Dann wird der Bestellknopf frei.'),
     waiver: T('Bitte den Bearbeitungsbeginn bestätigen (Kästchen oben), dann wird der Bestellknopf frei.'),
+    art9: T('Bitte die Einwilligung zu Konfession und Herkunft bestätigen (Kästchen oben), dann wird der Bestellknopf frei.'),
     mehrere: T('Der Herkunftsbericht gilt für einen Nachnamen. Für mehrere Namen ist die Familiengeschichte gedacht, sie deckt bis zu vier Nachnamen ab und kostet 89 €.'),
     viele: T('Das sind mehr als vier Nachnamen. Die Familiengeschichte deckt bis zu vier ab. Für mehr Namen erhalten Sie ein eigenes Angebot.')
   };
@@ -99,6 +102,8 @@
     if (!cur) return;
     var m = missing();
     var tt = q('#order-title'); if (tt) tt.textContent = T('Auftrag: ') + cur.name + (withBook() ? T(' mit Fotobuch, ') + cur.bookPrice : ', ' + cur.price);
+    if (sum) { sum.textContent = cur.umfang + (withBook() ? T(' Dazu das gedruckte Fotobuch, Lieferung innerhalb Deutschlands.') : '') + ' ';
+      var gp = document.createElement('b'); gp.textContent = T('Gesamtpreis ') + (withBook() ? cur.bookPrice : cur.price) + '.'; sum.appendChild(gp); }
     setzeHinweis(m);
     if (m) { setA(pay, false); setA(ml, false); return; }
     setA(pay, true, (withBook() ? cur.bookUrl : cur.url) + '?locale=' + SPR + '&client_reference_id=' + encodeURIComponent(ref()) + (val(em) ? '&prefilled_email=' + encodeURIComponent(val(em)) : ''));
@@ -109,7 +114,7 @@
   function send(weg) {
     var D = window.WW_DIENST;
     if (!D || !D.an() || !window.fetch) return Promise.resolve({ st: 0, j: null });
-    var daten = { nr: ono, paket: cur.key, name: sname(), namen: namen().length, email: val(em), tel: val(ph), wissen: val(kn), sprache: SPR, bericht: bericht(), fotobuch: withBook(), weg: weg, ref: ref(), seite: location.pathname.slice(0, 60) };
+    var daten = { einwilligung: a9 && a9.checked ? 'konfession-herkunft' : '', nr: ono, paket: cur.key, name: sname(), namen: namen().length, email: val(em), tel: val(ph), wissen: val(kn), sprache: SPR, bericht: bericht(), fotobuch: withBook(), weg: weg, ref: ref(), seite: location.pathname.slice(0, 60) };
     return D.token().then(function (ts) { daten.ts = ts; return D.ruf('/auftrag', { body: daten }); }).catch(function () { return { st: 0, j: null }; });
   }
   function remember() { try { localStorage.setItem('ww_order', JSON.stringify({ no: ono, p: cur.key, book: withBook(), t: Date.now() })); } catch (e) {} }
@@ -139,7 +144,7 @@
     if (!P[key]) return false;
     setze(key);
     ono = newNo();
-    w.checked = false; if (bk) bk.checked = !!(b && b.hasAttribute('data-book') && cur.bookUrl);
+    w.checked = false; if (a9) a9.checked = false; if (bk) bk.checked = !!(b && b.hasAttribute('data-book') && cur.bookUrl);
     var fz = window.__fz && window.__fz.st ? window.__fz.st().name : '';
     var pre = ((b && b.getAttribute('data-name')) || fz || (document.getElementById('fz-name') || {}).value || '').replace(/\s+/g, ' ').trim();
     if (pre && pre !== lastPre) { nm.value = pre; lastPre = pre; }
@@ -153,7 +158,7 @@
     if (!b || od.contains(b)) return;
     if (oeffne(b.getAttribute('data-order'), b)) e.preventDefault();
   });
-  [w, bk, lg].forEach(function (x) { if (x) x.addEventListener('change', upd); });
+  [w, a9, bk, lg].forEach(function (x) { if (x) x.addEventListener('change', upd); });
   [nm, em, ph, kn].forEach(function (x) { if (x) x.addEventListener('input', upd); });
   /* Wege aus dem Hinweis: zur Familiengeschichte wechseln oder mit vielen Namen ins Anfrageformular */
   if (hint) hint.addEventListener('click', function (e) {
@@ -196,7 +201,8 @@
     var m = missing();
     if (m === 'name' || m === 'mehrere' || m === 'viele') return flag(nm);
     if (m === 'email') return flag(em);
-    w.focus(); var c = w.closest('.check'); if (c) { c.classList.add('nudge'); setTimeout(function () { c.classList.remove('nudge'); }, 900); }
+    var k = m === 'art9' && a9 ? a9 : w;
+    k.focus(); var c = k.closest('.check'); if (c) { c.classList.add('nudge'); setTimeout(function () { c.classList.remove('nudge'); }, 900); }
   }
   /* Persönlicher Bestelllink aus Einschätzung oder Angebot: ?bestellen=hb|fg|ez&b=<Schlüssel> öffnet den Auftrag mit Name, Mail und Vorgang.
      Liegt zu diesem Vorgang schon eine Bestellung derselben Leistung vor, wird das gesagt, statt eine zweite anzulegen. */

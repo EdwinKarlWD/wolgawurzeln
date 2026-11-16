@@ -324,18 +324,21 @@
   var PDF_FEHLER = {
     mail: 'Bitte prüfen Sie die Mailadresse.',
     limit: 'Für diese Adresse ist heute schon eine Einschätzung unterwegs. Schauen Sie bitte auch im Spamordner nach.',
+    art9: 'Bitte bestätigen Sie die Einwilligung zu Konfession und Herkunft, dann senden wir Ihnen die Einschätzung.',
     sonst: 'Das hat leider nicht geklappt. Schreiben Sie uns gern direkt an <a href="mailto:edwin@wolgawurzeln.de">edwin@wolgawurzeln.de</a>.'
   };
   function pdfSenden(f) {
     var a = analyseAll(), p = st.pdf;
-    p.mail = (f.mail.value || '').trim(); p.notiz = (f.notiz.value || '').trim(); p.err = '';
+    p.mail = (f.mail.value || '').trim(); p.notiz = (f.notiz.value || '').trim(); p.err = ''; p.errA9 = false;
+    p.a9 = !!(f.einwilligung && f.einwilligung.checked);
     if (f.wunsch) st.want = f.wunsch.value;
     if (!/^[^\s@<>()",;:]+@[^\s@]+\.[A-Za-z]{2,}$/.test(p.mail)) { p.err = PDF_FEHLER.mail; render(); return; }
+    if (f.einwilligung && !p.a9) { p.errA9 = true; render(); var cb = d.querySelector('.ez-a9 input'); if (cb) cb.focus(); return; }
     if (f.firma.value) return;
     p.busy = true; render(); npLog('pdf');
     tsToken().then(function (token) {
       return fetch(EZ_API, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({
-        namen: pdfNamen(a), region: st.reg, wunsch: st.want, email: p.mail, notiz: p.notiz, angaben: frAngaben().map(function (x) { return x[0] + ': ' + x[1]; }).join('. '), sid: SID, quelle: quelle(), page: location.pathname, ts: token
+        einwilligung: p.a9 ? 'konfession-herkunft' : '', namen: pdfNamen(a), region: st.reg, wunsch: st.want, email: p.mail, notiz: p.notiz, angaben: frAngaben().map(function (x) { return x[0] + ': ' + x[1]; }).join('. '), sid: SID, quelle: quelle(), page: location.pathname, ts: token
       }) }).then(function (r) { return r.json().catch(function () { return { ok: false }; }); });
     }).then(function (j) {
       p.busy = false;
@@ -712,9 +715,11 @@
         Object.keys(WANT).map(function (k) { return '<option value="' + k + '"' + (st.want === k ? ' selected' : '') + '>' + WANT[k].t + '</option>'; }).join('') + '</select>' +
         '<label class="ez-lab" for="fz-pn">Was wissen Sie schon über die Familie?</label><textarea id="fz-pn" name="notiz" rows="3" maxlength="600" placeholder="Zum Beispiel Geburtsjahre und Orte der Großeltern">' + esc(p.notiz || '') + '</textarea></details>' +
         '<input class="fz-hp" type="text" name="firma" tabindex="-1" autocomplete="off" aria-hidden="true"></div>' +
+        '<label class="check ez-a9"><input type="checkbox" name="einwilligung" value="ja"' + (p.a9 ? ' checked' : '') + (p.errA9 ? ' aria-invalid="true"' : '') + '><span>Ich willige ausdrücklich ein, dass Angaben zu Konfession und Herkunft meiner Familie, auch zu lebenden Angehörigen, für meine Anfrage und meinen Auftrag verarbeitet werden. Ich kann das jederzeit widerrufen. <a href="datenschutz.html#recherche-konfession" target="_blank" rel="noopener">Mehr dazu</a></span></label>' +
+        (p.errA9 ? '<p class="ez-err" role="alert">' + PDF_FEHLER.art9 + '</p>' : '') +
         '<div class="ez-bar"><button class="ez-btn" type="submit"' + (p.busy ? ' disabled' : '') + '>' + (p.busy ? 'Wird erstellt …' : 'Kostenlos zusenden') + '</button></div>' +
         '<ul class="ez-trust"><li>Kostenlos und unverbindlich</li><li>Persönliche Antwort</li><li>Keine Werbemails</li></ul>' +
-        '<p class="ez-fine">' + SCHLOSS + '<span>Ihre Angaben nutzen wir nur für diese Einschätzung. <a href="datenschutz.html#ersteinschaetzung">Datenschutz</a></span></p></form>';
+        '<p class="ez-fine">' + SCHLOSS + '<span>Ihre Angaben nutzen wir nur für diese Einschätzung und unsere persönliche Antwort. <a href="datenschutz.html#ersteinschaetzung">Datenschutz</a></span></p></form>';
     }
     return '<div class="ez">' + kopf(3) + '<div class="ez-body">' + karte + haupt + '<div class="fz-altwrap">' + altHTML(a) + '</div></div></div>';
   }
@@ -904,6 +909,7 @@
     if (e.target.id === 'fz-pm') st.pdf.mail = e.target.value;
     if (e.target.id === 'fz-pn') st.pdf.notiz = e.target.value;
   });
+  out.addEventListener('change', function (e) { if (e.target.name === 'einwilligung' && e.target.closest('.ez-a9')) { st.pdf.a9 = e.target.checked; if (e.target.checked && st.pdf.errA9) { st.pdf.errA9 = false; var er = e.target.closest('form').querySelector('.ez-a9 + .ez-err'); if (er) er.remove(); e.target.removeAttribute('aria-invalid'); } } });
   var cl = box.querySelector('.fz-close');
   if (cl) cl.addEventListener('click', schliessen);
 

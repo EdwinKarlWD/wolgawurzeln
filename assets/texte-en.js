@@ -66,7 +66,14 @@
     'Ihre Bestellung ist eingegangen. Die Zahlungsdaten erhalten Sie per Mail.': 'Your order has arrived. You receive the payment details by email.',
     'Zu diesem Angebot liegt bereits eine Bestellung vor. Falls die Zahlung noch offen ist, können Sie sie hier abschließen.': 'There is already an order for this offer. If the payment is still open, you can complete it here.',
     'Bezahlseite öffnen': 'Open payment page',
-    'Diese Bestellung ist bereits eingegangen und bezahlt. Sie müssen nichts weiter tun.': 'This order has already arrived and is paid. You do not need to do anything else.'
+    'Diese Bestellung ist bereits eingegangen und bezahlt. Sie müssen nichts weiter tun.': 'This order has already arrived and is paid. You do not need to do anything else.',
+    'Herkunftsbericht für einen Nachnamen, als PDF in 3 bis 5 Tagen.': 'Origin report for one surname, as a PDF in 3 to 5 days.',
+    'Familiengeschichte für bis zu vier Nachnamen, als PDF in 5 bis 8 Tagen.': 'Family history for up to four surnames, as a PDF in 5 to 8 days.',
+    'Einzelfallrecherche, drei Stunden einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.': 'Individual research, three hours including the report, usually within 7 to 10 days.',
+    ' Dazu das gedruckte Fotobuch, Lieferung innerhalb Deutschlands.': ' Plus the printed photo book, delivery within Germany.',
+    'Gesamtpreis ': 'Total price ',
+    'Bitte die Einwilligung zu Konfession und Herkunft bestätigen (Kästchen oben), dann wird der Bestellknopf frei.': 'Please confirm your consent to the processing of information on religion and origin (box above), then the order button becomes active.',
+    'Bitte bestätigen Sie die Einwilligung zu Konfession und Herkunft, dann können Sie die Anfrage senden.': 'Please confirm your consent to the processing of information on religion and origin, then you can send your request.'
   };
   w.WW_TEXTE = X;
   w.WW_T = function (s) { return Object.prototype.hasOwnProperty.call(X, s) ? X[s] : s; };
