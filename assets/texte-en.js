@@ -73,7 +73,16 @@
     ' Dazu das gedruckte Fotobuch, Lieferung nur innerhalb Deutschlands, etwa 10 Werktage nach dem Bericht. Als Einzelanfertigung ohne Widerrufsrecht.': ' Plus the printed photo book, delivery within Germany only, about 10 working days after the report. Made individually, no right of withdrawal.',
     'Gesamtpreis ': 'Total price ',
     'Bitte die Einwilligung zu Konfession und Herkunft bestätigen (Kästchen oben), dann wird der Bestellknopf frei.': 'Please confirm your consent to the processing of information on religion and origin (box above), then the order button becomes active.',
-    'Bitte bestätigen Sie die Einwilligung zu Konfession und Herkunft, dann können Sie die Anfrage senden.': 'Please confirm your consent to the processing of information on religion and origin, then you can send your request.'
+    'Bitte bestätigen Sie die Einwilligung zu Konfession und Herkunft, dann können Sie die Anfrage senden.': 'Please confirm your consent to the processing of information on religion and origin, then you can send your request.',
+    'Nicht genutzte Stunden werden erstattet, 50 € je volle Stunde.': 'Unused hours are refunded, €50 per full hour.',
+    'Bitte den Nachnamen der Familie eintragen.': 'Please enter the family surname.',
+    'Bitte Ihre E-Mail eintragen, damit wir uns bei Ihnen melden können.': 'Please enter your email so that Wolgawurzeln can contact you.',
+    'Bitte die Einwilligung zu Konfession und Herkunft bestätigen. Ohne sie kann die Recherche nicht beginnen.': 'Please confirm your consent to the processing of information on religion and origin. Without it, the research cannot begin.',
+    ' Dazu das gedruckte Fotobuch, Versand kostenlos und nur innerhalb Deutschlands, etwa 10 Werktage nach dem Bericht. Einzelanfertigung ohne Widerrufsrecht.': ' Plus the printed photo book, free shipping within Germany only, about 10 working days after the report. Made individually, no right of withdrawal.',
+    'Schritt 1 von 2': 'Step 1 of 2',
+    'Schritt 2 von 2': 'Step 2 of 2',
+    'Für welche Familie?': 'Which family?',
+    'Auftrag abschließen': 'Complete your order'
   };
   w.WW_TEXTE = X;
   w.WW_T = function (s) { return Object.prototype.hasOwnProperty.call(X, s) ? X[s] : s; };

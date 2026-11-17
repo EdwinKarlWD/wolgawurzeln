@@ -112,7 +112,11 @@
     if (schild) schild.textContent = cur.dienst ? SCHILD_EZ : SCHILD0;
     if (wahl) {
       wahl.hidden = !cur.bookUrl;
-      [].forEach.call(wahl.querySelectorAll('[data-p]'), function (x) { x.setAttribute('aria-checked', x.getAttribute('data-p') === key ? 'true' : 'false'); });
+      [].forEach.call(wahl.querySelectorAll('[data-p]'), function (x) {
+        var k = x.getAttribute('data-p'), pr = x.querySelector('span');
+        x.setAttribute('aria-checked', k === key ? 'true' : 'false');
+        if (pr && P[k]) pr.textContent = P[k].price;
+      });
     }
     if (bkbox) bkbox.style.display = cur.bookUrl ? '' : 'none';
     if (gw) gw.style.display = cur.bookUrl ? '' : 'none';
@@ -189,7 +193,8 @@
     stufe = 1; versucht = false;
     [w, a9].forEach(function (x) { var c = x && x.closest('.check'); if (c) c.classList.remove('miss'); });
     w.checked = false; if (a9) a9.checked = false; if (bk) bk.checked = !!(b && b.hasAttribute('data-book') && cur.bookUrl);
-    var zb = q('input[name="order-zahl"][value="bank"]'); if (zb) zb.checked = true;
+    /* Vorauswahl Überweisung (Edwin lieber, bleibt auf der Seite). Auf der englischen Seite Karte, weil Überweisungen aus den USA und Kanada teuer sind. */
+    var zb = q('input[name="order-zahl"][value="' + (SPR === 'en' ? 'karte' : 'bank') + '"]'); if (zb) zb.checked = true;
     var fz = window.__fz && window.__fz.st ? window.__fz.st().name : '';
     var pre = ((b && b.getAttribute('data-name')) || fz || (document.getElementById('fz-name') || {}).value || '').replace(/\s+/g, ' ').trim();
     if (pre && pre !== lastPre) { nm.value = pre; lastPre = pre; }

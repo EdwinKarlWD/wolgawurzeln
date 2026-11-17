@@ -383,37 +383,42 @@
 <dialog class="dlg" id="auftrag" aria-labelledby="order-title">
   <div class="dlg-box">
     <button class="dlg-close" type="button" aria-label="Закрыть"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
-    <h2 id="order-title">Заказ</h2>
     <div id="order-form">
-    <ol class="dlg-steps"><li data-s="1" class="an">Ваши данные</li><li data-s="2">Проверить и заказать</li></ol>
+    <p class="dlg-kick" id="order-kick">Шаг 1 из 2</p>
+    <h2 id="order-title">Для какой семьи?</h2>
     <div class="dlg-step" id="order-s1">
-    <p class="dlg-sub"><span id="order-time"></span> Перед началом Wolgawurzeln уточнит с Вами фамилии и данные по электронной почте.</p>
+    <p class="dlg-sub" id="order-time"></p>
     <div class="dlg-fields">
       <label class="dlg-f" for="order-name"><span>Фамилия семьи</span><input id="order-name" type="text" autocomplete="family-name" autocapitalize="words" spellcheck="false" enterkeyhint="next" placeholder="например Шефер или Schäfer"></label>
       <label class="dlg-f" for="order-email"><span>Ваша электронная почта</span><input id="order-email" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" enterkeyhint="next" placeholder="name@example.com"></label>
-      <label class="dlg-f" for="order-lang"><span>Язык отчёта</span><select id="order-lang"><option value="de">Deutsch</option><option value="ru" selected>Русский</option><option value="en">English</option></select></label>
-      <details class="dlg-more"><summary><span>Дополнительные сведения <small>по желанию</small></span></summary>
-        <label class="dlg-f" for="order-know"><span>Что Вы уже знаете, если есть</span><textarea id="order-know" rows="2" placeholder="Деревня, регион, имена, годы"></textarea></label>
-        <label class="dlg-f" for="order-phone"><span>WhatsApp <small>по желанию</small></span><input id="order-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="Номер для вопросов в сообщениях"></label>
-      </details>
+      <label class="dlg-lang" for="order-lang"><span>Язык отчёта</span><select id="order-lang"><option value="de">Deutsch</option><option value="ru" selected>Русский</option><option value="en">English</option></select></label>
+    </div>
+    <input type="hidden" id="order-know" value="">
+    <label class="check ck ck-s check-a9"><input type="checkbox" id="chk-a9"><span class="ck-txt">Я прямо даю согласие на обработку сведений о вероисповедании и происхождении моей семьи, в том числе о ныне живущих родственниках, для моего заказа. Я могу в любое время отозвать это согласие. <a href="datenschutz.html#recherche-konfession" target="_blank" rel="noopener">Подробнее (на немецком)</a></span></label>
+    <div class="dlg-pay"><button type="button" id="order-next" class="btn btn-seal">Далее</button></div>
+    </div>
+    <div class="dlg-step" id="order-s2" tabindex="-1" hidden>
+    <p class="dlg-schild"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 2.8 4.5 5.6v5.6c0 4.6 3.1 8.4 7.5 9.9 4.4-1.5 7.5-5.3 7.5-9.9V5.6Z"/><path d="m8.6 12 2.4 2.4 4.4-4.6"/></svg><span id="order-schild">Перед началом Wolgawurzeln уточнит с Вами фамилии и данные по электронной почте.</span></p>
+    <div class="dlg-wahl" role="radiogroup" aria-label="Услуга">
+      <button type="button" role="radio" aria-checked="false" data-p="hb"><b>Отчёт о происхождении</b><span>49&nbsp;€</span></button>
+      <button type="button" role="radio" aria-checked="false" data-p="fg"><b>История семьи</b><span>89&nbsp;€</span></button>
     </div>
     <div class="bk-extra">
       <label class="check check-book"><input type="checkbox" id="chk-book"><img class="bk-ico" src="img/fotobuch-titel.jpg" width="36" height="51" alt="" loading="lazy" decoding="async"><span class="bk-txt"><b>Печатная фотокнига</b><span class="bk-sub">Хороший подарок.</span></span><span class="bk-add" aria-hidden="true">29&nbsp;€</span><span class="bk-more"><span class="de-druck">Напечатано в Германии</span><span class="xmas" data-bis="2026-11-29"><svg class="ic-xmas" viewBox="0 0 32 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M8 2.5 3.8 9H6.2L2.6 14.2H5L1.8 19.2H14.2L11 14.2H13.4L9.8 9H12.2Z" fill="currentColor" fill-opacity=".12"/><path d="M6.6 19.2V22H9.4V19.2"/><path d="M18 13.2H29V22H18Z" fill="currentColor" fill-opacity=".12"/><path d="M17 10.2H30V13.2H17Z"/><path d="M23.5 10.2V22"/><path d="M23.5 10.2C22 7.2 18.6 7 19.4 9 19.9 10.2 22 10.2 23.5 10.2ZM23.5 10.2C25 7.2 28.4 7 27.6 9 27.1 10.2 25 10.2 23.5 10.2Z"/></g></svg><span>Закажите до 1-го Адвента (29&nbsp;ноября), и книга придёт в Германии до Рождества</span></span></span></label>
     </div>
-    <div class="dlg-pay"><button type="button" id="order-next" class="btn btn-seal">Далее</button></div>
-    </div>
-    <div class="dlg-step" id="order-s2" tabindex="-1" hidden>
-    <p class="dlg-for"><span id="order-for"></span><button type="button" class="dlg-edit" id="order-back">Изменить</button></p>
-    <label class="check ck"><input type="checkbox" id="chk-waiver"><span class="ck-b"><b>Начать сразу</b><span class="ck-txt">Я прямо требую, чтобы исследование началось до истечения срока на отказ от договора. Мне известно, что моё право на отказ прекращается, как только услуга оказана полностью.</span></span></label>
-    <label class="check ck check-a9"><input type="checkbox" id="chk-a9"><span class="ck-b"><b>Вероисповедание и происхождение</b><span class="ck-txt">Я прямо даю согласие на обработку сведений о вероисповедании и происхождении моей семьи, в том числе о ныне живущих родственниках, для моего запроса и моего заказа. Я могу в любое время отозвать это согласие. <a href="datenschutz.html#recherche-konfession" target="_blank" rel="noopener">Подробнее (на немецком)</a></span></span></label>
+    <fieldset class="dlg-zahl"><legend>Оплата</legend>
+      <label class="zw"><input type="radio" name="order-zahl" value="bank" checked><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true" focusable="false"><path d="M3 9.5 12 4l9 5.5Z"/><path d="M5.5 10.5v6.5M10 10.5v6.5M14 10.5v6.5M18.5 10.5v6.5M3 19.5h18"/></svg><span><b>Банковский перевод или PayPal</b><small>Реквизиты для оплаты сразу придут на электронную почту.</small></span></label>
+      <label class="zw"><input type="radio" name="order-zahl" value="karte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true" focusable="false"><path d="M2.5 5.5h19v13h-19Z"/><path d="M2.5 9.5h19M6 15h4"/></svg><span><b>Карта, Klarna и другие способы</b><small>На защищённой платёжной странице Stripe.</small></span></label>
+    </fieldset>
+    <label class="check ck ck-s"><input type="checkbox" id="chk-waiver"><span class="ck-txt"><b>Начать сразу.</b> <span class="ck-w">Я прямо требую, чтобы исследование началось до истечения срока на отказ от договора. Мне известно, что моё право на отказ прекращается, как только услуга оказана полностью.</span></span></label>
     <div class="dlg-rec" id="order-rec" aria-live="polite"></div>
-    <figure class="gw gw-row"><a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener"><img src="img/gewaehrleistung-de-300.jpg" width="150" height="212" alt="Информация о законной гарантии, открыть для увеличения" loading="lazy" decoding="async"></a><figcaption>Законная гарантия на печатную фотокнигу. <a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener">Увеличить</a></figcaption></figure>
+    <p class="dlg-for"><span id="order-for"></span><button type="button" class="dlg-edit" id="order-back">Изменить</button></p>
     <div class="dlg-pay">
-      <a id="order-pay" class="btn btn-seal" role="button" aria-disabled="true" target="_blank" rel="noopener">Заказать с обязательством оплаты</a>
+      <a id="order-pay" class="btn btn-seal" role="button" aria-disabled="true">Заказать с обязательством оплаты</a>
     </div>
-    <p class="dlg-hint off" id="order-hint" aria-live="polite">Пожалуйста, укажите фамилию выше, тогда кнопка заказа станет активной.</p>
-    <p class="dlg-alt">Оплата проходит на защищённой платёжной странице, картой, через Klarna и другими способами. Удобнее переводом или через PayPal? Тогда <a id="order-mail" role="button" aria-disabled="true">закажите без карты с обязательством оплаты</a>, и Вы получите реквизиты по электронной почте.</p>
+    <p class="dlg-hint off" id="order-hint" aria-live="polite"></p>
     <p class="dlg-foot">Действуют наши <a href="agb.html" target="_blank" rel="noopener">условия (AGB)</a>. Информация о <a href="widerruf.html" target="_blank" rel="noopener">праве на отказ</a> и о <a href="datenschutz.html" target="_blank" rel="noopener">защите данных</a>. Правовые тексты на немецком языке. На Ваш адрес электронной почты мы можем присылать информацию о наших похожих услугах. Вы можете в любое время возразить против этого.</p>
+    <figure class="gw gw-row"><a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener"><img src="img/gewaehrleistung-de-300.jpg" width="150" height="212" alt="Информация о законной гарантии, открыть для увеличения" loading="lazy" decoding="async"></a><figcaption>Законная гарантия на печатную фотокнигу. <a href="img/gewaehrleistung-de.jpg" target="_blank" rel="noopener">Увеличить</a></figcaption></figure>
     </div>
     </div>
     <div id="order-done" class="dlg-done" hidden>

@@ -72,7 +72,16 @@
     ' Dazu das gedruckte Fotobuch, Lieferung nur innerhalb Deutschlands, etwa 10 Werktage nach dem Bericht. Als Einzelanfertigung ohne Widerrufsrecht.': ' Дополнительно печатная фотокнига, доставка только по Германии, примерно через 10 рабочих дней после отчёта. Изготавливается индивидуально, права на отказ нет.',
     'Gesamtpreis ': 'Итоговая цена ',
     'Bitte die Einwilligung zu Konfession und Herkunft bestätigen (Kästchen oben), dann wird der Bestellknopf frei.': 'Пожалуйста, подтвердите согласие на обработку сведений о вероисповедании и происхождении (отметка выше), тогда кнопка заказа станет активной.',
-    'Bitte bestätigen Sie die Einwilligung zu Konfession und Herkunft, dann können Sie die Anfrage senden.': 'Пожалуйста, подтвердите согласие на обработку сведений о вероисповедании и происхождении, тогда Вы сможете отправить запрос.'
+    'Bitte bestätigen Sie die Einwilligung zu Konfession und Herkunft, dann können Sie die Anfrage senden.': 'Пожалуйста, подтвердите согласие на обработку сведений о вероисповедании и происхождении, тогда Вы сможете отправить запрос.',
+    'Nicht genutzte Stunden werden erstattet, 50 € je volle Stunde.': 'Неиспользованные часы возвращаются, 50 € за каждый полный час.',
+    'Bitte den Nachnamen der Familie eintragen.': 'Пожалуйста, укажите фамилию семьи.',
+    'Bitte Ihre E-Mail eintragen, damit wir uns bei Ihnen melden können.': 'Пожалуйста, укажите Вашу электронную почту, чтобы мы могли с Вами связаться.',
+    'Bitte die Einwilligung zu Konfession und Herkunft bestätigen. Ohne sie kann die Recherche nicht beginnen.': 'Пожалуйста, подтвердите согласие на обработку сведений о вероисповедании и происхождении. Без него исследование не может начаться.',
+    ' Dazu das gedruckte Fotobuch, Versand kostenlos und nur innerhalb Deutschlands, etwa 10 Werktage nach dem Bericht. Einzelanfertigung ohne Widerrufsrecht.': ' Дополнительно печатная фотокнига, доставка бесплатно и только по Германии, примерно через 10 рабочих дней после отчёта. Изготавливается индивидуально, права на отказ нет.',
+    'Schritt 1 von 2': 'Шаг 1 из 2',
+    'Schritt 2 von 2': 'Шаг 2 из 2',
+    'Für welche Familie?': 'Для какой семьи?',
+    'Auftrag abschließen': 'Завершить заказ'
   };
   w.WW_TEXTE = X;
   w.WW_T = function (s) { return Object.prototype.hasOwnProperty.call(X, s) ? X[s] : s; };
