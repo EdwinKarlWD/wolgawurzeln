@@ -2528,3 +2528,6 @@ details .xmas.an{margin:8px 0 4px}
 #auftrag #order-s2 .check-book{padding:10px 12px}
 #auftrag #order-s2 .check-book .bk-more{padding-top:8px}
 #auftrag #order-s2 .bk-more:has(.xmas.an) .de-druck{display:none}
+/* Wissen: dichte Tabelle für lange Listen (Namensliste, 18.11.2026) */
+.tbl.dicht td{padding:9px 14px 9px 0}
+.tbl.dicht td:last-child,.tbl.dicht th:last-child{text-align:right}
