@@ -401,7 +401,8 @@
       if (NM) { NM.k = {}; NM.known.split(' ').forEach(function (x) { NM.k[x] = 1; }); }
       if (w.WW_PL) {
         PL = {}; w.WW_PL.split(' ').forEach(function (x) { PL[x] = 1; });
-        (w.WW_PLH || '').split(' ').forEach(function (x) { var m = /^([a-z]+)(\d+)$/.exec(x); if (m && PL[m[1]]) PL[m[1]] = +m[2]; });
+        /* WW_PLZ: Zahl der Haushalte, nur bei Namen in mehr als zwei Kolonien. Alle anderen bleiben 1 und gelten als selten. */
+        (w.WW_PLZ || '').split(' ').forEach(function (x) { var m = /^([a-z]+)(\d+)$/.exec(x); if (m && PL[m[1]]) PL[m[1]] = +m[2]; });
       }
       return NM;
     });
@@ -414,7 +415,7 @@
     ortP.then(function () { var g = d.getElementById('ez-ort'); if (g && w.WW_ORTE) w.WW_ORTE.an(g); });
   }
   /* Ansiedlungslisten 1764 bis 1767 (assets/pleve.js): ob ein Name verzeichnet ist und mit wie vielen Haushalten.
-     Zahl der Kolonien, Konfessionen und Schreibweisen stehen erst im PDF, Kolonienamen nirgends.
+     Zahl der Kolonien (nur bei häufigen Namen) und Konfessionen stehen erst im PDF. Schreibweisen aus den Listen und Kolonienamen nirgends.
      Gleiche Normalisierung und gleiche Reihenfolge wie im Worker (pruefung_basis.js, pruefung.js), damit Seite und PDF dieselbe Zahl nennen. */
   var PL = null;
   function variante(x) {
@@ -518,8 +519,12 @@
     var plz = plZahl(isC ? res.forms.slice(0, 2) : [name]), pl = plz > 0;
     if (pl && res.kind === 'unklar') res.kind = 'de';
     res.pleve = pl && res.kind === 'de';
-    /* Liegt im Browser noch eine ältere pleve.js ohne Zahlen, steht dort nur „verzeichnet“ statt einer falschen 1 */
-    res.plz = res.pleve && typeof w.WW_PLH === 'string' ? plz : 0;
+    /* Zahl nur bei häufigen Namen (mehr als zwei Kolonien). Seltene Namen zeigen „selten“, ohne Zahl: die Zahl wäre sonst schon fast
+       die Antwort, und vor der Mailadresse soll nichts davon stehen (Edwin, 19.11.2026). Gleiche Grenze wie im PDF des Dienstes.
+       Liegt im Browser noch eine ältere pleve.js ohne WW_PLZ, steht nur „verzeichnet“. */
+    var neu = typeof w.WW_PLZ === 'string';
+    res.plz = res.pleve && neu && plz > 1 ? plz : 0;
+    res.selten = res.pleve && neu && plz === 1;
     res.plt = res.plz ? plTop(res.plz) : 0;
     return res;
   }
@@ -544,7 +549,7 @@
     /* Bei Herkunft von der Wolga führt die Zahl aus den Ansiedlungslisten zum Herkunftsbericht. Die Kolonie selbst steht nie hier.
        Bei anderer oder offener Region sagt die Zahl nichts über die Familie, dort bleibt der allgemeine Satz. */
     var n = st.names.length, lz = st.reg === 'wolga' && a.pleve && a.plz ? a.plz : 0;
-    if (n <= 1 && lz === 1) s.push('In den Ansiedlungslisten steht der Name genau einmal. In welcher Kolonie, zeigt ein Herkunftsbericht.');
+    if (n <= 1 && st.reg === 'wolga' && a.selten) s.push('Der Name kommt in den Ansiedlungslisten nur vereinzelt vor. Für die Zuordnung ist das ein Vorteil. In welcher Kolonie die Familie lebte, zeigt ein Herkunftsbericht.');
     else if (n <= 1 && lz > 1) s.push('In den Ansiedlungslisten stehen ' + lz + ' Haushalte mit diesem Namen. In welchen Kolonien, zeigt ein Herkunftsbericht.');
     else if (n <= 1) s.push('Woher die Familie kam, ist die Frage, der ein Herkunftsbericht nachgeht.');
     else if (n <= 4) s.push('Woher die einzelnen Linien kamen, ist die Frage, der eine Familiengeschichte nachgeht.');
@@ -583,6 +588,7 @@
   };
   var REG_T = { wolga: 'Bei Saratow und Samara', meer: 'Odessa, Bessarabien, Krim, Dnjepr', wolhynien: 'Nordwesten der heutigen Ukraine', kaukasus: 'Tiflis, Aserbaidschan, Nordkaukasus', unklar: 'Wir grenzen die Region mit Ihnen ein' };
   var IN_LISTEN = '<span class="ez-ja">verzeichnet</span>';
+  var SELTEN = '<span class="ez-ja">verzeichnet</span> <span class="ez-zus">seltener Name</span>';
   /* Zahl der Haushalte mit dem Namen in den Listen. Sagt nichts über die Kolonie und nichts über die eigene Familie. */
   function haushalte(n) { return '<span class="ez-ja">' + (n === 1 ? '1 Haushalt' : n + ' Haushalte') + '</span>'; }
   /* Zeilen der Ergebniskarte: Bezeichnung und kurzer Wert. Zahlen stehen erst im PDF. */
@@ -592,7 +598,7 @@
       a.all.forEach(function (x) {
         var v = x.kind === 'bad' ? 'bitte Schreibweise prüfen' : (x.russian || x.kind === 'ru') ? 'russische oder ukrainische Namensform' : x.kind === 'unklar' ? 'keine typisch deutsche Namensform' :
           x.cyr ? 'wahrscheinlich ' + x.forms.map(esc).join(', ') : '<span lang="ru">' + x.forms.map(esc).join(', ') + '</span>';
-        z.push([esc(x.name), v + (x.pleve ? '<br>' + (x.plz ? haushalte(x.plz) : IN_LISTEN) + ' in den Ansiedlungslisten' : '')]);
+        z.push([esc(x.name), v + (x.pleve ? '<br>' + (x.plz ? haushalte(x.plz) : IN_LISTEN) + ' in den Ansiedlungslisten' + (x.selten ? ', selten' : '') : '')]);
       });
       if (a.all.length > 4) z.push(['Hinweis', 'Die Ersteinschätzung umfasst die ersten vier Namen. Für mehr stellen wir eine individuelle Recherche zusammen.']);
       return z;
@@ -600,7 +606,7 @@
     if (a.russian || (a.kind === 'unklar' && !a.cyr)) { /* keine Umschrift anzeigen */ }
     else if (a.cyr) z.push(['Deutsche Schreibweise', 'wahrscheinlich ' + a.forms.map(esc).join(', ')]);
     else z.push(['In russischen Akten', '<span lang="ru">' + a.forms.map(esc).join(', ') + '</span>']);
-    if (a.pleve) z.push(['Ansiedlungslisten 1764 bis 1767', a.plz ? haushalte(a.plz) + ' <span class="ez-zus">' + (a.plt === 10 ? 'einer der zehn häufigsten' : a.plt === 50 ? 'einer der 50 häufigsten' : 'mit diesem Namen') + '</span>' : IN_LISTEN]);
+    if (a.pleve) z.push(['Ansiedlungslisten 1764 bis 1767', a.plz ? haushalte(a.plz) + ' <span class="ez-zus">' + (a.plt === 10 ? 'einer der zehn häufigsten' : a.plt === 50 ? 'einer der 50 häufigsten' : 'mit diesem Namen') + '</span>' : a.selten ? SELTEN : IN_LISTEN]);
     if (a.menno) z.push(['Hinweis', 'unter Russlandmennoniten verbreitet']);
     if (!a.pleve) a.colonies.slice(0, 1).forEach(function (c) { z.push(['Gut zu wissen', 'Es gab eine Wolgakolonie dieses Namens: <a href="wissen/' + c[2] + '.html">' + esc(c[0]) + '</a>, gegründet ' + esc(c[4]) + '. Ob Ihre Familie von dort stammt, sagt der Name allein noch nicht.']); });
     if (a.kind === 'unklar') z.push(['Namensform', 'Keine typisch deutsche Form. Häufig liegt die deutsche Linie bei Mutter oder Großmutter.']);
@@ -644,7 +650,7 @@
     var treffer = (a.all || [a]).some(function (x) { return x.pleve; }), z = zeilen(a);
     return '<section class="ez-card" aria-label="Erster Befund"><div class="ez-rh">' + (a.kind === 'de' ? HAKEN : '') + '<h2 class="ez-name' + (st.name.length > 16 ? ' lang' : '') + '" tabindex="-1">' + esc(st.name) + '</h2>' +
       '<button type="button" class="ez-link fz-again">Ändern</button></div>' + kvHTML(z) +
-      (treffer ? '<p class="ez-hint">Die Zahl der Kolonien, die Konfession und die Schreibweisen stehen in Ihrer Ersteinschätzung.</p>' : '') + mehrHTML(a) + '</section>';
+      (treffer ? '<p class="ez-hint">Was das für Ihre Familie bedeutet, mit Konfession und fachlicher Einordnung, steht in Ihrer Ersteinschätzung.</p>' : '') + mehrHTML(a) + '</section>';
   }
   /* Die Seite spricht nach der Namensprüfung von der Familie: Überschriften mit data-fam bekommen den Namen (nur ein deutscher Name).
      Bleibt für den Besuch erhalten, bis ein anderer Name geprüft wird. */
