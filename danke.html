@@ -71,7 +71,7 @@
 <h2>Wie es weitergeht</h2>
 <ol class="dk-steps">
 <li><strong>Rückmeldung meist innerhalb von 24 Stunden.</strong> Wolgawurzeln meldet sich per E-Mail bei Ihnen, oder per WhatsApp, wenn Sie eine Nummer angegeben haben, und geht Namen und Angaben mit Ihnen durch.</li>
-<li><strong>Recherche.</strong> Danach beginnt die Arbeit an Ihrem Bericht. <span id="dk-time">Der Herkunftsbericht kommt in 3 bis 5 Tagen, die Familiengeschichte in 5 bis 8 Tagen als PDF.</span></li>
+<li><strong>Recherche.</strong> Danach beginnt die Arbeit an Ihrem Bericht. <span id="dk-time">Der Herkunftsbericht kommt in 3 bis 5 Tagen, die Familiengeschichte in 5 bis 7 Tagen als PDF.</span></li>
 <li><strong>Lieferung mit Rechnung.</strong> Sie erhalten den Bericht als PDF per E-Mail, die Rechnung kommt zusammen mit der Lieferung.</li>
 </ol>
 <p id="dk-book" hidden>Ihr gedrucktes Fotobuch ist mitbezahlt. Es wird gedruckt, sobald Ihr Bericht fertig ist, und an die angegebene Adresse geschickt.</p>
@@ -88,7 +88,7 @@
   try { p = new URLSearchParams(location.search).get('p'); } catch (e) {}
   try { o = JSON.parse(localStorage.getItem('ww_order') || 'null'); } catch (e) {}
   if (o && (!o.t || Date.now() - o.t > 2 * 864e5 || (p && o.p !== p))) o = null;
-  var T = { hb: 'Ihr Herkunftsbericht kommt in 3 bis 5 Tagen als PDF.', fg: 'Ihre Familiengeschichte kommt in 5 bis 8 Tagen als PDF.', ez: 'Ihr Recherchebericht kommt in der Regel nach 7 bis 10 Tagen als PDF.' };
+  var T = { hb: 'Ihr Herkunftsbericht kommt in 3 bis 5 Tagen als PDF.', fg: 'Ihre Familiengeschichte kommt in 5 bis 7 Tagen als PDF.', ez: 'Ihr Recherchebericht kommt in der Regel nach 5 bis 7 Tagen als PDF.' };
   var k = p || (o && o.p);
   if (T[k]) document.getElementById('dk-time').textContent = T[k];
   if (o && o.no) { var n = document.getElementById('dk-no'); n.querySelector('b').textContent = o.no; n.hidden = false; }
