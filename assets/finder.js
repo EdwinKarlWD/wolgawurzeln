@@ -606,6 +606,9 @@
   function zeilen(a) {
     var z = [];
     if (a.all && a.all.length > 1) {
+      /* Eine echte Zahl, die nichts verrät: wie viele der Namen in den Listen stehen. Gleiche Aussage wie die erste Kachel im PDF (Edwin, 20.11.2026). */
+      var vier = a.all.slice(0, 4), tr = vier.filter(function (x) { return x.pleve; }).length;
+      if (tr) z.push(['In den Ansiedlungslisten', '<span class="ez-ja">' + tr + ' von ' + vier.length + ' Namen</span>']);
       a.all.forEach(function (x) {
         var v = x.kind === 'bad' ? 'bitte Schreibweise prüfen' : (x.russian || x.kind === 'ru') ? 'russische oder ukrainische Namensform' : x.kind === 'unklar' ? 'keine typisch deutsche Namensform' :
           x.cyr ? 'wahrscheinlich ' + x.forms.map(esc).join(', ') : '<span lang="ru">' + x.forms.map(esc).join(', ') + '</span>';
