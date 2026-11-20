@@ -273,8 +273,10 @@
     parts = parts.filter(function (p) { return !/(ович|евич|овна|евна|ична|owitsch|ewitsch|owna|ewna)$/i.test(p) || parts.length === 1; });
     var fam = parts.filter(function (p) { return !FIRST[p.toLowerCase().replace(/ё/g, 'е')]; });
     if (!fam.length) fam = parts.slice(-1);
-    return fam.length ? uniq(fam) : [v];
+    return fam.length ? uniq(fam.map(gross)) : [gross(v)];
   }
+  /* Erster Buchstabe groß, auch nach Bindestrich: „karl“ wird „Karl“, „müller-schmidt“ wird „Müller-Schmidt“ (Edwin, 20.11.2026) */
+  function gross(p) { return String(p).replace(/(^|-)(\S)/g, function (m, a, b) { return a + b.toUpperCase(); }); }
   /* Anonyme Statistik der Namensprüfung: nur die Eingaben, keine IP, keine Cookies */
   var NP_API = 'https://wolgawurzeln-api.edwin3222.workers.dev/np', SID = Math.random().toString(36).slice(2, 10);
   function npLog(art) {
@@ -403,6 +405,8 @@
         PL = {}; w.WW_PL.split(' ').forEach(function (x) { PL[x] = 1; });
         /* WW_PLZ: Zahl der Haushalte, nur bei Namen in mehr als zwei Kolonien. Alle anderen bleiben 1 und gelten als selten. */
         (w.WW_PLZ || '').split(' ').forEach(function (x) { var m = /^([a-z]+)(\d+)$/.exec(x); if (m && PL[m[1]]) PL[m[1]] = +m[2]; });
+        /* WW_PLW: Wortskala wie im PDF (sehr häufig, häufig), für die Anzeige mehrerer Namen ohne Zahlen */
+        if (w.WW_PLW) { PLW = {}; (w.WW_PLW.s || '').split(' ').forEach(function (x) { if (x) PLW[x] = 'sehr häufig'; }); (w.WW_PLW.h || '').split(' ').forEach(function (x) { if (x) PLW[x] = 'häufig'; }); }
       }
       return NM;
     });
@@ -417,7 +421,7 @@
   /* Ansiedlungslisten 1764 bis 1767 (assets/pleve.js): ob ein Name verzeichnet ist und mit wie vielen Haushalten.
      Zahl der Kolonien (nur bei häufigen Namen) und Konfessionen stehen erst im PDF. Schreibweisen aus den Listen und Kolonienamen nirgends.
      Gleiche Normalisierung und gleiche Reihenfolge wie im Worker (pruefung_basis.js, pruefung.js), damit Seite und PDF dieselbe Zahl nennen. */
-  var PL = null;
+  var PL = null, PLW = null;
   function variante(x) {
     var v = String(x || '').toLowerCase().replace(/ß/g, 'ss').replace(/ae|ä/g, 'e').replace(/oe|ö/g, 'e').replace(/ue|ü/g, 'i').replace(/[^a-z]/g, '');
     v = v.replace(/^ph/, 'f').replace(/ph/g, 'f').replace(/th/g, 't').replace(/dt/g, 't').replace(/tz/g, 'z').replace(/ck/g, 'k').replace(/ai|ay|ey/g, 'ei').replace(/ie/g, 'i').replace(/y/g, 'i')
@@ -430,6 +434,12 @@
     return 0;
   }
   function inPleve(forms) { return plZahl(forms) > 0; }
+  /* Wort aus derselben Skala wie im PDF: selten, mehrfach belegt, häufig, sehr häufig. Leer, solange die Wortskala nicht geladen ist. */
+  function plWort(forms) {
+    if (!PL || !PLW) return '';
+    for (var i = 0; i < forms.length; i++) { var k = variante(forms[i]); if (k.length > 1 && PL[k] > 0) return PL[k] === 1 ? 'selten' : PLW[k] || 'mehrfach belegt'; }
+    return '';
+  }
   /* Häufige Namen: 10, wenn höchstens zehn Namen so viele Haushalte haben, 50 entsprechend, sonst 0. Gleichstände zählen mit, damit die Aussage stimmt. */
   var PLS = null;
   function plTop(n) {
@@ -525,6 +535,7 @@
     var neu = typeof w.WW_PLZ === 'string';
     res.plz = res.pleve && neu && plz > 1 ? plz : 0;
     res.selten = res.pleve && neu && plz === 1;
+    res.wort = res.pleve && neu ? plWort(isC ? res.forms.slice(0, 2) : [name]) : '';
     res.plt = res.plz ? plTop(res.plz) : 0;
     return res;
   }
@@ -598,7 +609,7 @@
       a.all.forEach(function (x) {
         var v = x.kind === 'bad' ? 'bitte Schreibweise prüfen' : (x.russian || x.kind === 'ru') ? 'russische oder ukrainische Namensform' : x.kind === 'unklar' ? 'keine typisch deutsche Namensform' :
           x.cyr ? 'wahrscheinlich ' + x.forms.map(esc).join(', ') : '<span lang="ru">' + x.forms.map(esc).join(', ') + '</span>';
-        z.push([esc(x.name), v + (x.pleve ? '<br>' + (x.plz ? haushalte(x.plz) : IN_LISTEN) + ' in den Ansiedlungslisten' + (x.selten ? ', selten' : '') : '')]);
+        z.push([esc(x.name), v + (x.pleve ? '<br>' + IN_LISTEN + ' in den Ansiedlungslisten' + (x.wort ? ', ' + x.wort : x.selten ? ', selten' : '') : '')]);
       });
       if (a.all.length > 4) z.push(['Hinweis', 'Die Ersteinschätzung umfasst die ersten vier Namen. Für mehr stellen wir eine individuelle Recherche zusammen.']);
       return z;
