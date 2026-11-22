@@ -6,7 +6,9 @@
    Stand 17.11.2026, kurze Fassung: je Bildschirm eine Entscheidung und ein Häkchen.
    Schritt 1 „Für welche Familie?“: Nachname, Mail, Berichtssprache, Einwilligung zu Konfession und Herkunft (dort, wo die Angaben eingegeben werden).
    Schritt 2 „Auftrag abschließen“: Leistung umschalten, Fotobuch, Zahlungsart, sofortiger Beginn, Übersicht direkt über dem Bestellknopf.
-   Überweisung bleibt ganz auf der Seite (Dienst schickt die Zahlungsdaten), Karte und Klarna öffnen die Bezahlseite von Stripe. */
+   Überweisung bleibt ganz auf der Seite (Dienst schickt die Zahlungsdaten), Karte und Klarna öffnen die Bezahlseite von Stripe.
+   Stand 22.11.2026: Der persönliche Bestelllink führt ohne zweites Häkchen direkt zu Schritt 2, denn die Einwilligung liegt seit der Ersteinschätzung vor
+   (Edwin: einmal reicht). Die Schritte im Dialog gehen ohne Eingaben an die eigene Besuchszählung (assets/zaehler.js), damit sichtbar wird, wo Leute aussteigen. */
 (function () {
   'use strict';
   var od = document.getElementById('auftrag');
@@ -20,8 +22,11 @@
   };
   var q = function (s) { return od.querySelector(s); };
   var cur = null, ono = '', lastPre = '', w = q('#chk-waiver'), bk = q('#chk-book'), pay = q('#order-pay'), nm = q('#order-name'), em = q('#order-email'), kn = q('#order-know'), kick = q('#order-kick'), schild = q('#order-schild'), wahl = q('.dlg-wahl'), lg = q('#order-lang'), hint = q('#order-hint'), oform = q('#order-form'), done = q('#order-done'), a9 = q('#chk-a9'), rec = q('#order-rec'), forl = q('#order-for'), s1 = q('#order-s1'), s2 = q('#order-s2'), next = q('#order-next'), back = q('#order-back');
-  var stufe = 1, versucht = false;
+  var stufe = 1, versucht = false, perLink = false, bestellt = false;
   if (!w || !pay || !nm) return;
+  /* Schritte im Dialog für die eigene Besuchszählung: nur feste Kennwörter, keine Eingaben. Lädt der Zähler später, holt er die Liste nach. */
+  function zm(s) { try { var z = window.WW_ZQ = window.WW_ZQ || []; if (!z.length || z.length < 40) z.push(s); } catch (e) {} }
+  var a9box = a9 && a9.closest('.check'), KICK2 = '';
   var note = q('.dlg-note'), wtxt = w.parentNode.querySelector('.ck-w') || w.parentNode.querySelector('.ck-txt'), bkbox = bk && (bk.closest('.bk-extra') || bk.closest('.check')), gw = q('.gw-row');
   /* Hinweis und Zustimmung: für die Berichte stehen sie im Seitentext, für die Dienstleistung kommen sie von hier */
   var NOTE0 = note ? note.textContent : '', WAIVE0 = wtxt ? wtxt.textContent : '', SCHILD0 = schild ? schild.textContent : '';
@@ -78,7 +83,8 @@
     if (cur.max && n > 4) return 'viele';
     if (cur.max === 1 && n > 1) return 'mehrere';
     if (!mailOk()) return 'email';
-    return a9 && !a9.checked ? 'art9' : '';
+    /* Persönlicher Bestelllink: Die Einwilligung wurde mit der Ersteinschätzung erteilt, das Häkchen entfällt. */
+    return a9 && !perLink && !a9.checked ? 'art9' : '';
   }
   /* alles zusammen: Schritt 1 und der sofortige Beginn */
   function missing() { return missing1() || (!w.checked ? 'waiver' : ''); }
@@ -131,7 +137,8 @@
   function schritt(n, fokus) {
     stufe = n; versucht = false;
     if (s1) s1.hidden = n !== 1; if (s2) s2.hidden = n !== 2;
-    if (kick) kick.textContent = n === 1 ? T('Schritt 1 von 2') : T('Schritt 2 von 2');
+    if (kick) kick.textContent = n === 1 ? T('Schritt 1 von 2') : (KICK2 || T('Schritt 2 von 2'));
+    if (n === 2) zm('dialog schritt 2 ' + cur.key);
     var tt = q('#order-title'); if (tt) tt.textContent = n === 1 ? T('Für welche Familie?') : T('Auftrag abschließen');
     upd(); od.scrollTop = 0;
     if (fokus && n === 2 && s2) { try { s2.focus({ preventScroll: true }); } catch (e) {} }
@@ -160,7 +167,7 @@
   function send(weg) {
     var D = window.WW_DIENST;
     if (!D || !D.an() || !window.fetch) return Promise.resolve({ st: 0, j: null });
-    var daten = { einwilligung: a9 && a9.checked ? 'konfession-herkunft' : '', nr: ono, paket: cur.key, name: sname(), namen: namen().length, email: val(em), wissen: val(kn), sprache: SPR, bericht: bericht(), fotobuch: withBook(), weg: weg, ref: ref(), seite: location.pathname.slice(0, 60) };
+    var daten = { einwilligung: perLink ? 'ersteinschaetzung' : (a9 && a9.checked ? 'konfession-herkunft' : ''), nr: ono, paket: cur.key, name: sname(), namen: namen().length, email: val(em), wissen: val(kn), sprache: SPR, bericht: bericht(), fotobuch: withBook(), weg: weg, ref: ref(), seite: location.pathname.slice(0, 60) };
     return D.token().then(function (ts) { daten.ts = ts; return D.ruf('/auftrag', { body: daten }); }).catch(function () { return { st: 0, j: null }; });
   }
   function remember() { try { localStorage.setItem('ww_order', JSON.stringify({ no: ono, p: cur.key, book: withBook(), t: Date.now() })); } catch (e) {} }
@@ -190,7 +197,8 @@
     if (!P[key]) return false;
     setze(key);
     ono = newNo();
-    stufe = 1; versucht = false;
+    stufe = 1; versucht = false; perLink = false; bestellt = false; KICK2 = '';
+    if (a9box) a9box.style.display = '';
     [w, a9].forEach(function (x) { var c = x && x.closest('.check'); if (c) c.classList.remove('miss'); });
     w.checked = false; if (a9) a9.checked = false; if (bk) bk.checked = !!(b && b.hasAttribute('data-book') && cur.bookUrl);
     /* Vorauswahl Überweisung (Edwin lieber, bleibt auf der Seite). Auf der englischen Seite Karte, weil Überweisungen aus den USA und Kanada teuer sind. */
@@ -209,7 +217,11 @@
     if (oeffne(b.getAttribute('data-order'), b)) e.preventDefault();
   });
   [w, a9, bk, lg].forEach(function (x) { if (x) x.addEventListener('change', upd); });
-  [].forEach.call(od.querySelectorAll('input[name="order-zahl"]'), function (x) { x.addEventListener('change', upd); });
+  [].forEach.call(od.querySelectorAll('input[name="order-zahl"]'), function (x) { x.addEventListener('change', function () { upd(); zm('dialog zahl ' + zahl()); }); });
+  w.addEventListener('change', function () { zm('dialog sofort ' + (w.checked ? 'an' : 'aus')); });
+  if (bk) bk.addEventListener('change', function () { zm('dialog fotobuch ' + (bk.checked ? 'an' : 'aus')); });
+  /* Dialog geschlossen, ohne zu bestellen: der Schritt, an dem jemand aussteigt */
+  od.addEventListener('close', function () { if (cur && !bestellt && oform && !oform.hidden) zm('dialog zu schritt ' + stufe + ' ' + cur.key); });
   [nm, em].forEach(function (x) { if (x) x.addEventListener('input', upd); });
   /* Leistung umschalten wie eine Anzahl: Herkunftsbericht oder Familiengeschichte */
   if (wahl) wahl.addEventListener('click', function (e) {
@@ -236,16 +248,16 @@
     var ziel = document.getElementById('anfrage'); if (ziel) { ziel.classList.add('an-auf'); ziel.scrollIntoView(); }
   });
   if (next) next.addEventListener('click', function () {
-    if (missing1()) { versucht = true; upd(); return fehlt(); }
+    if (missing1()) { zm('dialog fehlt ' + missing1()); versucht = true; upd(); return fehlt(); }
     schritt(2, true);
   });
   if (back) back.addEventListener('click', function () { schritt(1, true); });
   [nm, em].forEach(function (x) { if (x) x.addEventListener('keydown', function (e) { if (e.key === 'Enter' && next) { e.preventDefault(); next.click(); } }); });
   /* Bezahlen auf der Bezahlseite: Der Link öffnet sich, die Bestellung wird nebenher gemeldet */
   pay.addEventListener('click', function (e) {
-    if (pay.getAttribute('aria-disabled') === 'true') { e.preventDefault(); versucht = true; upd(); return fehlt(); }
+    if (pay.getAttribute('aria-disabled') === 'true') { e.preventDefault(); zm('dialog fehlt ' + missing()); versucht = true; upd(); return fehlt(); }
     if (zahl() !== 'karte') { e.preventDefault(); return ueberweisung(); }
-    upd(); send('pay'); remember();
+    upd(); send('pay'); remember(); bestellt = true; zm('dialog bestellt karte ' + cur.key);
     var href = pay.getAttribute('href');
     setTimeout(function () { showDone('pay', href); }, 250);
   });
@@ -258,8 +270,9 @@
     var href = mailto();
     send('bank').then(function (r) {
       laeuft = false; pay.style.opacity = '';
-      remember();
-      if (r && r.j && r.j.ok) { showDone(r.j.zahldaten ? 'bank' : 'bank2'); return; }
+      remember(); bestellt = true;
+      if (r && r.j && r.j.ok) { zm('dialog bestellt bank ' + cur.key); showDone(r.j.zahldaten ? 'bank' : 'bank2'); return; }
+      zm('dialog bestellt mailprogramm ' + cur.key);
       location.href = href; showDone('mail', href);
     });
   }
@@ -283,11 +296,15 @@
     try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {}
     var start = function (dt) {
       if (!oeffne(pk)) return;
-      if (!dt || !dt.np) return;
+      if (!dt || !dt.np) { zm('dialog link ' + pk + ' ohne vorgang'); return; }
       if (dt.name) { nm.value = dt.name; lastPre = dt.name; }
       if (em && dt.email) em.value = dt.email;
       if (kn) kn.value = ['Vorgang ' + dt.np, dt.notiz].filter(Boolean).join('. ');
       ono = dt.np.replace(/\s+/g, '');
+      /* Die Einwilligung zu Konfession und Herkunft liegt seit der Ersteinschätzung vor: kein zweites Häkchen, der Vorgang steht in der Kopfzeile. */
+      perLink = true; KICK2 = T('Ihr Vorgang: ') + dt.np;
+      if (a9box) a9box.style.display = 'none';
+      zm('dialog link ' + pk + (dt.stand ? ' ' + dt.stand : ''));
       upd();
       if (dt.stand === 'bezahlt') return showDone('bezahlt');
       if (dt.stand === 'bestellt') return showDone('schon', cur.url + '?locale=' + SPR + '&client_reference_id=' + encodeURIComponent(ref()) + (val(em) ? '&prefilled_email=' + encodeURIComponent(val(em)) : ''));

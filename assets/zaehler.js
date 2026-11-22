@@ -3,7 +3,9 @@
    vorherige Seite auf wolgawurzeln.de, sichtbare Verweildauer, wie weit gescrollt wurde und welche Knöpfe und Links
    angetippt wurden. Keine Cookies, im Browser wird nichts gespeichert, keine Eingaben aus Formularen.
    Geladen von site.js und v3.js. Die Kennung des Seitenaufrufs ist dieselbe wie in der Ersteinschätzung (WW_SID),
-   so lassen sich Ersteinschätzung und Besuch zusammen auswerten. */
+   so lassen sich Ersteinschätzung und Besuch zusammen auswerten.
+   Seit 22.11.2026 kommen die Schritte des Bestelldialogs dazu (assets/bestellen.js legt feste Kennwörter in WW_ZQ ab,
+   zum Beispiel „dialog schritt 2 fg“ oder „dialog zu schritt 1 hb“). Auch dabei keine Eingaben. */
 (function (w, d) {
   'use strict';
   if (w.WW_Z) return;
@@ -17,7 +19,7 @@
   if (pid.length < 6) pid = (pid + Math.random().toString(36).slice(2)).slice(0, 8);
   w.WW_SID = pid;
 
-  var sichtbarSeit = d.visibilityState === 'hidden' ? 0 : Date.now(), zeit = 0, tief = 0, klicks = [], zuletzt = '';
+  var sichtbarSeit = d.visibilityState === 'hidden' ? 0 : Date.now(), zeit = 0, tief = 0, klicks = [], marken = [], zuletzt = '';
 
   function senden(o) {
     try {
@@ -46,7 +48,8 @@
   function ende() {
     if (sichtbarSeit) { zeit += Date.now() - sichtbarSeit; sichtbarSeit = 0; }
     messen();
-    var o = { a: 'e', pid: pid, d: sek(), s: tief, k: klicks };
+    /* Die Kennwörter aus dem Bestelldialog stehen vorn, damit sie bei vielen Klicks nicht verloren gehen (der Dienst nimmt 25 Einträge). */
+    var o = { a: 'e', pid: pid, d: sek(), s: tief, k: marken.concat(klicks).slice(0, 25) };
     var s = JSON.stringify(o);
     if (s === zuletzt) return;
     zuletzt = s;
@@ -82,6 +85,9 @@
     return vor + (txt || cls || t.tagName.toLowerCase());
   }
   function merken(l) { if (l && klicks.length < 25) klicks.push(String(l).slice(0, 60) + ' @' + sek() + 's'); }
+  function marke(l) { if (l && marken.length < 14) marken.push(String(l).slice(0, 40) + ' @' + sek() + 's'); }
+  /* Was der Bestelldialog schon abgelegt hat, übernehmen. Danach landet jedes weitere Kennwort direkt hier. */
+  try { var zq = w.WW_ZQ; w.WW_ZQ = { push: marke }; if (zq && zq.length) for (var qi = 0; qi < zq.length; qi++) marke(zq[qi]); } catch (e) {}
 
   d.addEventListener('click', function (e) { try { merken(etikett(e.target)); } catch (x) {} }, true);
   d.addEventListener('submit', function (e) {
