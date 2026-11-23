@@ -2612,3 +2612,16 @@ details .xmas.an{margin:8px 0 4px}
 .ez-a9.check{margin:16px 2px 0;padding:0;border:0;background:none;color:var(--i2)}
 .ez-an b{white-space:nowrap}
 .ez-foot-k{margin-top:26px;padding-top:10px;border-top:1px solid var(--ln)}
+/* Bestelldialog, Zahlungsart und Fotobuch noch ruhiger (Edwin 23.11.2026: „das mit den Zahloptionen ist überladen“):
+   Zahlungsarten als zwei schlichte Zeilen ohne Symbol, der Erklärsatz steht nur unter der gewählten.
+   Fotobuch ohne Rahmen um den Preis, solange es nicht gewählt ist; „Gedruckt in Deutschland“ weicht dem Weihnachtshinweis. */
+#auftrag .zw{grid-template-columns:22px 1fr;padding:8px 0}
+#auftrag .zw svg{display:none}
+#auftrag .zw small{display:none}
+#auftrag .zw:has(input:checked) small{display:block}
+#auftrag .dlg-zahl legend{margin-bottom:2px}
+#auftrag .bk-add{min-width:0;min-height:40px;padding:0 6px;border:0;background:none}
+#auftrag .check-book:has(input:checked) .bk-add{padding:0 10px;background:var(--navy);color:#fff}
+#auftrag .check-book .bk-more:has(.xmas.an) .de-druck{display:none}
+#auftrag .check-book .xmas.an{font-size:13px}
+#auftrag .rc-r:not(.rc-sum){font-size:13.5px}
