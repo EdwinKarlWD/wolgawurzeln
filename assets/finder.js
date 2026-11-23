@@ -747,9 +747,11 @@
   function mailHTML(a) {
     var p = st.pdf, v = einordnung(a) || verdict(a), r = REG[st.reg], haupt;
     var deutsch = (a.all || [a]).some(function (x) { return !(x.russian || x.kind === 'ru'); });
-    var karte = '<section class="ez-card" aria-label="Ihre Angaben"><dl class="ez-kv oben"><div><dt>Name</dt><dd>' + esc(st.name) + '</dd></div>' +
-      '<div class="mit"><dt>Region</dt><dd>' + (st.reg === 'unklar' ? 'noch offen' : r.t) + '<button type="button" class="ez-link" data-ez-back>Ändern</button></dd><dd class="ez-deut">' + r.src + '</dd></div>' +
-      (frAktiv() ? frAngaben().map(function (x) { return '<div class="' + (x[1].length > 30 ? 'lang' : 'mit') + '"><dt>' + x[0] + '</dt><dd>' + esc(x[1]) + '</dd>' + (x[2] ? '<dd class="ez-deut">' + x[2] + '</dd>' : '') + '</div>'; }).join('') : '') + '</dl>' +
+    /* Ruhige Fassung (Edwin, 23.11.2026: zu viel Drumherum): Name und Region in einer Zeile statt einer Tabelle mit Linien.
+       Die Erläuterung zur Quellenlage der Region steht im PDF, hier würde sie die Frage nach der Mailadresse unter den Rand schieben. */
+    var karte = '<section class="ez-card ez-kurz" aria-label="Ihre Angaben"><p class="ez-zeile"><b>' + esc(st.name) + '</b><span>' + (st.reg === 'unklar' ? 'Region noch offen' : r.t) + '</span>' +
+      '<button type="button" class="ez-link" data-ez-back>Ändern</button></p>' +
+      (frAktiv() ? '<p class="ez-zeile2">' + frAngaben().map(function (x) { return esc(x[1]); }).join(' · ') + '</p>' : '') +
       (v ? '<p class="ez-status">' + (v.c === 'good' ? HAKEN : '') + '<span><b>' + v.h + '.</b> ' + (v.voll ? v.p : v.c === 'good' ? v.p.split('. ')[0].replace(/\.?$/, '.') : v.p) + '</span></p>' : '') + mehrHTML(a) + '</section>';
     if (!TS_KEY) {
       haupt = '<h2 class="ez-q">Ihre Ersteinschätzung per Nachricht</h2><div class="ez-card"><p class="ez-help first">Schicken Sie uns Ihre Angaben, Wolgawurzeln antwortet Ihnen persönlich.</p>' +
@@ -776,31 +778,32 @@
   }
   /* Schlussseite: Wer nicht auf die persönliche Antwort warten möchte, kann gleich beauftragen (Edwin, 23.11.2026).
      Bis dahin gab es im ganzen Fenster nur den leisen Textlink unter dem Mailformular (2 Klicks in 460 Sitzungen).
-     Herkunftsbericht und Familiengeschichte sind direkt bestellbar, die Einzelfallrecherche läuft weiter über das persönliche Angebot.
-     Der Herkunftsbericht gilt für einen Nachnamen, die Familiengeschichte für bis zu vier. Bei nicht deutschen Namensformen
-     und ab fünf Namen steht hier nichts, dort meldet sich Wolgawurzeln zuerst. */
+     Ruhige Fassung vom selben Tag: ein Angebot mit freigestelltem Bild des Berichts statt drei Karten. Bei einem Namen der
+     Herkunftsbericht, die Familiengeschichte als Zeile darunter (beide bleiben bestellbar), bei zwei bis vier Namen die
+     Familiengeschichte. Die Einzelfallrecherche steht als Satz dabei und läuft weiter über das persönliche Angebot.
+     Bei nicht deutschen Namensformen und ab fünf Namen steht hier nichts, dort meldet sich Wolgawurzeln zuerst. */
   function kaufHTML(a) {
-    var n = st.names.length, deutsch = a.kind === 'de' && !a.russian, k = [];
-    if (deutsch && n <= 1) k.push('hb');
-    if (deutsch && n <= 4) k.push('fg');
-    if (!k.length || !st.pdf.np) return '';
-    return '<h3 class="ez-h3">Gleich beauftragen</h3><p class="ez-help ez-kh">Wenn Sie nicht warten möchten, können Sie die Recherche gleich beauftragen. Ihre Angaben sind schon eingetragen.</p>' +
-      '<div class="ez-kauf">' + k.map(function (x) {
-        var W = WANT[x];
-        return '<section class="ez-card ez-kp"><div class="ez-kt"><h4>' + W.n + '</h4><b>' + W.price + '</b></div><p>' + W.d + '</p>' +
-          '<button type="button" class="ez-btn" data-fz-kauf="' + x + '">' + W.n + ' beauftragen</button></section>';
-      }).join('') +
-      '<section class="ez-card ez-kp leise"><div class="ez-kt"><h4>' + WANT.ez.n + '</h4><b>' + WANT.ez.price + '</b></div>' +
-      '<p>Gezielte Suche nach Vorfahren mit Namen und Daten. Dazu erhalten Sie von Wolgawurzeln ein persönliches Angebot.</p></section></div>';
+    var n = st.names.length, deutsch = a.kind === 'de' && !a.russian;
+    if (!deutsch || n > 4 || !st.pdf.np) return '';
+    var x = n <= 1 ? 'hb' : 'fg', W = WANT[x];
+    return '<section class="ez-angebot" aria-labelledby="ez-ang">' +
+      '<img class="ez-bericht" src="img/bericht-' + x + '-frei.webp" width="560" height="' + (x === 'hb' ? 452 : 364) + '" alt="Beispiel eines ' + W.n + 's mit Titelblatt und Innenseiten" decoding="async">' +
+      '<p class="ez-help ez-kh">Wenn Sie nicht warten möchten, können Sie die Recherche gleich beauftragen. Ihre Angaben sind schon eingetragen.</p>' +
+      '<h3 class="ez-kt" id="ez-ang"><span>' + W.n + '</span><b>' + W.price + '</b></h3><p class="ez-kd">' + W.d + '</p>' +
+      '<button type="button" class="ez-btn" data-fz-kauf="' + x + '">' + W.n + ' beauftragen</button>' +
+      (x === 'hb' ? '<p class="ez-alt">Für bis zu vier Nachnamen gibt es die <button type="button" class="ez-link" data-fz-kauf="fg">Familiengeschichte für 89 €</button>.</p>' : '') +
+      '<p class="ez-alt">Für Vorfahren mit Namen und Daten gibt es die Einzelfallrecherche, 149 € für 3 Stunden. Dazu erhalten Sie ein persönliches Angebot.</p></section>';
   }
   function fertigHTML(a) {
     var p = st.pdf, ok = p.done === 'gesendet', kauf = kaufHTML(a);
-    return '<div class="ez">' + kopf(4) + '<div class="ez-body"><div class="ez-done">' + HAKEN + '<h2 class="ez-q ez-name" tabindex="-1">' + (ok ? 'Ihre Ersteinschätzung ist unterwegs' : 'Ihre Anfrage ist angekommen') + '</h2></div>' +
-      '<section class="ez-card"><dl class="ez-kv oben"><div><dt>' + (ok ? 'Gesendet an' : 'Mailadresse') + '</dt><dd>' + esc(p.mail) + '</dd></div><div><dt>Name</dt><dd>' + esc(st.name) + '</dd></div><div><dt>Vorgang</dt><dd>' + esc(p.np || '') + '</dd></div></dl></section>' + kauf +
-      '<h3 class="ez-h3">So geht es weiter</h3><ol class="ez-next"><li>' + (ok ? 'Das PDF kommt in den nächsten Minuten per Mail. Schauen Sie sonst bitte im Spamordner nach.' : 'Das PDF kommt in Kürze per Mail.') + '</li>' +
-      '<li>Wolgawurzeln meldet sich danach persönlich bei Ihnen.</li><li>Sie entscheiden in Ruhe, ob Sie eine Recherche möchten.</li></ol>' +
-      '<div class="ez-bar' + (kauf ? ' frei' : '') + '"><button type="button" class="ez-btn' + (kauf ? ' line' : '') + '" data-ez-close>Fertig</button></div>' +
-      '<p class="ez-foot"><button type="button" class="ez-link fz-again">Weiteren Namen eingeben</button><br><a href="' + waLink(a, 'Frage zur Ersteinschätzung ' + (p.np || '')) + '">Frage zur Ersteinschätzung stellen</a></p></div></div>';
+    /* Zeichnung zweier Hände mit einem Brief aus dem Bildarchiv edwinkarl.de, wie auf der Leistungsseite (Edwin 23.11.2026: bleibt) */
+    return '<div class="ez">' + kopf(4) + '<div class="ez-body"><img class="ez-brief" src="img/illu/haende-brief.webp" width="900" height="608" alt="" decoding="async">' +
+      '<div class="ez-done">' + HAKEN + '<h2 class="ez-q ez-name" tabindex="-1">' + (ok ? 'Ihre Ersteinschätzung ist unterwegs' : 'Ihre Anfrage ist angekommen') + '</h2></div>' +
+      '<p class="ez-an">' + (ok ? 'Gesendet an ' : 'Mailadresse ') + '<b>' + esc(p.mail) + '</b>, Vorgang <b>' + esc(p.np || '') + '</b>. ' +
+      (ok ? 'Das PDF kommt in den nächsten Minuten. Schauen Sie sonst bitte im Spamordner nach.' : 'Das PDF kommt in Kürze per Mail.') + ' Danach meldet sich Wolgawurzeln persönlich bei Ihnen.</p>' + kauf +
+      /* Mit dem Angebot ist „Fertig“ ein schlichter Verweis, ohne Angebot bleibt es der Knopf */
+      (kauf ? '' : '<div class="ez-bar frei"><button type="button" class="ez-btn" data-ez-close>Fertig</button></div>') +
+      '<p class="ez-foot' + (kauf ? ' ez-foot-k' : '') + '">' + (kauf ? '<button type="button" class="ez-link" data-ez-close>Fertig, Fenster schließen</button><br>' : '') + '<button type="button" class="ez-link fz-again">Weiteren Namen eingeben</button><br><a href="' + waLink(a, 'Frage zur Ersteinschätzung ' + (p.np || '')) + '">Frage zur Ersteinschätzung stellen</a></p></div></div>';
   }
   function badHTML(a) {
     return '<div class="ez">' + kopf(0) + '<div class="ez-body"><section class="ez-card"><div class="ez-rh"><h2 class="ez-name' + (st.name.length > 16 ? ' lang' : '') + '" tabindex="-1">' + esc(st.name) + '</h2></div>' +
