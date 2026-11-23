@@ -21,9 +21,13 @@
     /* Einzelfallrecherche: Dienstleistung nach Zeit, kein Fotobuch, keine Grenze bei den Namen */
     ez: { key: 'ez', art: 'die', name: T('Einzelfallrecherche'), price: T('149 €'), time: T('Drei Stunden Recherche einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.'), umfang: T('Einzelfallrecherche, drei Stunden einschließlich Bericht, in der Regel nach 7 bis 10 Tagen.'), code: 'EZ149', max: 0, dienst: true, url: 'https://buy.stripe.com/28EfZac4C40g5I9ceM6Vq08' }
   };
+  /* Was die Leistung enthält, für das eine Angebot oben in Schritt 2 (23.11.2026) */
+  P.hb.inhalt = T('Kolonie, Herkunft in Deutschland und der Weg der Familie bis heute, jede Angabe mit Quelle.');
+  P.fg.inhalt = T('Für bis zu vier Nachnamen. Kolonie und Herkunft jeder Linie, mit Karte und Zeitleiste.');
+  P.ez.inhalt = T('Gezielte Suche nach Ihren Vorfahren mit Namen und Daten in Kirchenbüchern, Listen und Archivakten.');
   var q = function (s) { return od.querySelector(s); };
   var cur = null, ono = '', lastPre = '', w = q('#chk-waiver'), bk = q('#chk-book'), pay = q('#order-pay'), nm = q('#order-name'), em = q('#order-email'), kn = q('#order-know'), kick = q('#order-kick'), schild = q('#order-schild'), wahl = q('.dlg-wahl'), lg = q('#order-lang'), hint = q('#order-hint'), oform = q('#order-form'), done = q('#order-done'), a9 = q('#chk-a9'), rec = q('#order-rec'), forl = q('#order-for'), s1 = q('#order-s1'), s2 = q('#order-s2'), next = q('#order-next'), back = q('#order-back');
-  var stufe = 1, versucht = false, perLink = false, bestellt = false;
+  var stufe = 1, versucht = false, perLink = false, bestellt = false, autoFg = false;
   if (!w || !pay || !nm) return;
   /* Schritte im Dialog für die eigene Besuchszählung: nur feste Kennwörter, keine Eingaben. Lädt der Zähler später, holt er die Liste nach. */
   function zm(s) { try { var z = window.WW_ZQ = window.WW_ZQ || []; if (!z.length || z.length < 40) z.push(s); } catch (e) {} }
@@ -95,13 +99,13 @@
     waiver: T('Bitte den Bearbeitungsbeginn bestätigen (Kästchen oben), dann wird der Bestellknopf frei.'),
     art9: T('Bitte die Einwilligung zu Konfession und Herkunft bestätigen. Ohne sie kann die Recherche nicht beginnen.'),
     mehrere: T('Der Herkunftsbericht gilt für einen Nachnamen. Für mehrere Namen ist die Familiengeschichte gedacht, sie deckt bis zu vier Nachnamen ab und kostet 89 €.'),
-    viele: T('Das sind mehr als vier Nachnamen. Die Familiengeschichte deckt bis zu vier ab. Für mehr Namen erhalten Sie ein eigenes Angebot.')
+    viele: T('Das sind mehr als vier Nachnamen. Die Familiengeschichte deckt bis zu vier ab. Für mehr Namen ist die Einzelfallrecherche gedacht, dazu erhalten Sie ein persönliches Angebot.')
   };
   var WEITER = { mehrere: T('Zur Familiengeschichte wechseln'), viele: T('Anfrage stellen') };
   function setzeHinweis(m) {
     if (!hint) return;
     /* Passt der Name nicht zur gewählten Leistung, steht der Hinweis direkt unter der Umschaltung */
-    var ort = stufe === 2 && WEITER[m] && wahl && !wahl.hidden ? wahl : (stufe === 1 ? s1 : s2).querySelector('.dlg-pay');
+    var ort = stufe === 2 && WEITER[m] && ang ? ang : (stufe === 1 ? s1 : s2).querySelector('.dlg-pay');
     if (ort && hint.previousElementSibling !== ort) ort.parentNode.insertBefore(hint, ort.nextSibling);
     hint.classList.toggle('off', !m || !(versucht || WEITER[m]));
     hint.textContent = m ? HINT[m] : '';
@@ -110,6 +114,29 @@
     a.href = '#'; a.textContent = WEITER[m]; a.setAttribute('data-weiter', m); a.style.cssText = 'display:block;margin-top:6px;font-weight:600';
     hint.appendChild(a);
   }
+  /* Ein konkretes Angebot statt Auswahl (Edwin, 23.11.2026): Viele schauen sich auf der Seite nicht um, im Dialog wird nicht erklärt,
+     was was ist, die Auswahl gehört nicht in den Warenkorb. Oben in Schritt 2 steht deshalb nur die passende Leistung mit Inhalt und Preis.
+     Die Reiter (.dlg-wahl) bleiben im HTML, sind aber ausgeblendet. Angelegt hier, damit alle vier Seiten mit dem Dialog es haben. */
+  var ang = null;
+  function zeigeAngebot() {
+    var s2el = q('#order-s2'); if (!s2el) return;
+    if (!ang) {
+      ang = document.createElement('div'); ang.className = 'dlg-ang';
+      ang.innerHTML = '<p class="dlg-ang-k"><b></b><b></b></p><p class="dlg-ang-d"></p>';
+      s2el.insertBefore(ang, s2el.firstChild);
+    }
+    var b = ang.querySelectorAll('b');
+    b[0].textContent = cur.name; b[1].textContent = cur.price;
+    ang.querySelector('.dlg-ang-d').textContent = [cur.inhalt, cur.time].filter(Boolean).join(' ');
+  }
+  /* Fotobuch: Weihnachtshinweis in den Baustein holen, nur das Geschenk als Zeichen (Edwin 23.11.2026: Tannenbaum kann weg) */
+  (function () {
+    var box = q('.check-book'), xm = box && box.querySelector('.xmas'), tx = box && box.querySelector('.bk-txt');
+    if (!xm || !tx) return;
+    tx.appendChild(xm);
+    var sv = xm.querySelector('svg'), g = sv && sv.querySelector('g');
+    if (g && g.children.length > 4) { g.removeChild(g.children[0]); g.removeChild(g.children[0]); sv.setAttribute('viewBox', '16 7 15 16'); }
+  })();
   /* Paket setzen: Titel, Lieferzeit, Hinweis, Zustimmung und Fotobuch passend zur Leistung */
   function setze(key) {
     cur = P[key];
@@ -128,6 +155,7 @@
     if (bkbox) bkbox.style.display = cur.bookUrl ? '' : 'none';
     if (gw) gw.style.display = cur.bookUrl ? '' : 'none';
     if (bk && !cur.bookUrl) bk.checked = false;
+    zeigeAngebot();
   }
   var BUCH = T(' Dazu das gedruckte Fotobuch, Versand kostenlos und nur innerhalb Deutschlands, etwa 10 Werktage nach dem Bericht. Einzelanfertigung ohne Widerrufsrecht.').trim();
   function zeile(txt, preis, kl) {
@@ -147,6 +175,12 @@
   }
   function upd() {
     if (!cur) return;
+    /* Immer das passende Angebot: Stehen zwei bis vier Nachnamen beim Herkunftsbericht, gilt die Familiengeschichte.
+       Wird es wieder ein Name, geht es zurück zum Herkunftsbericht, aber nur, wenn hier gewechselt wurde. */
+    var nn = namen().length;
+    /* Beim persönlichen Bestelllink gilt die Leistung aus Edwins Angebot, dort bleibt es beim Hinweis mit dem Wechsel von Hand. */
+    if (!perLink && cur.key === 'hb' && nn > 1 && nn <= 4 && P.fg) { setze('fg'); autoFg = true; zm('dialog passend fg'); }
+    else if (autoFg && cur.key === 'fg' && nn <= 1) { setze('hb'); autoFg = false; zm('dialog passend hb'); }
     var m = missing(), m1 = missing1();
     if (rec) {
       rec.textContent = '';
@@ -198,7 +232,7 @@
     if (!P[key]) return false;
     setze(key);
     ono = newNo();
-    stufe = 1; versucht = false; perLink = false; bestellt = false; KICK2 = '';
+    stufe = 1; versucht = false; perLink = false; bestellt = false; KICK2 = ''; autoFg = false;
     if (a9box) a9box.style.display = '';
     [w, a9].forEach(function (x) { var c = x && x.closest('.check'); if (c) c.classList.remove('miss'); });
     w.checked = false; if (a9) a9.checked = false; if (bk) bk.checked = !!(b && b.hasAttribute('data-book') && cur.bookUrl);
@@ -279,8 +313,6 @@
   }
   function fehlt() {
     var m = missing();
-    /* Name passt nicht zur Leistung: in Schritt 2 bleiben, der Hinweis steht unter der Umschaltung */
-    if (stufe === 2 && (m === 'mehrere' || m === 'viele') && wahl && !wahl.hidden) { var f = wahl.querySelector('[aria-checked="true"]'); if (f) f.focus(); return; }
     if (missing1() && stufe !== 1) { schritt(1); versucht = true; upd(); }
     if (m === 'name' || m === 'mehrere' || m === 'viele') return flag(nm);
     if (m === 'email') return flag(em);

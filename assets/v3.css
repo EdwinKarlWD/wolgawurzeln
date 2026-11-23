@@ -2625,3 +2625,19 @@ details .xmas.an{margin:8px 0 4px}
 #auftrag .check-book .bk-more:has(.xmas.an) .de-druck{display:none}
 #auftrag .check-book .xmas.an{font-size:13px}
 #auftrag .rc-r:not(.rc-sum){font-size:13.5px}
+/* Ein konkretes Angebot statt Reiter (Edwin 23.11.2026: die Auswahl gehört nicht in den Warenkorb) */
+#auftrag .dlg-wahl{display:none!important}
+#auftrag .dlg-ang{margin-top:18px;padding-bottom:16px;border-bottom:1px solid var(--line-2)}
+#auftrag .dlg-ang-k{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin:0}
+#auftrag .dlg-ang-k b:first-child{font:600 21px/1.25 var(--serif);color:var(--navy)}
+#auftrag .dlg-ang-k b:last-child{flex:none;font:700 19px/1.25 var(--sans);color:var(--navy);white-space:nowrap}
+#auftrag .dlg-ang-d{margin:6px 0 0;font-size:14.5px;line-height:1.5;color:var(--ink-2)}
+/* Fotobuch etwas größer, Weihnachtshinweis im Baustein, nur das Geschenk als Zeichen */
+#auftrag .check-book{grid-template-columns:48px 1fr auto;gap:10px 14px;padding:16px 0}
+#auftrag .check-book img.bk-ico{width:48px;height:68px}
+#auftrag .check-book .bk-txt>b{font-size:16.5px}
+#auftrag .check-book .bk-sub{font-size:14px}
+#auftrag .check-book .bk-more{display:none}
+#auftrag .check-book .bk-txt .xmas.an{display:flex;align-items:flex-start;gap:7px;margin:5px 0 0;padding:0;font-size:13.5px;line-height:1.4;font-weight:400;color:var(--ink-2)}
+#auftrag .check-book .bk-txt .xmas .ic-xmas{flex:none;width:17px;height:18px;margin-top:1px;color:var(--seal-2,#7E2122)}
+@media (max-width:560px){#auftrag .check-book img.bk-ico{width:42px;height:60px}#auftrag .check-book{grid-template-columns:42px 1fr auto}}
