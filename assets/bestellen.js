@@ -8,7 +8,8 @@
    Schritt 2 „Auftrag abschließen“: Leistung umschalten, Fotobuch, Zahlungsart, sofortiger Beginn, Übersicht direkt über dem Bestellknopf.
    Überweisung bleibt ganz auf der Seite (Dienst schickt die Zahlungsdaten), Karte und Klarna öffnen die Bezahlseite von Stripe.
    Stand 22.11.2026: Der persönliche Bestelllink führt ohne zweites Häkchen direkt zu Schritt 2, denn die Einwilligung liegt seit der Ersteinschätzung vor
-   (Edwin: einmal reicht). Die Schritte im Dialog gehen ohne Eingaben an die eigene Besuchszählung (assets/zaehler.js), damit sichtbar wird, wo Leute aussteigen. */
+   (Edwin: einmal reicht). Die Schritte im Dialog gehen ohne Eingaben an die eigene Besuchszählung (assets/zaehler.js), damit sichtbar wird, wo Leute aussteigen.
+   Stand 23.11.2026: Derselbe Einstieg steht der Schlussseite der Ersteinschätzung offen (WW_BESTELLEN in assets/finder.js, „Gleich beauftragen“). */
 (function () {
   'use strict';
   var od = document.getElementById('auftrag');
@@ -287,6 +288,27 @@
     if (!k) return;
     k.focus(); var c = k.closest('.check'); if (c) { c.classList.add('nudge', 'miss'); setTimeout(function () { c.classList.remove('nudge'); }, 900); }
   }
+  /* Auftrag zu einem vorhandenen Vorgang der Ersteinschätzung öffnen. Zwei Wege führen hierher: der persönliche Bestelllink (woher „link“)
+     und die Schlussseite der Ersteinschätzung (woher „fenster“). Name, Mail und Vorgang sind eingetragen, die Einwilligung zu Konfession
+     und Herkunft liegt seit der Ersteinschätzung vor: kein zweites Häkchen, der Vorgang steht in der Kopfzeile, es geht direkt in Schritt 2. */
+  function mitVorgang(pk, dt, woher) {
+    if (!oeffne(pk)) return false;
+    if (!dt || !dt.np) { zm('dialog ' + woher + ' ' + pk + ' ohne vorgang'); return true; }
+    if (dt.name) { nm.value = dt.name; lastPre = dt.name; }
+    if (em && dt.email) em.value = dt.email;
+    if (kn) kn.value = ['Vorgang ' + dt.np, dt.notiz].filter(Boolean).join('. ');
+    ono = dt.np.replace(/\s+/g, '');
+    perLink = true; KICK2 = T('Ihr Vorgang: ') + dt.np;
+    if (a9box) a9box.style.display = 'none';
+    zm('dialog ' + woher + ' ' + pk + (dt.stand ? ' ' + dt.stand : ''));
+    upd();
+    if (dt.stand === 'bezahlt') { showDone('bezahlt'); return true; }
+    if (dt.stand === 'bestellt') { showDone('schon', cur.url + '?locale=' + SPR + '&client_reference_id=' + encodeURIComponent(ref()) + (val(em) ? '&prefilled_email=' + encodeURIComponent(val(em)) : '')); return true; }
+    if (!missing1()) schritt(2, true);
+    return true;
+  }
+  /* Für die Schlussseite der Ersteinschätzung (assets/finder.js): dt = { np, name, email, notiz } */
+  window.WW_BESTELLEN = function (pk, dt) { return mitVorgang(pk, dt, 'fenster'); };
   /* Persönlicher Bestelllink aus Einschätzung oder Angebot: ?bestellen=hb|fg|ez&b=<Schlüssel> öffnet den Auftrag mit Name, Mail und Vorgang.
      Liegt zu diesem Vorgang schon eine Bestellung derselben Leistung vor, wird das gesagt, statt eine zweite anzulegen. */
   (function () {
@@ -294,22 +316,7 @@
     var pk = u.get('bestellen'), tk = u.get('b');
     if (!pk || !P[pk]) return;
     try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {}
-    var start = function (dt) {
-      if (!oeffne(pk)) return;
-      if (!dt || !dt.np) { zm('dialog link ' + pk + ' ohne vorgang'); return; }
-      if (dt.name) { nm.value = dt.name; lastPre = dt.name; }
-      if (em && dt.email) em.value = dt.email;
-      if (kn) kn.value = ['Vorgang ' + dt.np, dt.notiz].filter(Boolean).join('. ');
-      ono = dt.np.replace(/\s+/g, '');
-      /* Die Einwilligung zu Konfession und Herkunft liegt seit der Ersteinschätzung vor: kein zweites Häkchen, der Vorgang steht in der Kopfzeile. */
-      perLink = true; KICK2 = T('Ihr Vorgang: ') + dt.np;
-      if (a9box) a9box.style.display = 'none';
-      zm('dialog link ' + pk + (dt.stand ? ' ' + dt.stand : ''));
-      upd();
-      if (dt.stand === 'bezahlt') return showDone('bezahlt');
-      if (dt.stand === 'bestellt') return showDone('schon', cur.url + '?locale=' + SPR + '&client_reference_id=' + encodeURIComponent(ref()) + (val(em) ? '&prefilled_email=' + encodeURIComponent(val(em)) : ''));
-      if (!missing1()) schritt(2, true);
-    };
+    var start = function (dt) { mitVorgang(pk, dt, 'link'); };
     if (!tk || !window.fetch) { start(null); return; }
     fetch((window.WW_DIENST ? window.WW_DIENST.api : 'https://wolgawurzeln-api.edwin3222.workers.dev') + '/bestellung?b=' + encodeURIComponent(tk) + '&p=' + pk)
       .then(function (r) { return r.ok ? r.json() : null; })

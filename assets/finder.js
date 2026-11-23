@@ -347,6 +347,8 @@
       if (j && j.np && (j.ok || j.status === 'spaeter')) { p.done = j.ok ? 'gesendet' : 'spaeter'; p.np = j.np; }
       else p.err = PDF_FEHLER[j && j.grund] || PDF_FEHLER.sonst;
       render();
+      /* Die Schlussseite ist seit „Gleich beauftragen“ länger als ein Bildschirm: nach oben, sonst bleibt der Stand vom Mailformular stehen und die Bestätigung ist nicht zu sehen */
+      if (p.done) oben();
     }).catch(function () { p.busy = false; p.err = PDF_FEHLER.sonst; render(); })
       .then(function () { var c = d.getElementById('fz-ts'); if (c) c.remove(); });
   }
@@ -743,13 +745,32 @@
     }
     return '<div class="ez">' + kopf(3) + '<div class="ez-body">' + karte + haupt + '<div class="fz-altwrap">' + altHTML(a) + '</div></div></div>';
   }
+  /* Schlussseite: Wer nicht auf die persönliche Antwort warten möchte, kann gleich beauftragen (Edwin, 23.11.2026).
+     Bis dahin gab es im ganzen Fenster nur den leisen Textlink unter dem Mailformular (2 Klicks in 460 Sitzungen).
+     Herkunftsbericht und Familiengeschichte sind direkt bestellbar, die Einzelfallrecherche läuft weiter über das persönliche Angebot.
+     Der Herkunftsbericht gilt für einen Nachnamen, die Familiengeschichte für bis zu vier. Bei nicht deutschen Namensformen
+     und ab fünf Namen steht hier nichts, dort meldet sich Wolgawurzeln zuerst. */
+  function kaufHTML(a) {
+    var n = st.names.length, deutsch = a.kind === 'de' && !a.russian, k = [];
+    if (deutsch && n <= 1) k.push('hb');
+    if (deutsch && n <= 4) k.push('fg');
+    if (!k.length || !st.pdf.np) return '';
+    return '<h3 class="ez-h3">Gleich beauftragen</h3><p class="ez-help ez-kh">Wenn Sie nicht warten möchten, können Sie die Recherche gleich beauftragen. Ihre Angaben sind schon eingetragen.</p>' +
+      '<div class="ez-kauf">' + k.map(function (x) {
+        var W = WANT[x];
+        return '<section class="ez-card ez-kp"><div class="ez-kt"><h4>' + W.n + '</h4><b>' + W.price + '</b></div><p>' + W.d + '</p>' +
+          '<button type="button" class="ez-btn" data-fz-kauf="' + x + '">' + W.n + ' beauftragen</button></section>';
+      }).join('') +
+      '<section class="ez-card ez-kp leise"><div class="ez-kt"><h4>' + WANT.ez.n + '</h4><b>' + WANT.ez.price + '</b></div>' +
+      '<p>Gezielte Suche nach Vorfahren mit Namen und Daten. Dazu erhalten Sie von Wolgawurzeln ein persönliches Angebot.</p></section></div>';
+  }
   function fertigHTML(a) {
-    var p = st.pdf, ok = p.done === 'gesendet';
+    var p = st.pdf, ok = p.done === 'gesendet', kauf = kaufHTML(a);
     return '<div class="ez">' + kopf(4) + '<div class="ez-body"><div class="ez-done">' + HAKEN + '<h2 class="ez-q ez-name" tabindex="-1">' + (ok ? 'Ihre Ersteinschätzung ist unterwegs' : 'Ihre Anfrage ist angekommen') + '</h2></div>' +
-      '<section class="ez-card"><dl class="ez-kv oben"><div><dt>' + (ok ? 'Gesendet an' : 'Mailadresse') + '</dt><dd>' + esc(p.mail) + '</dd></div><div><dt>Name</dt><dd>' + esc(st.name) + '</dd></div><div><dt>Vorgang</dt><dd>' + esc(p.np || '') + '</dd></div></dl></section>' +
+      '<section class="ez-card"><dl class="ez-kv oben"><div><dt>' + (ok ? 'Gesendet an' : 'Mailadresse') + '</dt><dd>' + esc(p.mail) + '</dd></div><div><dt>Name</dt><dd>' + esc(st.name) + '</dd></div><div><dt>Vorgang</dt><dd>' + esc(p.np || '') + '</dd></div></dl></section>' + kauf +
       '<h3 class="ez-h3">So geht es weiter</h3><ol class="ez-next"><li>' + (ok ? 'Das PDF kommt in den nächsten Minuten per Mail. Schauen Sie sonst bitte im Spamordner nach.' : 'Das PDF kommt in Kürze per Mail.') + '</li>' +
       '<li>Wolgawurzeln meldet sich danach persönlich bei Ihnen.</li><li>Sie entscheiden in Ruhe, ob Sie eine Recherche möchten.</li></ol>' +
-      '<div class="ez-bar"><button type="button" class="ez-btn" data-ez-close>Fertig</button></div>' +
+      '<div class="ez-bar' + (kauf ? ' frei' : '') + '"><button type="button" class="ez-btn' + (kauf ? ' line' : '') + '" data-ez-close>Fertig</button></div>' +
       '<p class="ez-foot"><button type="button" class="ez-link fz-again">Weiteren Namen eingeben</button><br><a href="' + waLink(a, 'Frage zur Ersteinschätzung ' + (p.np || '')) + '">Frage zur Ersteinschätzung stellen</a></p></div></div>';
   }
   function badHTML(a) {
@@ -891,6 +912,16 @@
         else { st.fr.fertig = true; st.step = 'mail'; if (TS_KEY) npLog('fragen'); }
         schritt(); render(); oben(st.step === 'mail' ? 'fz-pm' : ''); return;
       }
+    }
+    /* Schlussseite, „Gleich beauftragen“: Bestelldialog mit Name, Mail und Vorgang, direkt in Schritt 2 */
+    var kb = e.target.closest('[data-fz-kauf]');
+    if (kb) {
+      npLog('bestellen');
+      var kart = kb.getAttribute('data-fz-kauf'), kdt = { np: st.pdf.np, name: st.name, email: st.pdf.mail, notiz: [knowSummary(), st.pdf.notiz || ''].filter(Boolean).join('. '), stand: '' };
+      schliessen();
+      if (w.WW_BESTELLEN) w.WW_BESTELLEN(kart, kdt);
+      else { var ktrg = d.querySelector('.pk-act [data-order="' + kart + '"]'), knm = d.getElementById('order-name'); if (knm) knm.value = kdt.name; if (ktrg) ktrg.click(); }
+      return;
     }
     var ob = e.target.closest('[data-fz-order]');
     if (ob) {
