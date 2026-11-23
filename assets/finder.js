@@ -268,11 +268,36 @@
     + 'alexander andreas andrej andrei viktor victor wladimir vladimir sergej sergei sergey nikolai nikolaj peter pjotr johann johannes heinrich jakob jacob david eduard waldemar woldemar alexej aleksej juri jurij michael michail dmitri dmitrij igor oleg artur arthur edwin paul georg friedrich konrad conrad eugen jewgeni evgeni ivan iwan iwanowitsch robert rudolf otto emil wilhelm karl carl franz walter valeri valerij anatoli gennadi leonid boris pavel pawel stepan konstantin roman denis maxim maksim ilja ilya anton '
     + 'анна мария ольга ирина наталья наталия елена татьяна светлана людмила галина валентина лидия нина екатерина эмма амалия елизавета лариса алла вера софия юлия оксана инна тамара раиса роза '
     + 'александр андрей виктор владимир сергей николай пётр петр иван яков давид эдуард вальдемар алексей юрий михаил дмитрий игорь олег артур евгений генрих фридрих иоганн роберт рудольф отто эмиль вильгельм карл франц валерий анатолий геннадий леонид борис павел степан константин роман денис максим илья антон').split(' ').forEach(function (k) { FIRST[k] = 1; });
-  function splitNames(v) {
-    var parts = v.split(/[\s,;\/&+]+/).filter(function (p) { return p && !/^(und|and|и|oder|или|von|van|vom|de|der|zu)$/i.test(p); });
-    parts = parts.filter(function (p) { return !/(ович|евич|овна|евна|ична|owitsch|ewitsch|owna|ewna)$/i.test(p) || parts.length === 1; });
-    var fam = parts.filter(function (p) { return !FIRST[p.toLowerCase().replace(/ё/g, 'е')]; });
-    if (!fam.length) fam = parts.slice(-1);
+  /* Vornamen, die in den Ansiedlungslisten zugleich als Nachnamen stehen: 23 der Vornamen oben, ausgezählt am 23.11.2026
+     (Walter 38 Haushalte, Heinrich 19, Konrad 15, Karl und Michael je 11, Wilhelm 10, Paul und Otto je 9). In einer Aufzählung fallen sie nicht weg. */
+  var AUCH_NACHNAME = {}; 'andreas nikolai peter johann johannes heinrich jakob jacob david michael paul georg friedrich konrad conrad robert rudolf otto wilhelm karl carl franz walter'.split(' ').forEach(function (n) { AUCH_NACHNAME[n] = 1; });
+  /* Eingabe in einzelne Nachnamen zerlegen.
+     Mit Leerzeichen geschrieben („Viktor Batz“, „Karl Weber“) gilt wie bisher Vorname und Nachname, der Vorname fällt weg.
+     Mit Komma, Strichpunkt, Schrägstrich, & oder „und“ getrennt ist es eine Aufzählung. Bis 23.11.2026 fiel auch dort jeder Vorname weg,
+     selbst wenn er ein Nachname ist: Aus „Karl, Weber“ wurde „Weber“ (Edwin: muss unbedingt gelöst werden). Jetzt fällt in der Aufzählung
+     ein einzelnes Wort nur noch weg, wenn es ein reiner Vorname ist („Batz, Viktor“ bleibt Batz). Es bleibt, was auch Nachname ist
+     (AUCH_NACHNAME oder ein Treffer in den Ansiedlungslisten), und das erste Wort vor einem Komma, denn dort steht bei „Nachname, Vorname“ der Nachname.
+     nurNachnamen: Feld „Weitere Nachnamen“, dort ist jede Angabe ein Nachname. */
+  function splitNames(v, nurNachnamen) {
+    var TEIL = /^(und|and|и|oder|или|von|van|vom|de|der|zu)$/i, PATR = /(ович|евич|овна|евна|ична|owitsch|ewitsch|owna|ewna)$/i;
+    var vorname = function (p) { return !!FIRST[p.toLowerCase().replace(/ё/g, 'е')]; };
+    var roh = String(v || ''), teile = [], re = /\s*(?:[,;\/&+]+|\s(?:und|and|и|oder|или)\s)\s*/gi, pos = 0, m;
+    while ((m = re.exec(roh))) { teile.push({ t: roh.slice(pos, m.index), komma: /[,;\/]/.test(m[0]) }); pos = m.index + m[0].length; }
+    teile.push({ t: roh.slice(pos), komma: false });
+    teile = teile.map(function (x) { x.w = x.t.split(/\s+/).filter(function (p) { return p && !TEIL.test(p); }); return x; }).filter(function (x) { return x.w.length; });
+    var alle = [].concat.apply([], teile.map(function (x) { return x.w; })), fam = [];
+    teile.forEach(function (x, i) {
+      var wo = x.w.filter(function (p) { return !PATR.test(p) || alle.length === 1; });
+      if (!wo.length) return;
+      if (wo.length > 1) {
+        var f = wo.filter(function (p) { return !vorname(p); });
+        fam = fam.concat(f.length ? f : (teile.length === 1 ? wo.slice(-1) : []));
+        return;
+      }
+      var p = wo[0];
+      if (!vorname(p) || teile.length === 1 || nurNachnamen || AUCH_NACHNAME[p.toLowerCase()] || (PL && PL[variante(p)] > 0) || (i === 0 && x.komma)) fam.push(p);
+    });
+    if (!fam.length) fam = alle.slice(-1);
     return fam.length ? uniq(fam.map(gross)) : [gross(v)];
   }
   /* Erster Buchstabe groß, auch nach Bindestrich: „karl“ wird „Karl“, „müller-schmidt“ wird „Müller-Schmidt“ (Edwin, 20.11.2026) */
@@ -289,6 +314,10 @@
   }
   /* Ersteinschätzung als PDF per Mail. Ohne Turnstile Schlüssel steht an der Stelle die Anfrage per WhatsApp oder Mail. */
   var WD = w.WW_DIENST || {}, EZ_API = (WD.api || 'https://wolgawurzeln-api.edwin3222.workers.dev') + '/einschaetzung', TS_KEY = WD.key || ''; /* Site Key steht in assets/dienst.js */
+  /* Das Namensfeld sagt, dass mehrere Namen gehen (Edwin, 23.11.2026). In der Welle schickten 15 Personen zwei Formulare für zwei Namen.
+     Gesetzt wird das hier und nicht in index.html, weil die englische und russische Seite dasselbe Feld ohne diese Auswertung haben. */
+  /* Auf sehr schmalen Handys (unter 360 Pixel) passt der längere Hinweis nicht ins Feld */
+  if (inp) inp.setAttribute('placeholder', w.matchMedia && w.matchMedia('(max-width: 359px)').matches ? 'Nachname(n)' : 'Nachname, auch mehrere');
   /* Texte, die den Versand per Mail versprechen, erst zeigen, wenn der Dienst eingerichtet ist */
   if (TS_KEY) [].forEach.call(d.querySelectorAll('[data-mit-dienst]'), function (el) { el.textContent = el.getAttribute('data-mit-dienst'); });
   function quelle() {
@@ -654,7 +683,7 @@
   }
   function mehrDazu() {
     var mi = out.querySelector('#fz-mn'), v = mi ? (mi.value || '').replace(/\s+/g, ' ').trim() : '';
-    var neu = v.length < 2 ? [] : splitNames(v).filter(function (n) { return !st.names.some(function (x) { return x.toLowerCase() === n.toLowerCase(); }); });
+    var neu = v.length < 2 ? [] : splitNames(v, true).filter(function (n) { return !st.names.some(function (x) { return x.toLowerCase() === n.toLowerCase(); }); });
     if (!neu.length) { if (mi) mi.focus(); return; }
     st.names = st.names.concat(neu); st.name = st.names.join(', ');
     if (!st.want || st.want === 'hb' || st.want === 'fg') st.want = st.names.length > 4 ? 'ez' : 'fg';
