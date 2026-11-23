@@ -747,11 +747,10 @@
   function mailHTML(a) {
     var p = st.pdf, v = einordnung(a) || verdict(a), r = REG[st.reg], haupt;
     var deutsch = (a.all || [a]).some(function (x) { return !(x.russian || x.kind === 'ru'); });
-    /* Ruhige Fassung (Edwin, 23.11.2026: zu viel Drumherum): Name und Region in einer Zeile statt einer Tabelle mit Linien.
-       Die Erläuterung zur Quellenlage der Region steht im PDF, hier würde sie die Frage nach der Mailadresse unter den Rand schieben. */
-    var karte = '<section class="ez-card ez-kurz" aria-label="Ihre Angaben"><p class="ez-zeile"><b>' + esc(st.name) + '</b><span>' + (st.reg === 'unklar' ? 'Region noch offen' : r.t) + '</span>' +
-      '<button type="button" class="ez-link" data-ez-back>Ändern</button></p>' +
-      (frAktiv() ? '<p class="ez-zeile2">' + frAngaben().map(function (x) { return esc(x[1]); }).join(' · ') + '</p>' : '') +
+    /* Angaben mit Deutung bleiben (Inhalt), ruhiger wird es über die Gestaltung: keine Linien, kein Kasten (23.11.2026) */
+    var karte = '<section class="ez-card" aria-label="Ihre Angaben"><dl class="ez-kv oben"><div><dt>Name</dt><dd>' + esc(st.name) + '</dd></div>' +
+      '<div class="mit"><dt>Region</dt><dd>' + (st.reg === 'unklar' ? 'noch offen' : r.t) + '<button type="button" class="ez-link" data-ez-back>Ändern</button></dd><dd class="ez-deut">' + r.src + '</dd></div>' +
+      (frAktiv() ? frAngaben().map(function (x) { return '<div class="' + (x[1].length > 30 ? 'lang' : 'mit') + '"><dt>' + x[0] + '</dt><dd>' + esc(x[1]) + '</dd>' + (x[2] ? '<dd class="ez-deut">' + x[2] + '</dd>' : '') + '</div>'; }).join('') : '') + '</dl>' +
       (v ? '<p class="ez-status">' + (v.c === 'good' ? HAKEN : '') + '<span><b>' + v.h + '.</b> ' + (v.voll ? v.p : v.c === 'good' ? v.p.split('. ')[0].replace(/\.?$/, '.') : v.p) + '</span></p>' : '') + mehrHTML(a) + '</section>';
     if (!TS_KEY) {
       haupt = '<h2 class="ez-q">Ihre Ersteinschätzung per Nachricht</h2><div class="ez-card"><p class="ez-help first">Schicken Sie uns Ihre Angaben, Wolgawurzeln antwortet Ihnen persönlich.</p>' +
