@@ -360,7 +360,7 @@
   };
   function pdfSenden(f) {
     var a = analyseAll(), p = st.pdf;
-    p.mail = (f.mail.value || '').trim(); p.notiz = (f.notiz.value || '').trim(); p.err = ''; p.errA9 = false;
+    p.mail = (f.mail.value || '').trim(); p.notiz = f.notiz ? (f.notiz.value || '').trim() : ''; p.err = ''; p.errA9 = false;
     p.a9 = !!(f.einwilligung && f.einwilligung.checked);
     if (f.wunsch) st.want = f.wunsch.value;
     if (!/^[^\s@<>()",;:]+@[^\s@]+\.[A-Za-z]{2,}$/.test(p.mail)) { p.err = PDF_FEHLER.mail; render(); return; }
@@ -740,7 +740,7 @@
   function altHTML(a) {
     /* Nach dem Fragenkatalog passt bei einem einzelnen deutschen Namen der Herkunftsbericht, auch wenn noch kein Wunsch gewählt ist */
     var art = st.want || (einordnung(a) && st.names.length <= 1 ? 'hb' : ''), W = art ? WANT[art] : null, t = [];
-    if (W && W.order && a.kind === 'de') t.push('<button type="button" class="ez-link" data-fz-order="' + art + '">' + W.n + ' für ' + W.price + ' direkt bestellen</button>');
+    /* „… direkt bestellen“ stand hier bis 23.11.2026. Gekauft wird auf der Schlussseite, nach der Frage nach dem nächsten Ziel. */
     if (TS_KEY) t.push('<a href="' + waLink(a, 'Frage zu meiner Familie') + '">Lieber erst eine Frage stellen</a>');
     return t.length ? '<p class="ez-foot">' + t.join('<br>') + '</p>' : '';
   }
@@ -762,10 +762,7 @@
         '<label class="ez-lab" for="fz-pm">Mailadresse</label><input id="fz-pm" type="email" name="mail" autocomplete="email" inputmode="email" enterkeyhint="send" value="' + esc(p.mail || '') + '"' + (p.err ? ' aria-invalid="true" aria-describedby="ez-err"' : '') + '>' +
         (p.err ? '<p class="ez-err" id="ez-err" role="alert">' + p.err + '</p>' : '') +
         '<p class="ez-help">Sie erhalten ein PDF mit Karte, ' + (deutsch ? 'Schreibweisen' : 'einer Einordnung des Namens') + ' und Quellenlage. Danach meldet sich Wolgawurzeln persönlich bei Ihnen.</p>' +
-        '<details class="ez-more"' + (p.more || p.notiz || st.want ? ' open' : '') + '><summary><span>Angaben zur Familie hinzufügen<small>freiwillig</small></span></summary>' +
-        '<label class="ez-lab" for="fz-pw">Was möchten Sie herausfinden?</label><select id="fz-pw" name="wunsch"><option value="">Bitte wählen</option>' +
-        Object.keys(WANT).map(function (k) { return '<option value="' + k + '"' + (st.want === k ? ' selected' : '') + '>' + WANT[k].t + '</option>'; }).join('') + '</select>' +
-        '<label class="ez-lab" for="fz-pn">Was wissen Sie schon über die Familie?</label><textarea id="fz-pn" name="notiz" rows="3" maxlength="600" placeholder="Zum Beispiel Geburtsjahre und Orte der Großeltern">' + esc(p.notiz || '') + '</textarea></details>' +
+        /* „Angaben zur Familie hinzufügen“ (Wunsch und Notiz) ist seit 23.11.2026 auf der Schlussseite: zugeklappt nutzten es 11 von 134 */
         '<input class="fz-hp" type="text" name="firma" tabindex="-1" autocomplete="off" aria-hidden="true"></div>' +
         '<label class="check ez-a9"><input type="checkbox" name="einwilligung" value="ja"' + (p.a9 ? ' checked' : '') + (p.errA9 ? ' aria-invalid="true"' : '') + '><span>Ich willige ausdrücklich ein, dass Angaben zu Konfession und Herkunft meiner Familie, auch zu lebenden Angehörigen, für meine Anfrage und meinen Auftrag verarbeitet werden. Ich kann das jederzeit widerrufen. <a href="datenschutz.html#recherche-konfession" target="_blank" rel="noopener">Mehr dazu</a></span></label>' +
         (p.errA9 ? '<p class="ez-err" role="alert">' + PDF_FEHLER.art9 + '</p>' : '') +
@@ -781,20 +778,58 @@
      Herkunftsbericht, die Familiengeschichte als Zeile darunter (beide bleiben bestellbar), bei zwei bis vier Namen die
      Familiengeschichte. Die Einzelfallrecherche steht als Satz dabei und läuft weiter über das persönliche Angebot.
      Bei nicht deutschen Namensformen und ab fünf Namen steht hier nichts, dort meldet sich Wolgawurzeln zuerst. */
-  function kaufHTML(a) {
+  /* Seit 23.11.2026 (Edwin): erst die Frage, was der Kunde als Nächstes herausfinden möchte, dann genau ein passender Block.
+     Hb und fg sind gleich kaufbar. Bei zwei bis vier Namen führt die Kolonie Frage zur Familiengeschichte, ab fünf Namen und bei nicht
+     deutscher Namensform führen beide zum persönlichen Angebot. Einzelfall und Archivanfrage mit Feld, Transkription mit Fotohinweis.
+     Antippen und Notiz gehen an den Dienst (/nachtrag), Wolgawurzeln bekommt einen Nachtrag zur Lead Mail, der Kunde keine Mail. */
+  var ZIEL = ['hb', 'fg', 'ez', 'ar', 'tr'], NT_API = (WD.api || 'https://wolgawurzeln-api.edwin3222.workers.dev') + '/nachtrag';
+  function zq(s) { try { var z = w.WW_ZQ = w.WW_ZQ || []; if (z.length < 40) z.push(s); } catch (e) {} }
+  function zielArt(a, z) {
     var n = st.names.length, deutsch = a.kind === 'de' && !a.russian;
-    if (!deutsch || n > 4 || !st.pdf.np) return '';
-    var x = n <= 1 ? 'hb' : 'fg', W = WANT[x];
-    return '<section class="ez-angebot" aria-labelledby="ez-ang">' +
-      '<img class="ez-bericht" src="img/bericht-' + x + '-frei.webp" width="560" height="' + (x === 'hb' ? 452 : 364) + '" alt="Beispiel eines ' + W.n + 's mit Titelblatt und Innenseiten" decoding="async">' +
-      '<p class="ez-help ez-kh">Wenn Sie nicht warten möchten, können Sie die Recherche gleich beauftragen. Ihre Angaben sind schon eingetragen.</p>' +
-      '<h3 class="ez-kt" id="ez-ang"><span>' + W.n + '</span><b>' + W.price + '</b></h3><p class="ez-kd">' + W.d + '</p>' +
-      '<button type="button" class="ez-btn" data-fz-kauf="' + x + '">' + W.n + ' beauftragen</button>' +
-      (x === 'hb' ? '<p class="ez-alt">Für bis zu vier Nachnamen gibt es die <button type="button" class="ez-link" data-fz-kauf="fg">Familiengeschichte für 89 €</button>.</p>' : '') +
-      '<p class="ez-alt">Für Vorfahren mit Namen und Daten gibt es die Einzelfallrecherche, 149 € für 3 Stunden. Dazu erhalten Sie ein persönliches Angebot.</p></section>';
+    if (z !== 'hb' && z !== 'fg') return z;
+    if (!deutsch || n > 4) return 'pers';
+    return n > 1 ? 'fg' : z;
+  }
+  function zielBlock(a, z) {
+    var k = zielArt(a, z), p = st.pdf;
+    if (k === 'hb' || k === 'fg') {
+      var W = WANT[k];
+      return '<section class="ez-angebot" aria-labelledby="ez-ang">' +
+        '<p class="ez-help ez-kh">' + (z === 'hb' && k === 'fg' ? 'Bei mehreren Nachnamen ist das die Familiengeschichte. ' : '') + 'Wenn Sie nicht warten möchten, können Sie die Recherche gleich beauftragen. Ihre Angaben sind schon eingetragen.</p>' +
+        '<img class="ez-bericht" src="img/bericht-' + k + '-frei.webp" width="560" height="' + (k === 'hb' ? 452 : 364) + '" alt="Beispiel eines ' + W.n + 's mit Titelblatt und Innenseiten" decoding="async">' +
+        '<h3 class="ez-kt" id="ez-ang"><span>' + W.n + '</span><b>' + W.price + '</b></h3><p class="ez-kd">' + W.d + '</p>' +
+        '<button type="button" class="ez-btn" data-fz-kauf="' + k + '">' + W.n + ' beauftragen</button></section>';
+    }
+    if (k === 'tr') return '<section class="ez-ziel-b"><p class="ez-help">Schicken Sie ein Foto des Dokuments als Antwort auf die Mail mit Ihrer Ersteinschätzung. Sie erhalten dann vorab ein Angebot.</p></section>';
+    var satz = k === 'ez' ? 'Für Vorfahren mit Namen und Daten gibt es die Einzelfallrecherche, 149 € für drei Stunden einschließlich Bericht. Dazu erhalten Sie ein persönliches Angebot.'
+      : k === 'ar' ? 'Dokumente aus russischen Archiven fragen wir über spezialisierte Partner an. Den Festpreis nennen wir Ihnen vorab.'
+      : st.names.length > 4 ? 'Für mehr als vier Nachnamen erhalten Sie ein persönliches Angebot.'
+      : 'Bei dieser Namensform prüft Wolgawurzeln zuerst die Herkunft und meldet sich dann mit einem persönlichen Angebot.';
+    if (p.ntGesendet) return '<section class="ez-ziel-b"><p class="ez-help">' + satz + '</p><p class="ez-status ez-nt-ok">' + HAKEN + '<span>Ist angekommen. Wolgawurzeln meldet sich mit einem persönlichen Angebot bei Ihnen.</span></p></section>';
+    return '<section class="ez-ziel-b"><p class="ez-help">' + satz + '</p><label class="ez-lab" for="fz-zn">' + (k === 'ar' ? 'Welches Dokument, von wem, aus welchem Ort?' : 'Wen suchen Sie? Name, Jahr und Ort, soweit bekannt') + '</label>' +
+      '<textarea id="fz-zn" rows="3" maxlength="600">' + esc(p.ntNotiz || '') + '</textarea><div class="ez-bar"><button type="button" class="ez-btn" data-fz-nt>An Wolgawurzeln senden</button></div></section>';
+  }
+  function zielHTML(a) {
+    var p = st.pdf, z = p.ziel;
+    if (!p.np) return '';
+    var opts = z ? '<div class="ez-opts"><div class="ez-opt ez-ziel-g" aria-current="true"><span class="ez-ot"><b>' + WANT[z].t + '</b></span><button type="button" class="ez-link" data-fz-ziel-neu>Ändern</button></div></div>'
+      : '<div class="ez-opts" role="group" aria-labelledby="ez-zq">' + ZIEL.map(function (k) { return '<button type="button" class="ez-opt" data-fz-ziel="' + k + '"><span class="ez-ot"><b>' + WANT[k].t + '</b></span></button>'; }).join('') + '</div>';
+    return '<section class="ez-ziel"><h3 class="ez-kq" id="ez-zq">Was möchten Sie als Nächstes herausfinden?</h3>' + opts + (z ? zielBlock(a, z) : '') + '</section>';
+  }
+  /* Gemeldet wird einmal je Stand: beim Senden der Notiz, beim Klick auf „beauftragen“ (nur gespeichert) und beim Verlassen der Seite */
+  function nachtragSenden(kauf, beacon) {
+    var p = st.pdf; if (!p || !p.np || !p.ziel || p.ntFertig) return;
+    var ta = out.querySelector('#fz-zn'); if (ta) p.ntNotiz = (ta.value || '').trim();
+    var key = p.ziel + '|' + (p.ntNotiz || '') + '|' + (kauf ? 1 : 0); if (key === p.ntLetzt) return;
+    p.ntLetzt = key; if (kauf) p.ntFertig = true;
+    var body = JSON.stringify({ np: p.np, sid: SID, wunsch: p.ziel, notiz: p.ntNotiz || '', kauf: !!kauf });
+    try {
+      if (beacon && navigator.sendBeacon) navigator.sendBeacon(NT_API, new Blob([body], { type: 'text/plain' }));
+      else fetch(NT_API, { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'text/plain' } }).catch(function () {});
+    } catch (e) {}
   }
   function fertigHTML(a) {
-    var p = st.pdf, ok = p.done === 'gesendet', kauf = kaufHTML(a);
+    var p = st.pdf, ok = p.done === 'gesendet', kauf = zielHTML(a);
     /* Zeichnung zweier Hände mit einem Brief aus dem Bildarchiv edwinkarl.de, wie auf der Leistungsseite (Edwin 23.11.2026: bleibt) */
     return '<div class="ez">' + kopf(4) + '<div class="ez-body"><img class="ez-brief" src="img/illu/haende-brief.webp" width="900" height="608" alt="" decoding="async">' +
       '<div class="ez-done">' + HAKEN + '<h2 class="ez-q ez-name" tabindex="-1">' + (ok ? 'Ihre Ersteinschätzung ist unterwegs' : 'Ihre Anfrage ist angekommen') + '</h2></div>' +
@@ -841,6 +876,7 @@
     w.dispatchEvent(new Event('fz:change'));
   }
   function schliessen() {
+    if (st.pdf && st.pdf.ziel) nachtragSenden(false, true);
     if (hist) { var n = hist; hist = 0; still = true; try { history.go(-n); } catch (e) { still = false; } }
     leeren();
   }
@@ -945,10 +981,22 @@
       }
     }
     /* Schlussseite, „Gleich beauftragen“: Bestelldialog mit Name, Mail und Vorgang, direkt in Schritt 2 */
+    var zb = e.target.closest('[data-fz-ziel]');
+    if (zb) {
+      st.pdf.ziel = zb.getAttribute('data-fz-ziel'); st.pdf.ntGesendet = false; zq('schluss ziel ' + st.pdf.ziel); render();
+      var zs = out.querySelector('.ez-ziel'); if (zs) try { zs.scrollIntoView({ block: 'start' }); } catch (er) {}
+      return;
+    }
+    if (e.target.closest('[data-fz-ziel-neu]')) { var ta0 = out.querySelector('#fz-zn'); if (ta0) st.pdf.ntNotiz = ta0.value; st.pdf.ziel = ''; render(); return; }
+    if (e.target.closest('[data-fz-nt]')) {
+      var ta = out.querySelector('#fz-zn'), nt = ta ? (ta.value || '').trim() : '';
+      if (!nt) { if (ta) { ta.setAttribute('aria-invalid', 'true'); ta.focus(); } return; }
+      nachtragSenden(false, false); st.pdf.ntGesendet = true; zq('schluss notiz ' + st.pdf.ziel); render(); return;
+    }
     var kb = e.target.closest('[data-fz-kauf]');
     if (kb) {
-      npLog('bestellen');
-      var kart = kb.getAttribute('data-fz-kauf'), kdt = { np: st.pdf.np, name: st.name, email: st.pdf.mail, notiz: [knowSummary(), st.pdf.notiz || ''].filter(Boolean).join('. '), stand: '' };
+      npLog('bestellen'); nachtragSenden(true, false);
+      var kart = kb.getAttribute('data-fz-kauf'), kdt = { np: st.pdf.np, name: st.name, email: st.pdf.mail, notiz: [knowSummary(), st.pdf.notiz || '', st.pdf.ntNotiz || ''].filter(Boolean).join('. '), stand: '' };
       schliessen();
       if (w.WW_BESTELLEN) w.WW_BESTELLEN(kart, kdt);
       else { var ktrg = d.querySelector('.pk-act [data-order="' + kart + '"]'), knm = d.getElementById('order-name'); if (knm) knm.value = kdt.name; if (ktrg) ktrg.click(); }
@@ -990,8 +1038,12 @@
   out.addEventListener('input', function (e) {
     if (e.target.id === 'fz-pm') st.pdf.mail = e.target.value;
     if (e.target.id === 'fz-pn') st.pdf.notiz = e.target.value;
+    if (e.target.id === 'fz-zn' && e.target.hasAttribute('aria-invalid')) e.target.removeAttribute('aria-invalid');
   });
   out.addEventListener('change', function (e) { if (e.target.name === 'einwilligung' && e.target.closest('.ez-a9')) { st.pdf.a9 = e.target.checked; if (e.target.checked && st.pdf.errA9) { st.pdf.errA9 = false; var er = e.target.closest('form').querySelector('.ez-a9 + .ez-err'); if (er) er.remove(); e.target.removeAttribute('aria-invalid'); } } });
+  /* Wer die Seite verlässt oder in die Mail App wechselt, nachdem er etwas angetippt hat: Stand einmal melden */
+  w.addEventListener('pagehide', function () { if (offen && st.pdf && st.pdf.ziel) nachtragSenden(false, true); });
+  d.addEventListener('visibilitychange', function () { if (d.visibilityState === 'hidden' && offen && st.pdf && st.pdf.ziel) nachtragSenden(false, true); });
   var cl = box.querySelector('.fz-close');
   if (cl) cl.addEventListener('click', schliessen);
 
