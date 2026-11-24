@@ -345,12 +345,12 @@
      Liegt zu diesem Vorgang schon eine Bestellung derselben Leistung vor, wird das gesagt, statt eine zweite anzulegen. */
   (function () {
     var u; try { u = new URLSearchParams(location.search); } catch (e) { return; }
-    var pk = u.get('bestellen'), tk = u.get('b');
+    var pk = u.get('bestellen'), tk = u.get('b'), kk = u.get('k');   /* k: kurzer Link wolgawurzeln.de/b/… (24.11.2026) */
     if (!pk || !P[pk]) return;
     try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {}
     var start = function (dt) { mitVorgang(pk, dt, 'link'); };
-    if (!tk || !window.fetch) { start(null); return; }
-    fetch((window.WW_DIENST ? window.WW_DIENST.api : 'https://wolgawurzeln-api.edwin3222.workers.dev') + '/bestellung?b=' + encodeURIComponent(tk) + '&p=' + pk)
+    if ((!tk && !kk) || !window.fetch) { start(null); return; }
+    fetch((window.WW_DIENST ? window.WW_DIENST.api : 'https://wolgawurzeln-api.edwin3222.workers.dev') + '/bestellung?' + (tk ? 'b=' + encodeURIComponent(tk) : 'k=' + encodeURIComponent(kk)) + '&p=' + pk)
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(start, function () { start(null); });
   })();
